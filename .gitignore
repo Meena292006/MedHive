@@ -1,0 +1,22 @@
+# Node
+node_modules/
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# ML models (OPTIONAL – see note below)
+# Uncomment if models are too large
+# *.pkl
+
+# SQLite DB
+*.db
+
+# Vite
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
