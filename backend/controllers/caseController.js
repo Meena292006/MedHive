@@ -9,14 +9,17 @@ exports.submitCase = async (req, res) => {
     { symptoms }
   );
 
-  const predictions = mlRes.data.top_predictions;
+  const predictions = mlRes.data.top_predictions || [];
 
-  const riskScore = Math.min(
-  100,
-  Math.round(predictions[0].probability * 10)
-);
+  let riskScore = 0;
+  if (predictions.length > 0) {
+    riskScore = Math.min(
+      100,
+      Math.round(predictions[0].probability * 10)
+    );
+  }
 
-  const priority = riskScore > 60 ? "HIGH" : "NORMAL";
+  const priority = mlRes.data.priority || (riskScore > 60 ? "HIGH" : "NORMAL");
 
   Case.createCase({
     patient,

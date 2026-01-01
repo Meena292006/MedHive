@@ -11,12 +11,13 @@ import os
 # =====================================================
 
 app = FastAPI(title="MedHive AI Service")
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "http://127.0.0.1:5173"
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -86,6 +87,37 @@ SYMPTOM_CACHE = None
 # ROUTES
 # =====================================================
 
+# =====================================================
+# LOAD LABEL ENCODER (NEW)
+# =====================================================
+
+LABEL_ENCODER = None
+try:
+    LABEL_ENCODER = joblib.load(os.path.join(MODEL_DIR, "label_encoder.pkl"))
+    print("DEBUG: Label encoder loaded successfully")
+except:
+    print("DEBUG: No label encoder found - using fallback")
+
+def get_disease_label(class_val):
+    """
+    Returns human-readable disease name.
+    """
+    if isinstance(class_val, (str, np.str_)):
+        return class_val.title()
+    
+    # If integer, try mapping
+    if LABEL_ENCODER:
+        try:
+            return LABEL_ENCODER.inverse_transform([int(class_val)])[0]
+        except:
+            pass
+            
+    return f"Unknown Disease (Class {class_val})"
+
+# =====================================================
+# ROUTES
+# =====================================================
+
 @app.get("/")
 def root():
     return {"message": "MedHive AI Service running"}
@@ -94,7 +126,8 @@ def root():
 def health():
     return {
         "status": "OK",
-        "models_loaded": len(models)
+        "models_loaded": len(models),
+        "label_encoder": LABEL_ENCODER is not None
     }
 
 @app.get("/symptoms")
@@ -119,12 +152,20 @@ def get_all_symptoms():
 
 @app.post("/predict")
 def predict(data: SymptomInput):
+    print(f"DEBUG: Received symptoms: {data.symptoms}")
     combined_probs = defaultdict(float)
     total_matches = 0
+    active_models_count = 0
 
     for model, cols in models:
         x, matched = build_vector(data.symptoms, cols)
+        
+        # 🚨 DYNAMIC FILTER: Skip models that don't match any symptoms
+        if matched == 0:
+            continue
+            
         total_matches += matched
+        active_models_count += 1
 
         # If model supports probabilities
         if hasattr(model, "predict_proba"):
@@ -135,23 +176,25 @@ def predict(data: SymptomInput):
             probs = np.ones(len(classes)) / len(classes)
 
         for disease, prob in zip(classes, probs):
-            if not isinstance(disease, (str, np.str_)):
-                continue
-            combined_probs[str(disease)] += float(prob)
+            # Resolve label (handle ints/strings)
+            disease_name = get_disease_label(disease)
+            combined_probs[disease_name] += float(prob)
 
-    # 🚨 SAFETY CHECK (VERY IMPORTANT)
+    # 🚨 NO MATCHES FOUND
     if total_matches == 0:
         return {
             "warning": "No selected symptoms matched model features",
-            "top_predictions": []
+            "top_predictions": [],
+            "priority": "NORMAL"
         }
 
-    num_models = len(models)
+    # Normalize by active models (not total models) to avoid dilution
+    normalization_factor = max(1, active_models_count)
 
     results = [
         {
             "disease": disease,
-            "probability": round((prob / num_models) * 100, 2)
+            "probability": round((prob / normalization_factor) * 100, 2)
         }
         for disease, prob in combined_probs.items()
     ]
@@ -161,8 +204,13 @@ def predict(data: SymptomInput):
         key=lambda x: x["probability"],
         reverse=True
     )[:3]
+    
+    # CALCULATE PRIORITY
+    top_prob = results[0]["probability"] if results else 0
+    priority = "HIGH" if top_prob > 50.0 else "NORMAL"
 
     return {
         "matched_symptoms": total_matches,
-        "top_predictions": results
+        "top_predictions": results,
+        "priority": priority
     }
