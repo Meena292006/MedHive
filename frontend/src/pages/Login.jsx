@@ -1,11 +1,12 @@
-import { Button, Box, Typography, Card, CardContent } from "@mui/material";
+import { Button, Box, Typography, Card, CardContent, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
-import PersonIcon from "@mui/icons-material/Person";
-import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+import MedicalServicesIcon from "@mui/icons-material/MedicalServicesRounded";
+import PersonIcon from "@mui/icons-material/PersonRounded";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospitalRounded";
 
 export default function Login() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const login = (role) => {
     localStorage.setItem("role", role);
@@ -19,53 +20,64 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #020617, #0f172a, #7f1d1d)",
+        background: `linear-gradient(135deg, ${theme.palette.primary.dark}, #0f172a)`,
+        position: "relative",
+        overflow: "hidden"
       }}
     >
+      {/* Decorative background blobs */}
+      <Box sx={{ position: "absolute", top: -100, left: -100, width: 400, height: 400, borderRadius: "50%", background: theme.palette.primary.main, filter: "blur(100px)", opacity: 0.3 }} />
+      <Box sx={{ position: "absolute", bottom: -100, right: -100, width: 300, height: 300, borderRadius: "50%", background: theme.palette.secondary.main, filter: "blur(80px)", opacity: 0.2 }} />
+
       <Card
         sx={{
-          width: 380,
+          width: 400,
           borderRadius: 4,
-          backdropFilter: "blur(10px)",
-          background: "rgba(15, 23, 42, 0.85)",
-          boxShadow: "0 25px 50px rgba(0,0,0,0.5)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          backdropFilter: "blur(20px)",
+          background: "rgba(255, 255, 255, 0.05)",
+          boxShadow: "0 25px 50px rgba(0,0,0,0.3)",
+          border: "1px solid rgba(255,255,255,0.1)",
         }}
       >
-        <CardContent sx={{ textAlign: "center", p: 4 }}>
-          {/* ICON */}
-          <LocalHospitalIcon
-            sx={{ fontSize: 56, color: "#38bdf8", mb: 1 }}
-          />
+        <CardContent sx={{ textAlign: "center", p: 5 }}>
+          <Box sx={{
+            width: 80, height: 80, margin: "0 auto",
+            background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+            borderRadius: "20px",
+            display: "flex", alignItems: "center", justifyContent: "center", mb: 3,
+            boxShadow: "0 10px 20px rgba(0,0,0,0.2)"
+          }}>
+            <LocalHospitalIcon sx={{ fontSize: 40, color: "white" }} />
+          </Box>
 
-          {/* TITLE */}
           <Typography
             variant="h4"
-            fontWeight="bold"
-            sx={{ color: "#f8fafc", letterSpacing: 1 }}
+            fontWeight="800"
+            sx={{ color: "white", letterSpacing: 1, mb: 0.5 }}
           >
             MedHive
           </Typography>
 
           <Typography
             variant="body2"
-            sx={{ color: "#cbd5f5", mb: 4 }}
+            sx={{ color: "rgba(255,255,255,0.7)", mb: 5 }}
           >
-            AI-Powered Clinical Decision Support
+            Next-Gen Clinical Decision Support
           </Typography>
 
-          {/* PATIENT LOGIN */}
           <Button
             fullWidth
             variant="contained"
+            size="large"
             startIcon={<PersonIcon />}
             sx={{
               mb: 2,
-              py: 1.3,
-              fontWeight: "bold",
-              background: "linear-gradient(135deg, #0ea5e9, #2563eb)",
+              py: 1.5,
+              fontSize: "1rem",
+              background: "white",
+              color: theme.palette.primary.dark,
               "&:hover": {
-                background: "linear-gradient(135deg, #0284c7, #1d4ed8)",
+                background: "#f8fafc",
               },
             }}
             onClick={() => login("patient")}
@@ -73,17 +85,19 @@ export default function Login() {
             Patient Portal
           </Button>
 
-          {/* DOCTOR LOGIN */}
           <Button
             fullWidth
-            variant="contained"
+            variant="outlined"
+            size="large"
             startIcon={<MedicalServicesIcon />}
             sx={{
-              py: 1.3,
-              fontWeight: "bold",
-              background: "linear-gradient(135deg, #dc2626, #7f1d1d)",
+              py: 1.5,
+              fontSize: "1rem",
+              borderColor: "rgba(255,255,255,0.3)",
+              color: "white",
               "&:hover": {
-                background: "linear-gradient(135deg, #b91c1c, #7f1d1d)",
+                borderColor: "white",
+                background: "rgba(255,255,255,0.1)"
               },
             }}
             onClick={() => login("doctor")}
@@ -91,10 +105,9 @@ export default function Login() {
             Doctor Portal
           </Button>
 
-          {/* FOOTER */}
           <Typography
             variant="caption"
-            sx={{ display: "block", mt: 4, color: "#94a3b8" }}
+            sx={{ display: "block", mt: 4, color: "rgba(255,255,255,0.4)" }}
           >
             Secure hospital access • MedHive © 2026
           </Typography>
