@@ -47,7 +47,7 @@ export default function PatientDashboard() {
             Dashboard
           </Typography>
           <Typography variant="h4" sx={{ fontWeight: 800, color: theme.palette.text.primary, mt: 0.5 }}>
-            Patient Portal
+            Patient Health Prediction System
           </Typography>
         </Box>
         <Box sx={{ display: "flex", gap: 2 }}>

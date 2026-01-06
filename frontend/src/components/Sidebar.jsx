@@ -8,6 +8,10 @@ import PeopleIcon from "@mui/icons-material/PeopleRounded";
 import NotificationsIcon from "@mui/icons-material/NotificationsRounded";
 import PersonIcon from "@mui/icons-material/PersonRounded";
 import LogoutIcon from "@mui/icons-material/LogoutRounded";
+import FavoriteIcon from "@mui/icons-material/FavoriteRounded";
+import WaterDropIcon from "@mui/icons-material/WaterDropRounded";
+import DescriptionIcon from "@mui/icons-material/DescriptionRounded";
+import HistoryIcon from "@mui/icons-material/HistoryRounded";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const DRAWER_WIDTH = 280; // Slightly wider for better breathing room
@@ -18,11 +22,11 @@ export default function Sidebar() {
     const theme = useTheme();
 
     const menuItems = [
-        { text: "Dashboard", icon: <DashboardIcon />, path: "/doctor" },
-        { text: "AI Query", icon: <PsychologyIcon />, path: "/ai-query" },
-        { text: "Patient List", icon: <PeopleIcon />, path: "/patients" },
-        { text: "Alerts", icon: <NotificationsIcon />, path: "/alerts" },
-        { text: "Patient Portal", icon: <PersonIcon />, path: "/patient" },
+        { text: "Home", icon: <DashboardIcon />, path: "/patient" },
+        { text: "Heart Analysis", icon: <FavoriteIcon />, path: "/patient/heart" },
+        { text: "Diabetes Check", icon: <WaterDropIcon />, path: "/patient/diabetes" },
+        { text: "Medical Reports", icon: <DescriptionIcon />, path: "/patient/reports" },
+        { text: "History", icon: <HistoryIcon />, path: "/patient/history" },
     ];
 
     const handleLogout = () => {
