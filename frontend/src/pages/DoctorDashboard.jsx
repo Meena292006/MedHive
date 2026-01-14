@@ -10,7 +10,8 @@ import {
   Grid,
   Divider,
   useTheme,
-  Avatar
+  Avatar,
+  Stack
 } from "@mui/material";
 import WarningIcon from "@mui/icons-material/WarningRounded";
 import PersonIcon from "@mui/icons-material/PersonRounded";
@@ -31,223 +32,276 @@ export default function DoctorDashboard() {
 
   useEffect(() => {
     api.get("/cases").then(res => {
-      const latestCases = res.data
+      const latest = res.data
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
         .slice(0, 10);
-
-      setCases(latestCases);
+      setCases(latest);
     });
   }, []);
-
-  // =========================
-  // ANALYTICS
-  // =========================
 
   const highCount = cases.filter(c => c.priority === "HIGH").length;
   const normalCount = cases.filter(c => c.priority === "NORMAL").length;
 
   const chartData = [
-    { name: "High Priority", count: highCount },
-    { name: "Normal Priority", count: normalCount }
+    { name: "High Risk", count: highCount },
+    { name: "Normal", count: normalCount }
   ];
 
-  const getPriorityColor = (priority) =>
-    priority === "HIGH" ? "error" : "success";
+  const getPriorityColor = (p) => (p === "HIGH" ? "error" : "success");
 
   return (
     <DashboardLayout>
       {/* HEADER */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="caption" sx={{ color: theme.palette.text.secondary, textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
-          Overview
+      <Box sx={{ mb: 5 }}>
+        <Typography
+          variant="caption"
+          sx={{
+            letterSpacing: 2,
+            fontWeight: 700,
+            color: theme.palette.primary.main
+          }}
+        >
+          Doctor Panel
         </Typography>
-        <Typography variant="h4" fontWeight="800" color="text.primary" sx={{ mt: 0.5 }}>
-          Doctor Dashboard
+
+        <Typography variant="h4" fontWeight={900}>
+          Clinical Dashboard
         </Typography>
-        <Typography sx={{ color: theme.palette.text.secondary, mt: 1 }}>
-          Clinical overview & AI-assisted analysis (latest 10 cases)
+
+        <Typography color="text.secondary">
+          Real-time AI assisted patient overview
         </Typography>
       </Box>
 
-      {/* ANALYTICS CARDS */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Box>
-                <Typography variant="caption" color="text.secondary" fontWeight={600}>TOTAL CASES</Typography>
-                <Typography variant="h3" fontWeight="bold" sx={{ mt: 1 }}>
-                  {cases.length}
-                </Typography>
-              </Box>
-              <Avatar sx={{ width: 56, height: 56, bgcolor: theme.palette.primary.light, color: "white" }}>
-                <AnalyticsIcon />
-              </Avatar>
-            </CardContent>
-          </Card>
-        </Grid>
+      {/* STATS */}
+      <Grid container spacing={3} sx={{ mb: 5 }}>
+        {[
+          {
+            label: "Total Cases",
+            value: cases.length,
+            icon: <AnalyticsIcon />,
+            color: theme.palette.primary.main
+          },
+          {
+            label: "High Risk",
+            value: highCount,
+            icon: <WarningIcon />,
+            color: theme.palette.error.main
+          },
+          {
+            label: "Normal",
+            value: normalCount,
+            icon: <MedicalServicesIcon />,
+            color: theme.palette.success.main
+          }
+        ].map((s, i) => (
+          <Grid item xs={12} md={4} key={i}>
+            <Card
+              sx={{
+                height: "100%",
+                borderRadius: 4,
+                background: `linear-gradient(145deg, ${s.color}22, transparent)`,
+                border: `1px solid ${theme.palette.divider}`,
+                transition: "all .25s",
+                "&:hover": {
+                  transform: "translateY(-3px)",
+                  boxShadow: "0 18px 40px rgba(0,0,0,0.08)"
+                }
+              }}
+            >
+              <CardContent
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <Box>
+                  <Typography
+                    variant="caption"
+                    fontWeight={700}
+                    color="text.secondary"
+                  >
+                    {s.label}
+                  </Typography>
+                  <Typography variant="h3" fontWeight={900}>
+                    {s.value}
+                  </Typography>
+                </Box>
 
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: "100%" }}>
-            <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Box>
-                <Typography variant="caption" color="text.secondary" fontWeight={600}>HIGH RISK</Typography>
-                <Typography variant="h3" fontWeight="bold" color="error.main" sx={{ mt: 1 }}>
-                  {highCount}
-                </Typography>
-              </Box>
-              <Avatar sx={{ width: 56, height: 56, bgcolor: theme.palette.error.light, color: "white" }}>
-                <WarningIcon />
-              </Avatar>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: "100%" }}>
-            <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Box>
-                <Typography variant="caption" color="text.secondary" fontWeight={600}>NORMAL</Typography>
-                <Typography variant="h3" fontWeight="bold" color="success.main" sx={{ mt: 1 }}>
-                  {normalCount}
-                </Typography>
-              </Box>
-              <Avatar sx={{ width: 56, height: 56, bgcolor: theme.palette.success.light, color: "white" }}>
-                <MedicalServicesIcon />
-              </Avatar>
-            </CardContent>
-          </Card>
-        </Grid>
+                <Avatar
+                  sx={{
+                    bgcolor: s.color,
+                    width: 56,
+                    height: 56,
+                    boxShadow: `0 10px 25px ${s.color}55`
+                  }}
+                >
+                  {s.icon}
+                </Avatar>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
 
-      {/* GRAPH */}
-      <Card sx={{ mb: 4 }}>
+      {/* CHART */}
+      <Card
+        sx={{
+          mb: 5,
+          borderRadius: 4,
+          border: `1px solid ${theme.palette.divider}`,
+          boxShadow: "0 12px 30px rgba(0,0,0,0.06)"
+        }}
+      >
         <CardContent>
-          <Typography fontWeight={700} variant="h6" sx={{ mb: 3 }}>
-            Priority Distribution
+          <Typography fontWeight={800} mb={3}>
+            Case Priority Distribution
           </Typography>
 
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={280}>
             <BarChart data={chartData}>
-              <XAxis
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: theme.palette.text.secondary }}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: theme.palette.text.secondary }}
-              />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} />
+              <YAxis axisLine={false} tickLine={false} />
               <Tooltip
-                cursor={{ fill: 'transparent' }}
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                contentStyle={{
+                  borderRadius: 12,
+                  border: "none",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.15)"
+                }}
               />
-              <Bar dataKey="count" fill={theme.palette.primary.main} radius={[4, 4, 0, 0]} barSize={50} />
+              <Bar
+                dataKey="count"
+                radius={[12, 12, 0, 0]}
+                fill={theme.palette.primary.main}
+                barSize={56}
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* PATIENT CASES */}
-      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Recent Cases</Typography>
+      {/* CASES */}
+      <Typography variant="h6" fontWeight={800} sx={{ mb: 3 }}>
+        Recent Patient Cases
+      </Typography>
+
       <Grid container spacing={3}>
-        {cases.map((c) => (
+        {cases.map(c => (
           <Grid item xs={12} md={6} key={c.id}>
             <Card
               sx={{
-                borderLeft: c.priority === "HIGH"
-                  ? `6px solid ${theme.palette.error.main}`
-                  : `6px solid ${theme.palette.success.main}`,
-                transition: "transform 0.2s",
-                "&:hover": { transform: "translateY(-4px)", boxShadow: "0 10px 30px rgba(0,0,0,0.08)" }
+                borderRadius: 4,
+                borderLeft: `6px solid ${
+                  c.priority === "HIGH"
+                    ? theme.palette.error.main
+                    : theme.palette.success.main
+                }`,
+                border: `1px solid ${theme.palette.divider}`,
+                transition: "all .25s",
+                "&:hover": {
+                  transform: "translateY(-4px)",
+                  boxShadow: "0 18px 45px rgba(0,0,0,0.1)"
+                }
               }}
             >
-              <CardContent sx={{ p: 3 }}>
-                {/* HEADER */}
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Avatar sx={{ width: 40, height: 40, bgcolor: theme.palette.grey[100], color: theme.palette.text.primary, mr: 2 }}>
+              <CardContent>
+                <Stack direction="row" justifyContent="space-between" mb={2}>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Avatar
+                      sx={{
+                        bgcolor: theme.palette.background.default,
+                        color: theme.palette.primary.main,
+                        boxShadow: "0 8px 20px rgba(0,0,0,0.12)"
+                      }}
+                    >
                       <PersonIcon />
                     </Avatar>
+
                     <Box>
-                      <Typography fontWeight={700} variant="body1">
+                      <Typography fontWeight={700}>
                         {c.patient_name}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">ID: #{c.id}</Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                      >
+                        Case #{c.id}
+                      </Typography>
                     </Box>
-                  </Box>
+                  </Stack>
 
                   <Chip
                     label={c.priority}
                     color={getPriorityColor(c.priority)}
-                    icon={c.priority === "HIGH" ? <WarningIcon /> : undefined}
-                    size="small"
-                    sx={{ fontWeight: "bold" }}
+                    sx={{ fontWeight: 800 }}
                   />
-                </Box>
+                </Stack>
 
                 <Divider sx={{ my: 2 }} />
 
-                {/* SYMPTOMS */}
-                <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ textTransform: "uppercase" }}>
+                <Typography
+                  variant="caption"
+                  fontWeight={700}
+                  color="text.secondary"
+                >
                   Symptoms
                 </Typography>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1, mb: 2 }}>
+
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
                   {JSON.parse(c.symptoms).map((s, i) => (
-                    <Chip key={i} label={s} size="small" variant="outlined" sx={{ borderColor: theme.palette.divider }} />
+                    <Chip
+                      key={i}
+                      label={s}
+                      size="small"
+                      sx={{
+                        bgcolor: theme.palette.background.paper,
+                        fontWeight: 500
+                      }}
+                    />
                   ))}
                 </Box>
 
-                {/* AI PREDICTIONS */}
-                <Box sx={{ bgcolor: theme.palette.background.default, p: 2, borderRadius: 2 }}>
-                  <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ textTransform: "uppercase" }}>
-                    Top AI Predictions
+                <Box
+                  sx={{
+                    mt: 3,
+                    p: 2,
+                    borderRadius: 3,
+                    bgcolor: theme.palette.background.default,
+                    border: `1px dashed ${theme.palette.divider}`
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    fontWeight={700}
+                    color="text.secondary"
+                  >
+                    AI Predictions
                   </Typography>
 
                   {JSON.parse(c.predictions).map((p, i) => (
-                    <Box
+                    <Stack
                       key={i}
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        mt: 1,
-                        alignItems: "center"
-                      }}
+                      direction="row"
+                      justifyContent="space-between"
+                      mt={1}
                     >
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <MedicalServicesIcon sx={{ fontSize: 16, mr: 1, color: theme.palette.primary.main }} />
-                        <Typography variant="body2" fontWeight={500}>
-                          {p.disease}
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" fontWeight={700} color="primary.main">
+                      <Typography fontWeight={600}>
+                        {p.disease}
+                      </Typography>
+                      <Typography
+                        fontWeight={800}
+                        color="primary.main"
+                      >
                         {p.probability}%
                       </Typography>
-                    </Box>
+                    </Stack>
                   ))}
-                </Box>
-
-                {/* RISK SCORE */}
-                <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-                  <Typography variant="caption" sx={{ mr: 1 }}>Risk Score</Typography>
-                  <Typography variant="body2" fontWeight={800}>{c.risk_score}</Typography>
                 </Box>
               </CardContent>
             </Card>
           </Grid>
         ))}
-
-        {cases.length === 0 && (
-          <Grid item xs={12}>
-            <Box sx={{ p: 4, textAlign: "center", border: `1px dashed ${theme.palette.divider}`, borderRadius: 2 }}>
-              <Typography sx={{ color: theme.palette.text.secondary, fontStyle: "italic" }}>
-                No recent patient cases available.
-              </Typography>
-            </Box>
-          </Grid>
-        )}
       </Grid>
     </DashboardLayout>
   );

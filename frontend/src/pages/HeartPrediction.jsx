@@ -2,188 +2,233 @@ import { useState } from "react";
 import { mlApi } from "../api/mlApi";
 import DashboardLayout from "../components/DashboardLayout";
 import {
-    Button, TextField, Card, CardContent, Typography,
-    Grid, Box, Chip, FormControl, InputLabel, Select, MenuItem
+  Button,
+  TextField,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/FavoriteRounded";
 
 export default function HeartPrediction() {
-    const [formData, setFormData] = useState({
-        age: "57", sex: "1", cp: "0", trestbps: "140", chol: "241",
-        fbs: "0", restecg: "1", thalach: "123", exang: "1",
-        oldpeak: "0.2", slope: "1", ca: "0", thal: "3"
-    });
-    const [result, setResult] = useState(null);
-    const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    age: "57",
+    sex: "1",
+    cp: "0",
+    trestbps: "140",
+    chol: "241",
+    fbs: "0",
+    restecg: "1",
+    thalach: "123",
+    exang: "1",
+    oldpeak: "0.2",
+    slope: "1",
+    ca: "0",
+    thal: "2"
+  });
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    const submit = async () => {
-        setLoading(true);
-        setResult(null); // Clear previous result
-        try {
-            const safeParseInt = (val) => isNaN(parseInt(val)) ? 0 : parseInt(val);
-            const safeParseFloat = (val) => isNaN(parseFloat(val)) ? 0.0 : parseFloat(val);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-            const payload = {
-                age: safeParseInt(formData.age),
-                sex: safeParseInt(formData.sex),
-                cp: safeParseInt(formData.cp),
-                trestbps: safeParseInt(formData.trestbps),
-                chol: safeParseInt(formData.chol),
-                fbs: safeParseInt(formData.fbs),
-                restecg: safeParseInt(formData.restecg),
-                thalach: safeParseInt(formData.thalach),
-                exang: safeParseInt(formData.exang),
-                oldpeak: safeParseFloat(formData.oldpeak),
-                slope: safeParseInt(formData.slope),
-                ca: safeParseInt(formData.ca),
-                thal: safeParseInt(formData.thal)
-            };
+  const submit = async () => {
+    setLoading(true);
+    setResult(null);
 
-            const res = await mlApi.post("/predict/heart", payload);
-            setResult(res.data);
-        } catch (err) {
-            console.error(err);
-            alert("Failed to get prediction. Please check your inputs and try again.\nError: " + (err.response?.data?.detail || err.message));
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+      const payload = {
+        age: Number(formData.age),
+        sex: Number(formData.sex),
+        cp: Number(formData.cp),
+        trestbps: Number(formData.trestbps),
+        chol: Number(formData.chol),
+        fbs: Number(formData.fbs),
+        restecg: Number(formData.restecg),
+        thalach: Number(formData.thalach),
+        exang: Number(formData.exang),
+        oldpeak: Number(formData.oldpeak),
+        slope: Number(formData.slope),
+        ca: Number(formData.ca),
+        thal: Number(formData.thal)
+      };
 
-    return (
-        <DashboardLayout>
-            <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
-                <FavoriteIcon sx={{ fontSize: 40, color: "error.main" }} />
-                <Typography variant="h4" fontWeight={800}> Heart Disease Analysis</Typography>
-            </Box>
+      const res = await mlApi.post("/predict/heart", payload);
 
-            <Grid container spacing={4}>
-                <Grid item xs={12} md={8}>
-                    <Card>
-                        <CardContent sx={{ p: 4 }}>
-                            <Grid container spacing={3}>
-                                <Grid item xs={6}><TextField fullWidth label="Age" name="age" type="number" onChange={handleChange} /></Grid>
-                                <Grid item xs={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Sex</InputLabel>
-                                        <Select name="sex" value={formData.sex} label="Sex" onChange={handleChange}>
-                                            <MenuItem value={1}>Male</MenuItem>
-                                            <MenuItem value={0}>Female</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
+      const isDanger = res.data.prediction === 1;
 
-                                <Grid item xs={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Chest Pain Type (0-3)</InputLabel>
-                                        <Select name="cp" value={formData.cp} label="Chest Pain Type (0-3)" onChange={handleChange}>
-                                            <MenuItem value={0}>Typical Angina</MenuItem>
-                                            <MenuItem value={1}>Atypical Angina</MenuItem>
-                                            <MenuItem value={2}>Non-anginal Pain</MenuItem>
-                                            <MenuItem value={3}>Asymptomatic</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}><TextField fullWidth label="Resting BP (mm Hg)" name="trestbps" type="number" onChange={handleChange} /></Grid>
+      setResult({
+        isDanger,
+        probability: res.data.probability,
+        label: isDanger
+          ? "High Risk of Heart Disease"
+          : "Low Risk / Normal"
+      });
+    } catch (err) {
+      alert(
+        "Prediction failed\n" +
+          (err.response?.data?.detail || err.message)
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                                <Grid item xs={6}><TextField fullWidth label="Cholesterol (mg/dl)" name="chol" type="number" onChange={handleChange} /></Grid>
-                                <Grid item xs={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Fasting BS &gt; 120 mg/dl</InputLabel>
-                                        <Select name="fbs" value={formData.fbs} label="Fasting BS > 120 mg/dl" onChange={handleChange}>
-                                            <MenuItem value={1}>True</MenuItem>
-                                            <MenuItem value={0}>False</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
+  return (
+    <DashboardLayout>
+      <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
+        <FavoriteIcon sx={{ fontSize: 40, color: "error.main" }} />
+        <Typography variant="h4" fontWeight={800}>
+          Heart Disease Analysis
+        </Typography>
+      </Box>
 
-                                <Grid item xs={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Resting ECG</InputLabel>
-                                        <Select name="restecg" value={formData.restecg} label="Resting ECG" onChange={handleChange}>
-                                            <MenuItem value={0}>Normal</MenuItem>
-                                            <MenuItem value={1}>ST-T Wave Abnormality</MenuItem>
-                                            <MenuItem value={2}>Left Ventricular Hypertrophy</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}><TextField fullWidth label="Max Heart Rate" name="thalach" type="number" onChange={handleChange} /></Grid>
-
-                                <Grid item xs={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Exercise Angina</InputLabel>
-                                        <Select name="exang" value={formData.exang} label="Exercise Angina" onChange={handleChange}>
-                                            <MenuItem value={1}>Yes</MenuItem>
-                                            <MenuItem value={0}>No</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}><TextField fullWidth label="ST Depression (Oldpeak)" name="oldpeak" type="number" helperText="Typical range: 0 - 6.0" onChange={handleChange} /></Grid>
-
-                                <Grid item xs={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Slope of Peak ST</InputLabel>
-                                        <Select name="slope" value={formData.slope} label="Slope of Peak ST" onChange={handleChange}>
-                                            <MenuItem value={0}>Upsloping</MenuItem>
-                                            <MenuItem value={1}>Flat</MenuItem>
-                                            <MenuItem value={2}>Downsloping</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>No. Major Vessels (0-3)</InputLabel>
-                                        <Select name="ca" value={formData.ca} label="No. Major Vessels (0-3)" onChange={handleChange}>
-                                            <MenuItem value={0}>0</MenuItem>
-                                            <MenuItem value={1}>1</MenuItem>
-                                            <MenuItem value={2}>2</MenuItem>
-                                            <MenuItem value={3}>3</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Thalassemia</InputLabel>
-                                        <Select name="thal" value={formData.thal} label="Thalassemia" onChange={handleChange}>
-                                            <MenuItem value={0}>Normal</MenuItem>
-                                            <MenuItem value={1}>Fixed Defect</MenuItem>
-                                            <MenuItem value={2}>Reversable Defect</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-
-                                <Grid item xs={12}>
-                                    <Button variant="contained" fullWidth size="large" onClick={submit} disabled={loading}>
-                                        {loading ? "Analyzing..." : "Predict Heart Disease Risk"}
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                        </CardContent>
-                    </Card>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={8}>
+          <Card>
+            <CardContent sx={{ p: 4 }}>
+              <Grid container spacing={3}>
+                <Grid item xs={6}>
+                  <TextField fullWidth label="Age" name="age" type="number" value={formData.age} onChange={handleChange} />
                 </Grid>
 
-                <Grid item xs={12} md={4}>
-                    {result && (
-                        <Card sx={{ bgcolor: result.is_danger ? "#FFF5F5" : "#F0FFF4", border: 1, borderColor: result.is_danger ? "error.main" : "success.main" }}>
-                            <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                                <Typography variant="h5" fontWeight={700} color={result.is_danger ? "error" : "success.main"}>
-                                    {result.prediction}
-                                </Typography>
-                                <Typography variant="h3" fontWeight={800} sx={{ my: 2 }}>
-                                    {result.probability}%
-                                </Typography>
-                                <Typography variant="body1" color="text.secondary">
-                                    Confidence Score
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    )}
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Sex</InputLabel>
+                    <Select name="sex" value={formData.sex} onChange={handleChange}>
+                      <MenuItem value={1}>Male</MenuItem>
+                      <MenuItem value={0}>Female</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
-            </Grid>
-        </DashboardLayout>
-    );
+
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Chest Pain Type</InputLabel>
+                    <Select name="cp" value={formData.cp} onChange={handleChange}>
+                      <MenuItem value={0}>Typical Angina</MenuItem>
+                      <MenuItem value={1}>Atypical Angina</MenuItem>
+                      <MenuItem value={2}>Non-anginal Pain</MenuItem>
+                      <MenuItem value={3}>Asymptomatic</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField fullWidth label="Resting BP (mm Hg)" name="trestbps" type="number" value={formData.trestbps} onChange={handleChange} />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField fullWidth label="Cholesterol (mg/dl)" name="chol" type="number" value={formData.chol} onChange={handleChange} />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Fasting Blood Sugar</InputLabel>
+                    <Select name="fbs" value={formData.fbs} onChange={handleChange}>
+                      <MenuItem value={1}>High (&gt;120)</MenuItem>
+                      <MenuItem value={0}>Normal</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Resting ECG</InputLabel>
+                    <Select name="restecg" value={formData.restecg} onChange={handleChange}>
+                      <MenuItem value={0}>Normal</MenuItem>
+                      <MenuItem value={1}>ST-T Abnormality</MenuItem>
+                      <MenuItem value={2}>LV Hypertrophy</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField fullWidth label="Max Heart Rate (thalach)" name="thalach" type="number" value={formData.thalach} onChange={handleChange} />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Exercise Angina</InputLabel>
+                    <Select name="exang" value={formData.exang} onChange={handleChange}>
+                      <MenuItem value={1}>Yes</MenuItem>
+                      <MenuItem value={0}>No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField fullWidth label="ST Depression (oldpeak)" name="oldpeak" type="number" value={formData.oldpeak} onChange={handleChange} />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Slope</InputLabel>
+                    <Select name="slope" value={formData.slope} onChange={handleChange}>
+                      <MenuItem value={0}>Upsloping</MenuItem>
+                      <MenuItem value={1}>Flat</MenuItem>
+                      <MenuItem value={2}>Downsloping</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Major Vessels (ca)</InputLabel>
+                    <Select name="ca" value={formData.ca} onChange={handleChange}>
+                      <MenuItem value={0}>0</MenuItem>
+                      <MenuItem value={1}>1</MenuItem>
+                      <MenuItem value={2}>2</MenuItem>
+                      <MenuItem value={3}>3</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel>Thalassemia</InputLabel>
+                    <Select name="thal" value={formData.thal} onChange={handleChange}>
+                      <MenuItem value={0}>Normal</MenuItem>
+                      <MenuItem value={1}>Fixed Defect</MenuItem>
+                      <MenuItem value={2}>Reversible Defect</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Button fullWidth size="large" variant="contained" onClick={submit} disabled={loading}>
+                    {loading ? "Analyzing..." : "Predict Heart Risk"}
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          {result && (
+            <Card sx={{ border: 1, borderColor: result.isDanger ? "error.main" : "success.main" }}>
+              <CardContent sx={{ textAlign: "center", p: 4 }}>
+                <Typography variant="h6" fontWeight={700} color={result.isDanger ? "error" : "success.main"}>
+                  {result.label}
+                </Typography>
+                <Typography variant="h3" fontWeight={800} sx={{ my: 2 }}>
+                  {result.probability}%
+                </Typography>
+                <Typography color="text.secondary">Prediction Confidence</Typography>
+              </CardContent>
+            </Card>
+          )}
+        </Grid>
+      </Grid>
+    </DashboardLayout>
+  );
 }

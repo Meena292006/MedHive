@@ -11,8 +11,8 @@ models = {
     "symptom_columns.pkl": "symptom_columns",
     "disease_prediction_model.pkl": "disease_model",
     "heart_model.pkl": "heart_model",
-    "diabetes_model_cleaned.pkl": "diabetes_model"
-}
+    "diabetes_model_cleaned.pkl": "diabetes_model",
+    "liver_model.pkl": "liver_model"}
 
 for filename, name in models.items():
     path = os.path.join(MODEL_DIR, filename)

@@ -4,8 +4,10 @@ import PatientDashboard from "./pages/PatientDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import HeartPrediction from "./pages/HeartPrediction";
 import DiabetesPrediction from "./pages/DiabetesPrediction";
+import LiverPrediction from "./pages/LiverPrediction";
 import History from "./pages/History";
 import Reports from "./pages/Reports";
+import ECGPrediction from "./pages/ECGPrediction";
 
 export default function App() {
   return (
@@ -18,6 +20,10 @@ export default function App() {
         <Route path="/patient/history" element={<History />} />
         <Route path="/patient/reports" element={<Reports />} />
         <Route path="/doctor" element={<DoctorDashboard />} />
+        <Route path="/doctor/analytics" element={<DoctorDashboard />} />
+        <Route path="/doctor/cases" element={<DoctorDashboard />} />
+        <Route path="/patient/liver" element={<LiverPrediction/>}/>
+        <Route path="/patient/ecg" element={<ECGPrediction />} />
       </Routes>
     </BrowserRouter>
   );
