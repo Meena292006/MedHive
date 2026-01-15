@@ -1,7 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
     --font-base: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
@@ -9,27 +13,34 @@ body {
     font-family: var(--font-base);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #f4f7fe;
-    /* Soft Premium Grey/Blue */
+    background: linear-gradient(135deg, #f4f7fe 0%, #e8f0fe 100%);
     color: #1b2559;
+    overflow-x: hidden;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
 }
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: rgba(0, 0, 0, 0.05);
     border-radius: 10px;
 }
 
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #4318FF, #6AD2FF);
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+
 ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: linear-gradient(135deg, #2a0d9e, #00a0d6);
 }
 
 /* Glassmorphism Utilities */
@@ -38,4 +49,71 @@ body {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Animation utilities */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Gradient text */
+.gradient-text {
+    background: linear-gradient(135deg, #4318FF, #6AD2FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Smooth transitions */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Focus styles */
+*:focus-visible {
+    outline: 2px solid #4318FF;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Selection styles */
+::selection {
+    background: rgba(67, 24, 255, 0.3);
+    color: #1b2559;
+}
+
+::-moz-selection {
+    background: rgba(67, 24, 255, 0.3);
+    color: #1b2559;
 }

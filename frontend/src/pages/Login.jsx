@@ -1,8 +1,10 @@
 import { Button, Box, Typography, Card, CardContent, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServicesRounded";
 import PersonIcon from "@mui/icons-material/PersonRounded";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospitalRounded";
+import AnimatedBackground from "../components/AnimatedBackground";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -20,99 +22,162 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: `linear-gradient(135deg, ${theme.palette.primary.dark}, #0f172a)`,
+        background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, #0f172a 50%, ${theme.palette.primary.dark} 100%)`,
         position: "relative",
         overflow: "hidden"
       }}
     >
-      {/* Decorative background blobs */}
-      <Box sx={{ position: "absolute", top: -100, left: -100, width: 400, height: 400, borderRadius: "50%", background: theme.palette.primary.main, filter: "blur(100px)", opacity: 0.3 }} />
-      <Box sx={{ position: "absolute", bottom: -100, right: -100, width: 300, height: 300, borderRadius: "50%", background: theme.palette.secondary.main, filter: "blur(80px)", opacity: 0.2 }} />
+      {/* <AnimatedBackground /> */}
 
-      <Card
-        sx={{
-          width: 400,
-          borderRadius: 4,
-          backdropFilter: "blur(20px)",
-          background: "rgba(255, 255, 255, 0.05)",
-          boxShadow: "0 25px 50px rgba(0,0,0,0.3)",
-          border: "1px solid rgba(255,255,255,0.1)",
-        }}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{ position: "relative", zIndex: 10 }}
       >
-        <CardContent sx={{ textAlign: "center", p: 5 }}>
-          <Box sx={{
-            width: 80, height: 80, margin: "0 auto",
-            background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-            borderRadius: "20px",
-            display: "flex", alignItems: "center", justifyContent: "center", mb: 3,
-            boxShadow: "0 10px 20px rgba(0,0,0,0.2)"
-          }}>
-            <LocalHospitalIcon sx={{ fontSize: 40, color: "white" }} />
-          </Box>
+        <Card
+          sx={{
+            width: { xs: "90%", sm: 450 },
+            borderRadius: 6,
+            backdropFilter: "blur(30px)",
+            background: "rgba(255, 255, 255, 0.08)",
+            boxShadow: "0 25px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          <CardContent sx={{ textAlign: "center", p: 5 }}>
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ duration: 0.8, type: "spring", stiffness: 200 }}
+            >
+              <Box sx={{
+                width: 100, height: 100, margin: "0 auto",
+                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                borderRadius: "24px",
+                display: "flex", alignItems: "center", justifyContent: "center", mb: 3,
+                boxShadow: `0 20px 40px ${theme.palette.primary.main}40`,
+                position: "relative",
+              }}>
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+                >
+                  <LocalHospitalIcon sx={{ fontSize: 50, color: "white" }} />
+                </motion.div>
+              </Box>
+            </motion.div>
 
-          <Typography
-            variant="h4"
-            fontWeight="800"
-            sx={{ color: "white", letterSpacing: 1, mb: 0.5 }}
-          >
-            MedHive
-          </Typography>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <Typography
+                variant="h3"
+                fontWeight="900"
+                sx={{ 
+                  color: "white", 
+                  letterSpacing: 2, 
+                  mb: 1,
+                  background: `linear-gradient(135deg, #ffffff, ${theme.palette.secondary.light})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                MedHive
+              </Typography>
 
-          <Typography
-            variant="body2"
-            sx={{ color: "rgba(255,255,255,0.7)", mb: 5 }}
-          >
-            Next-Gen Clinical Decision Support
-          </Typography>
+              <Typography
+                variant="body1"
+                sx={{ color: "rgba(255,255,255,0.8)", mb: 5, fontWeight: 500 }}
+              >
+                Next-Gen Clinical Decision Support
+              </Typography>
+            </motion.div>
 
-          <Button
-            fullWidth
-            variant="contained"
-            size="large"
-            startIcon={<PersonIcon />}
-            sx={{
-              mb: 2,
-              py: 1.5,
-              fontSize: "1rem",
-              background: "white",
-              color: theme.palette.primary.dark,
-              "&:hover": {
-                background: "#f8fafc",
-              },
-            }}
-            onClick={() => login("patient")}
-          >
-            Patient Portal
-          </Button>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              <Button
+                fullWidth
+                variant="contained"
+                size="large"
+                startIcon={<PersonIcon />}
+                sx={{
+                  mb: 2,
+                  py: 1.8,
+                  fontSize: "1.1rem",
+                  fontWeight: 700,
+                  background: "linear-gradient(135deg, #ffffff, #f8fafc)",
+                  color: theme.palette.primary.dark,
+                  borderRadius: 3,
+                  boxShadow: "0 10px 30px rgba(255,255,255,0.3)",
+                  "&:hover": {
+                    background: "linear-gradient(135deg, #f8fafc, #ffffff)",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 15px 40px rgba(255,255,255,0.4)",
+                  },
+                  transition: "all 0.3s",
+                }}
+                onClick={() => login("patient")}
+              >
+                Patient Portal
+              </Button>
+            </motion.div>
 
-          <Button
-            fullWidth
-            variant="outlined"
-            size="large"
-            startIcon={<MedicalServicesIcon />}
-            sx={{
-              py: 1.5,
-              fontSize: "1rem",
-              borderColor: "rgba(255,255,255,0.3)",
-              color: "white",
-              "&:hover": {
-                borderColor: "white",
-                background: "rgba(255,255,255,0.1)"
-              },
-            }}
-            onClick={() => login("doctor")}
-          >
-            Doctor Portal
-          </Button>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+            >
+              <Button
+                fullWidth
+                variant="outlined"
+                size="large"
+                startIcon={<MedicalServicesIcon />}
+                sx={{
+                  py: 1.8,
+                  fontSize: "1.1rem",
+                  fontWeight: 700,
+                  borderColor: "rgba(255,255,255,0.4)",
+                  borderWidth: 2,
+                  color: "white",
+                  borderRadius: 3,
+                  background: "rgba(255,255,255,0.05)",
+                  "&:hover": {
+                    borderColor: "white",
+                    background: "rgba(255,255,255,0.15)",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 10px 30px rgba(255,255,255,0.2)",
+                  },
+                  transition: "all 0.3s",
+                }}
+                onClick={() => login("doctor")}
+              >
+                Doctor Portal
+              </Button>
+            </motion.div>
 
-          <Typography
-            variant="caption"
-            sx={{ display: "block", mt: 4, color: "rgba(255,255,255,0.4)" }}
-          >
-            Secure hospital access • MedHive © 2026
-          </Typography>
-        </CardContent>
-      </Card>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 0.5 }}
+            >
+              <Typography
+                variant="caption"
+                sx={{ display: "block", mt: 4, color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
+              >
+                Secure hospital access • MedHive © 2026
+              </Typography>
+            </motion.div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </Box>
   );
 }

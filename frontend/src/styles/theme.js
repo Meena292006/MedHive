@@ -65,11 +65,16 @@ const theme = createTheme({
         MuiButton: {
             styleOverrides: {
                 root: {
-                    borderRadius: "12px", // Consistent rounded buttons
+                    borderRadius: "12px",
                     padding: "10px 24px",
                     boxShadow: "none",
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     "&:hover": {
-                        boxShadow: "0px 8px 20px rgba(67, 24, 255, 0.2)", // Subtle glow on hover
+                        boxShadow: "0px 8px 20px rgba(67, 24, 255, 0.3)",
+                        transform: "translateY(-2px)",
+                    },
+                    "&:active": {
+                        transform: "translateY(0px)",
                     },
                 },
             },
@@ -78,8 +83,12 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     borderRadius: "20px",
-                    boxShadow: "0px 20px 40px rgba(112, 144, 176, 0.12)", // Soft premium shadow
+                    boxShadow: "0px 20px 40px rgba(112, 144, 176, 0.12)",
                     border: "none",
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                        boxShadow: "0px 25px 50px rgba(112, 144, 176, 0.18)",
+                    },
                 },
             },
         },
@@ -94,15 +103,32 @@ const theme = createTheme({
                     "& .MuiOutlinedInput-root": {
                         borderRadius: "12px",
                         backgroundColor: "#F4F7FE",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                         "& fieldset": {
                             borderColor: "transparent",
+                            transition: "border-color 0.3s",
                         },
                         "&:hover fieldset": {
                             borderColor: "#4318FF",
                         },
-                        "&.Mui-focused fieldset": {
-                            borderColor: "#4318FF",
+                        "&.Mui-focused": {
+                            backgroundColor: "#FFFFFF",
+                            boxShadow: "0px 4px 12px rgba(67, 24, 255, 0.15)",
+                            "& fieldset": {
+                                borderColor: "#4318FF",
+                                borderWidth: "2px",
+                            },
                         },
+                    },
+                },
+            },
+        },
+        MuiChip: {
+            styleOverrides: {
+                root: {
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                        transform: "scale(1.05)",
                     },
                 },
             },
