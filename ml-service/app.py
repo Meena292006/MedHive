@@ -1,31 +1,33 @@
-import os
-import sys
-import io
+# =====================================================
+# QUIET LOGGING (NO JSON / NO ACCESS SPAM)
+# =====================================================
+import pandas as pd
 import logging
-import warnings
-import traceback
-
-# =====================================================
-# SUPPRESS TF NOISE
-# =====================================================
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-
-warnings.filterwarnings("ignore")
-logging.getLogger("tensorflow").setLevel(logging.ERROR)
-
-# =====================================================
-# IMPORTS
-# =====================================================
+import os
+import io
+import numpy as np
+import joblib
+from PIL import Image
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import joblib
-import numpy as np
-from PIL import Image
 
-# Optional TF imports (SAFE)
+# Silence uvicorn noise
+logging.getLogger("uvicorn.access").disabled = True
+logging.getLogger("uvicorn.error").setLevel(logging.ERROR)
+
+# Log ONLY real errors to file
+logging.basicConfig(
+    filename="medhive_errors.log",
+    level=logging.ERROR,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+print("🚀 MedHive backend starting (quiet mode)")
+
+# =====================================================
+# OPTIONAL TENSORFLOW (ECG)
+# =====================================================
 try:
     from tensorflow.keras.models import load_model
     from tensorflow.keras.preprocessing import image
@@ -42,7 +44,10 @@ app = FastAPI(title="MedHive AI Service")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,58 +59,46 @@ app.add_middleware(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = os.path.join(BASE_DIR, "models")
 
-# =====================================================
-# MODEL VARS
-# =====================================================
-symptom_model = None
-symptom_columns = []
-
-heart_model = None
-diabetes_model = None
-liver_model = None
-ecg_model = None
-
-print(f"📦 MODEL DIR: {MODEL_DIR}")
+print(f"📂 Models directory: {MODEL_DIR}")
 
 # =====================================================
-# LOAD MODELS
+# SAFE MODEL LOADER
 # =====================================================
-def load_joblib(name):
+def load_model_safe(name):
     try:
         model = joblib.load(os.path.join(MODEL_DIR, name))
         print(f"✅ Loaded {name}")
         return model
     except Exception:
-        print(f"❌ Failed {name}")
-        traceback.print_exc()
+        logging.error(f"Failed loading {name}", exc_info=True)
+        print(f"❌ Failed loading {name} (see medhive_errors.log)")
         return None
 
-symptom_model = load_joblib("disease_prediction_model.pkl")
+# =====================================================
+# LOAD MODELS
+# =====================================================
+symptom_model   = load_model_safe("disease_prediction_model.pkl")
+heart_model     = load_model_safe("heart_model.pkl")
+diabetes_model  = load_model_safe("diabetes_model_cleaned.pkl")
+liver_model     = load_model_safe("liver_model.pkl")
+
 try:
     symptom_columns = joblib.load(os.path.join(MODEL_DIR, "symptom_columns.pkl"))
 except Exception:
     symptom_columns = []
 
-heart_model = load_joblib("heart_model.pkl")
-diabetes_model = load_joblib("diabetes_model_cleaned.pkl")
-liver_model = load_joblib("liver_model.pkl")
-
-# ---- ECG MODEL (OPTIONAL)
+# ECG
+ecg_model = None
 if TF_AVAILABLE:
     try:
-        ecg_path = os.path.join(MODEL_DIR, "ecg_heart_model_final.keras")
-        old_stdout, old_stderr = sys.stdout, sys.stderr
-        sys.stdout, sys.stderr = io.StringIO(), io.StringIO()
-        ecg_model = load_model(ecg_path, compile=False, safe_mode=False)
-        sys.stdout, sys.stderr = old_stdout, old_stderr
+        ecg_model = load_model(
+            os.path.join(MODEL_DIR, "ecg_heart_model_final.keras"),
+            compile=False
+        )
         print("✅ ECG model loaded")
     except Exception:
-        sys.stdout, sys.stderr = old_stdout, old_stderr
-        ecg_model = None
-        print("❌ ECG model failed")
-        traceback.print_exc()
-else:
-    print("⚠️ TensorFlow not installed – ECG disabled")
+        logging.error("ECG model load failed", exc_info=True)
+        print("❌ ECG model failed (see medhive_errors.log)")
 
 # =====================================================
 # SCHEMAS
@@ -151,19 +144,22 @@ class LiverInput(BaseModel):
     ag_ratio: float
 
 # =====================================================
-# SAFE PREDICT
+# SAFE PREDICT (NO CRASH)
 # =====================================================
 def safe_predict(model, features):
-    X = np.array(features).reshape(1, -1)
-    pred = int(model.predict(X)[0])
+    try:
+        X = np.array(features, dtype=float).reshape(1, -1)
+        pred = int(model.predict(X)[0])
+    except Exception:
+        logging.error("Prediction failed", exc_info=True)
+        raise HTTPException(500, "Model prediction failed")
 
-    prob = None
-    if hasattr(model, "predict_proba"):
-        try:
-            prob = float(model.predict_proba(X)[0][-1]) * 100
-        except Exception:
+    try:
+        if hasattr(model, "predict_proba"):
+            prob = float(model.predict_proba(X)[0][1]) * 100
+        else:
             prob = 100.0 if pred == 1 else 0.0
-    else:
+    except Exception:
         prob = 100.0 if pred == 1 else 0.0
 
     return pred, round(prob, 2)
@@ -173,7 +169,7 @@ def safe_predict(model, features):
 # =====================================================
 @app.get("/")
 def root():
-    return {"status": "MedHive AI Service Running"}
+    return {"status": "MedHive running"}
 
 @app.get("/health")
 def health():
@@ -199,56 +195,141 @@ def predict_symptoms(data: SymptomInput):
     if symptom_model is None:
         raise HTTPException(503, "Symptom model not loaded")
 
-    def norm(t): return t.lower().replace(" ", "_")
-    vec = [1 if norm(c) in map(norm, data.symptoms) else 0 for c in symptom_columns]
-    if sum(vec) == 0:
+    def norm(x): return x.lower().replace(" ", "_")
+    selected = set(map(norm, data.symptoms))
+    vector = [1 if norm(c) in selected else 0 for c in symptom_columns]
+
+    if sum(vector) == 0:
         return {"matched": 0, "top_predictions": []}
 
-    probs = symptom_model.predict_proba([vec])[0]
-    res = sorted(
-        [{"disease": str(c), "probability": round(float(p) * 100, 2)}
-         for c, p in zip(symptom_model.classes_, probs)],
+    probs = symptom_model.predict_proba([vector])[0]
+    result = sorted(
+        [
+            {"disease": str(c), "probability": round(float(p) * 100, 2)}
+            for c, p in zip(symptom_model.classes_, probs)
+        ],
         key=lambda x: x["probability"],
         reverse=True
     )[:3]
 
-    return {"matched": sum(vec), "top_predictions": res}
+    return {"matched": sum(vector), "top_predictions": result}
 
 # =====================================================
-# HEART / DIABETES / LIVER
+# HEART
+# =====================================================
+HEART_FEATURES = [
+    "Age",
+    "Sex",
+    "Chest pain type",
+    "BP",
+    "Cholesterol",
+    "FBS over 120",
+    "EKG results",
+    "Max HR",
+    "Exercise angina",
+    "ST depression",
+    "Slope of ST",
+    "Number of vessels fluro",
+    "Thallium"
+]
+
+
+# =====================================================
+# HEART
 # =====================================================
 @app.post("/predict/heart")
 def predict_heart(data: HeartInput):
     if heart_model is None:
         raise HTTPException(503, "Heart model not loaded")
 
-    X = [[
-        data.age, data.sex, data.cp, data.trestbps, data.chol,
-        data.fbs, data.restecg, data.thalach, data.exang,
-        data.oldpeak, data.slope, data.ca, data.thal
-    ]]
+    try:
+        X = pd.DataFrame([[
+            data.age,
+            data.sex,
+            data.cp,
+            data.trestbps,
+            data.chol,
+            data.fbs,
+            data.restecg,
+            data.thalach,
+            data.exang,
+            data.oldpeak,
+            data.slope,
+            data.ca,
+            data.thal
+        ]], columns=HEART_FEATURES)
 
-    label = heart_model.predict(X)[0]              # Presence / Absence
-    probs = heart_model.predict_proba(X)[0]
-    prob_presence = float(probs[1]) * 100
+        raw_pred = heart_model.predict(X)[0]
+        label = str(raw_pred).lower()
 
-    # MEDICAL threshold (NOT ML default)
-    is_danger = prob_presence >= 40
+        is_disease = label in ["presence", "disease", "yes", "1", "true"]
+
+        if hasattr(heart_model, "predict_proba"):
+            classes = [str(c).lower() for c in heart_model.classes_]
+            if "presence" in classes:
+                idx = classes.index("presence")
+                prob = float(heart_model.predict_proba(X)[0][idx]) * 100
+            else:
+                prob = 50.0
+        else:
+            prob = 100.0 if is_disease else 0.0
+
+    except Exception as e:
+        logging.error("Heart prediction failed", exc_info=True)
+        raise HTTPException(500, f"Heart prediction failed: {e}")
 
     return {
-        "prediction": "Presence" if is_danger else "Absence",
-        "raw_model_label": label,
-        "probability": round(prob_presence, 2),
-        "risk_level": (
-            "High Risk" if prob_presence >= 70 else
-            "Moderate Risk" if prob_presence >= 40 else
-            "Low Risk"
-        )
+        "prediction": "Heart Disease Detected" if is_disease else "No Heart Disease",
+        "probability": round(prob, 2),
+        "is_danger": prob >= 40,
+        "raw_model_label": raw_pred
     }
 
+# =====================================================
+# DIABETES
+# =====================================================
+@app.post("/predict/diabetes")
+def predict_diabetes(data: DiabetesInput):
+    if diabetes_model is None:
+        raise HTTPException(503, "Diabetes model not loaded")
+
+    pred, prob = safe_predict(diabetes_model, [
+        data.Pregnancies, data.Glucose, data.BloodPressure,
+        data.SkinThickness, data.Insulin, data.BMI,
+        data.DiabetesPedigreeFunction, data.Age
+    ])
+
+    return {
+        "prediction": "Diabetes Detected" if pred else "No Diabetes",
+        "probability": prob,
+        "is_danger": pred == 1,
+        "raw_model_label": pred
+    }
 
 # =====================================================
-# ECG (OPTIONAL)
+# LIVER
+# =====================================================
+@app.post("/predict/liver")
+def predict_liver(data: LiverInput):
+    if liver_model is None:
+        raise HTTPException(503, "Liver model not loaded")
+
+    pred, prob = safe_predict(liver_model, [
+        data.age, data.gender, data.total_bilirubin,
+        data.direct_bilirubin, data.alkaline_phosphotase,
+        data.alt, data.ast, data.total_proteins,
+        data.albumin, data.ag_ratio
+    ])
+
+    return {
+        "prediction": "Liver Disease Detected" if pred else "No Liver Disease",
+        "probability": prob,
+        "is_danger": pred == 1,
+        "raw_model_label": pred
+    }
+
+# =====================================================
+# ECG
 # =====================================================
 @app.post("/predict/ecg")
 async def predict_ecg(file: UploadFile = File(...)):
@@ -260,8 +341,11 @@ async def predict_ecg(file: UploadFile = File(...)):
     arr = image.img_to_array(img) / 255.0
     arr = np.expand_dims(arr, axis=0)
 
-    prob = float(ecg_model.predict(arr)[0][0])
+    score = float(ecg_model.predict(arr)[0][0])
+    diagnosis = "Disease" if score > 0.5 else "Normal"
+
     return {
-        "prediction": "Heart Disease Detected" if prob > 0.5 else "Normal ECG",
-        "confidence": round(prob * 100, 2)
+        "prediction": diagnosis,
+        "confidence": round(score * 100, 2),
+        "raw_score": score
     }

@@ -63,14 +63,21 @@ export default function HeartPrediction() {
 
       const res = await mlApi.post("/predict/heart", payload);
 
-      const isDanger = res.data.prediction === 1;
+      const backendDanger = res.data.is_danger;
+      const rawLabel = res.data.raw_model_label;
+      const labelText = res.data.prediction;
+
+      const isDanger = typeof backendDanger === "boolean"
+        ? backendDanger
+        : rawLabel === 1 ||
+          (labelText && labelText.toLowerCase().includes("disease")) ||
+          res.data.probability >= 40;
 
       setResult({
         isDanger,
-        probability: res.data.probability,
-        label: isDanger
-          ? "High Risk of Heart Disease"
-          : "Low Risk / Normal"
+        probability: res.data.probability ?? 0,
+        riskLevel: res.data.risk_level,
+        label: labelText || (isDanger ? "High Risk of Heart Disease" : "Low Risk / Normal")
       });
     } catch (err) {
       alert(
