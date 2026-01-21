@@ -1,3 +1,14 @@
+import os
+import sys
+
+# 🔇 HARD SILENCE TensorFlow / Keras
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["KMP_AFFINITY"] = "noverbose"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
+sys.stdout = sys.__stdout__
+sys.stderr = sys.__stderr__
+
 # =====================================================
 # QUIET LOGGING (NO JSON / NO ACCESS SPAM)
 # =====================================================
@@ -7,10 +18,12 @@ import os
 import io
 import numpy as np
 import joblib
+import json
 from PIL import Image
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
 
 # Silence uvicorn noise
 logging.getLogger("uvicorn.access").disabled = True
@@ -30,12 +43,11 @@ print("🚀 MedHive backend starting (quiet mode)")
 # =====================================================
 try:
     from tensorflow.keras.models import load_model
-    from tensorflow.keras.preprocessing import image
+    from tensorflow.keras.utils import img_to_array
     TF_AVAILABLE = True
 except Exception:
     TF_AVAILABLE = False
     load_model = None
-    image = None
 
 # =====================================================
 # APP INIT
@@ -87,21 +99,27 @@ try:
 except Exception:
     symptom_columns = []
 
-# ECG
+# =====================================================
+# ECG MODEL (FIXED)
+# =====================================================
+# =====================================================
+# ECG MODEL (FORCED LOAD)
+# =====================================================
 ecg_model = None
+
 if TF_AVAILABLE:
     try:
         ecg_model = load_model(
-            os.path.join(MODEL_DIR, "ecg_heart_model_final.keras"),
+            os.path.join(MODEL_DIR, "ecg_best_model_69pct.keras"),
             compile=False
         )
+        ecg_model.trainable = False
         print("✅ ECG model loaded")
     except Exception:
+        ecg_model = None
         logging.error("ECG model load failed", exc_info=True)
-        print("❌ ECG model failed (see medhive_errors.log)")
+        print("❌ ECG model failed")
 
-# =====================================================
-# SCHEMAS
 # =====================================================
 class SymptomInput(BaseModel):
     symptoms: list[str]
@@ -233,50 +251,28 @@ HEART_FEATURES = [
     "Thallium"
 ]
 
-
-# =====================================================
-# HEART
-# =====================================================
 @app.post("/predict/heart")
 def predict_heart(data: HeartInput):
     if heart_model is None:
         raise HTTPException(503, "Heart model not loaded")
 
-    try:
-        X = pd.DataFrame([[
-            data.age,
-            data.sex,
-            data.cp,
-            data.trestbps,
-            data.chol,
-            data.fbs,
-            data.restecg,
-            data.thalach,
-            data.exang,
-            data.oldpeak,
-            data.slope,
-            data.ca,
-            data.thal
-        ]], columns=HEART_FEATURES)
+    X = pd.DataFrame([[
+        data.age, data.sex, data.cp, data.trestbps, data.chol,
+        data.fbs, data.restecg, data.thalach, data.exang,
+        data.oldpeak, data.slope, data.ca, data.thal
+    ]], columns=HEART_FEATURES)
 
-        raw_pred = heart_model.predict(X)[0]
-        label = str(raw_pred).lower()
+    raw_pred = heart_model.predict(X)[0]
+    label = str(raw_pred).lower()
+    is_disease = label in ["presence", "disease", "yes", "1", "true"]
 
-        is_disease = label in ["presence", "disease", "yes", "1", "true"]
-
-        if hasattr(heart_model, "predict_proba"):
-            classes = [str(c).lower() for c in heart_model.classes_]
-            if "presence" in classes:
-                idx = classes.index("presence")
-                prob = float(heart_model.predict_proba(X)[0][idx]) * 100
-            else:
-                prob = 50.0
-        else:
-            prob = 100.0 if is_disease else 0.0
-
-    except Exception as e:
-        logging.error("Heart prediction failed", exc_info=True)
-        raise HTTPException(500, f"Heart prediction failed: {e}")
+    if hasattr(heart_model, "predict_proba"):
+        classes = [str(c).lower() for c in heart_model.classes_]
+        prob = float(
+            heart_model.predict_proba(X)[0][classes.index("presence")]
+        ) * 100 if "presence" in classes else 50.0
+    else:
+        prob = 100.0 if is_disease else 0.0
 
     return {
         "prediction": "Heart Disease Detected" if is_disease else "No Heart Disease",
@@ -290,9 +286,6 @@ def predict_heart(data: HeartInput):
 # =====================================================
 @app.post("/predict/diabetes")
 def predict_diabetes(data: DiabetesInput):
-    if diabetes_model is None:
-        raise HTTPException(503, "Diabetes model not loaded")
-
     pred, prob = safe_predict(diabetes_model, [
         data.Pregnancies, data.Glucose, data.BloodPressure,
         data.SkinThickness, data.Insulin, data.BMI,
@@ -311,9 +304,6 @@ def predict_diabetes(data: DiabetesInput):
 # =====================================================
 @app.post("/predict/liver")
 def predict_liver(data: LiverInput):
-    if liver_model is None:
-        raise HTTPException(503, "Liver model not loaded")
-
     pred, prob = safe_predict(liver_model, [
         data.age, data.gender, data.total_bilirubin,
         data.direct_bilirubin, data.alkaline_phosphotase,
@@ -329,7 +319,7 @@ def predict_liver(data: LiverInput):
     }
 
 # =====================================================
-# ECG
+# ECG (FIXED MULTI-CLASS)
 # =====================================================
 @app.post("/predict/ecg")
 async def predict_ecg(file: UploadFile = File(...)):
@@ -338,14 +328,19 @@ async def predict_ecg(file: UploadFile = File(...)):
 
     contents = await file.read()
     img = Image.open(io.BytesIO(contents)).convert("RGB").resize((224, 224))
-    arr = image.img_to_array(img) / 255.0
+
+    arr = img_to_array(img) / 255.0
     arr = np.expand_dims(arr, axis=0)
 
-    score = float(ecg_model.predict(arr)[0][0])
-    diagnosis = "Disease" if score > 0.5 else "Normal"
+    preds = ecg_model.predict(arr)[0]
+    class_idx = int(np.argmax(preds))
+    confidence = float(preds[class_idx]) * 100
+
+    classes = ["Normal", "Abnormal", "Myocardial Infarction", "Other"]
 
     return {
-        "prediction": diagnosis,
-        "confidence": round(score * 100, 2),
-        "raw_score": score
+        "prediction": classes[class_idx],
+        "confidence": round(confidence, 2),
+        "raw_scores": preds.tolist()
     }
+

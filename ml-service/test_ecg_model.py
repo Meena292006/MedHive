@@ -6,7 +6,7 @@ import os
 print("Current working directory:", os.getcwd())
 
 MODEL_DIR = "models"  # ← relative to where you run the script
-MODEL_FILENAME = "ecg_heart_model_final.keras"  # ← change this if name is different!
+MODEL_FILENAME = "ecg_best_model_69pct.keras"  # ← change this if name is different!
 
 full_path = os.path.join(MODEL_DIR, MODEL_FILENAME)
 

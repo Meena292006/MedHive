@@ -62,7 +62,10 @@ export default function ECGPrediction() {
     }
   };
 
-  const isDisease = result?.prediction === "Disease";
+  const isDisease =
+  result &&
+  !result.prediction.toLowerCase().includes("normal");
+
 
   return (
     <DashboardLayout>

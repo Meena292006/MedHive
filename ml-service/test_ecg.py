@@ -3,7 +3,7 @@ from tensorflow.keras.models import load_model
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = os.path.join(BASE_DIR, "models")
-ecg_model_path = os.path.join(MODEL_DIR, "ecg_heart_model_final.keras")
+ecg_model_path = os.path.join(MODEL_DIR, "ecg_best_model_69pct.keras")
 
 print(f"Model path: {ecg_model_path}")
 print(f"File exists: {os.path.exists(ecg_model_path)}")
