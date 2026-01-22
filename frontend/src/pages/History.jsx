@@ -13,7 +13,7 @@ export default function History() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/history")
+    api.get("/cases")
       .then(res => {
         if (Array.isArray(res.data)) setHistory(res.data);
       })
@@ -58,22 +58,41 @@ export default function History() {
                     </TableRow>
                   ))}
 
-                {!loading && history.map((row, i) => (
-                  <TableRow key={i}>
-                    <TableCell>{row.date}</TableCell>
-                    <TableCell>{row.type}</TableCell>
-                    <TableCell>{row.result}</TableCell>
-                    <TableCell>{row.probability}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={row.status}
-                        color={row.status === "High" ? "error" : "success"}
-                        size="small"
-                        sx={{ fontWeight: "bold" }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {!loading && history.map((row, i) => {
+                  let parsedPredictions = [];
+                  try {
+                    parsedPredictions = typeof row.predictions === 'string'
+                      ? JSON.parse(row.predictions)
+                      : row.predictions || [];
+                  } catch (e) {
+                    console.error("Failed to parse predictions", e);
+                  }
+
+                  const resultLabel = (Array.isArray(parsedPredictions) && parsedPredictions[0])
+                    ? (parsedPredictions[0].label || parsedPredictions[0].disease || "Completed")
+                    : "Review Analysis";
+
+                  return (
+                    <TableRow key={i}>
+                      <TableCell>{new Date(row.created_at).toLocaleString()}</TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight={700}>
+                          {row.type || "SYMPTOMS"} Analysis
+                        </Typography>
+                      </TableCell>
+                      <TableCell>{resultLabel}</TableCell>
+                      <TableCell>{row.risk_score}%</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={row.priority}
+                          color={row.priority === "HIGH" ? "error" : "success"}
+                          size="small"
+                          sx={{ fontWeight: "bold" }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
 
                 {!loading && history.length === 0 && (
                   <TableRow>

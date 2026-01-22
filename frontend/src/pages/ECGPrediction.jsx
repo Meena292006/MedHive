@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { mlApi } from "../api/mlApi";
+import { api } from "../api/api";
 import DashboardLayout from "../components/DashboardLayout";
 import AnimatedCard from "../components/AnimatedCard";
 import {
@@ -54,6 +55,19 @@ export default function ECGPrediction() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setResult(res.data);
+
+      // Save to Reports
+      try {
+        await api.post("/cases/save", {
+          patient: "Patient",
+          type: "ECG",
+          result: res.data.prediction,
+          probability: res.data.confidence,
+          is_danger: !res.data.prediction.toLowerCase().includes("normal")
+        });
+      } catch (saveErr) {
+        console.error("Failed to save report:", saveErr);
+      }
     } catch (err) {
       console.error(err);
       alert("ECG prediction failed");
@@ -63,8 +77,8 @@ export default function ECGPrediction() {
   };
 
   const isDisease =
-  result &&
-  !result.prediction.toLowerCase().includes("normal");
+    result &&
+    !result.prediction.toLowerCase().includes("normal");
 
 
   return (

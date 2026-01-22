@@ -5,6 +5,7 @@ db.prepare(`
 CREATE TABLE IF NOT EXISTS cases (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   patient_name TEXT,
+  type TEXT DEFAULT 'SYMPTOMS',
   symptoms TEXT,
   predictions TEXT,
   risk_score INTEGER,

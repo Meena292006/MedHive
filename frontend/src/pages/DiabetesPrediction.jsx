@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { mlApi } from "../api/mlApi";
+import { api } from "../api/api";
 import DashboardLayout from "../components/DashboardLayout";
 import AnimatedCard from "../components/AnimatedCard";
 import {
@@ -10,6 +11,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import WaterDropIcon from "@mui/icons-material/WaterDropRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircleRounded";
 import WarningIcon from "@mui/icons-material/WarningRounded";
+import RestaurantIcon from "@mui/icons-material/RestaurantRounded";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenterRounded";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospitalRounded";
+import InfoIcon from "@mui/icons-material/InfoRounded";
+import ScienceIcon from "@mui/icons-material/ScienceRounded";
+import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafetyRounded";
 
 export default function DiabetesPrediction() {
     const [formData, setFormData] = useState({
@@ -44,6 +51,19 @@ export default function DiabetesPrediction() {
 
             const res = await mlApi.post("/predict/diabetes", payload);
             setResult(res.data);
+
+            // Save to Reports
+            try {
+                await api.post("/cases/save", {
+                    patient: "Patient",
+                    type: "DIABETES",
+                    result: res.data.prediction,
+                    probability: res.data.probability,
+                    is_danger: res.data.is_danger
+                });
+            } catch (saveErr) {
+                console.error("Failed to save report:", saveErr);
+            }
         } catch (err) {
             console.error(err);
             alert("Failed to get prediction. Please check your inputs and try again.\nError: " + (err.response?.data?.detail || err.message));
@@ -168,70 +188,173 @@ export default function DiabetesPrediction() {
                         )}
 
                         {result && !loading && (
-                            <motion.div
-                                key="result"
-                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.5, type: "spring" }}
-                            >
-                                <AnimatedCard
-                                    sx={{
-                                        bgcolor: result.is_danger
-                                            ? `linear-gradient(135deg, ${theme.palette.error.light}10, ${theme.palette.error.light}05)`
-                                            : `linear-gradient(135deg, ${theme.palette.success.light}10, ${theme.palette.success.light}05)`,
-                                        border: 2,
-                                        borderColor: result.is_danger ? "error.main" : "success.main",
-                                        position: "relative",
-                                        overflow: "hidden",
-                                    }}
+                            <Box>
+                                <motion.div
+                                    key="result"
+                                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ duration: 0.5, type: "spring" }}
                                 >
-                                    <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                                        <motion.div
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                                        >
-                                            <Avatar
-                                                sx={{
-                                                    width: 80,
-                                                    height: 80,
-                                                    mx: "auto",
-                                                    mb: 2,
-                                                    bgcolor: result.is_danger ? "error.main" : "success.main",
-                                                    boxShadow: `0 10px 30px ${result.is_danger ? theme.palette.error.main : theme.palette.success.main}40`,
-                                                }}
+                                    <AnimatedCard
+                                        sx={{
+                                            bgcolor: result.is_danger
+                                                ? `linear-gradient(135deg, ${theme.palette.error.light}10, ${theme.palette.error.light}05)`
+                                                : `linear-gradient(135deg, ${theme.palette.success.light}10, ${theme.palette.success.light}05)`,
+                                            border: 2,
+                                            borderColor: result.is_danger ? "error.main" : "success.main",
+                                            position: "relative",
+                                            overflow: "hidden",
+                                        }}
+                                    >
+                                        <CardContent sx={{ textAlign: 'center', p: 4 }}>
+                                            <motion.div
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
                                             >
-                                                {result.is_danger ? <WarningIcon sx={{ fontSize: 40 }} /> : <CheckCircleIcon sx={{ fontSize: 40 }} />}
-                                            </Avatar>
-                                        </motion.div>
+                                                <Avatar
+                                                    sx={{
+                                                        width: 80,
+                                                        height: 80,
+                                                        mx: "auto",
+                                                        mb: 2,
+                                                        bgcolor: result.is_danger ? "error.main" : "success.main",
+                                                        boxShadow: `0 10px 30px ${result.is_danger ? theme.palette.error.main : theme.palette.success.main}40`,
+                                                    }}
+                                                >
+                                                    {result.is_danger ? <WarningIcon sx={{ fontSize: 40 }} /> : <CheckCircleIcon sx={{ fontSize: 40 }} />}
+                                                </Avatar>
+                                            </motion.div>
 
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: 0.4 }}
-                                        >
-                                            <Typography variant="h5" fontWeight={700} color={result.is_danger ? "error" : "success.main"} sx={{ mb: 2 }}>
-                                                {result.prediction}
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.4 }}
+                                            >
+                                                <Typography variant="h5" fontWeight={700} color={result.is_danger ? "error" : "success.main"} sx={{ mb: 2 }}>
+                                                    {result.prediction}
+                                                </Typography>
+                                            </motion.div>
+
+                                            <motion.div
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ delay: 0.5, type: "spring" }}
+                                            >
+                                                <Typography variant="h2" fontWeight={800} sx={{ my: 2, color: result.is_danger ? "error.main" : "success.main" }}>
+                                                    {result.probability}%
+                                                </Typography>
+                                            </motion.div>
+
+                                            <Typography variant="body1" color="text.secondary" fontWeight={600}>
+                                                Confidence Score
                                             </Typography>
-                                        </motion.div>
+                                        </CardContent>
+                                    </AnimatedCard>
+                                </motion.div>
 
-                                        <motion.div
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            transition={{ delay: 0.5, type: "spring" }}
-                                        >
-                                            <Typography variant="h2" fontWeight={800} sx={{ my: 2, color: result.is_danger ? "error.main" : "success.main" }}>
-                                                {result.probability}%
-                                            </Typography>
-                                        </motion.div>
+                                {/* Recommendations Section */}
+                                {result.recommendations && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2 }}
+                                        style={{ marginTop: '24px' }}
+                                    >
+                                        <Card sx={{ borderRadius: 4, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+                                            <CardContent sx={{ p: 4 }}>
+                                                <Typography variant="h6" fontWeight={800} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                                                    <HealthAndSafetyIcon color="primary" /> Suggested Action Plan
+                                                </Typography>
 
-                                        <Typography variant="body1" color="text.secondary" fontWeight={600}>
-                                            Confidence Score
-                                        </Typography>
-                                    </CardContent>
-                                </AnimatedCard>
-                            </motion.div>
+                                                {/* Medical Advice Box */}
+                                                <Box sx={{
+                                                    p: 2.5, mb: 3, borderRadius: 2,
+                                                    bgcolor: result.is_danger ? 'rgba(211, 47, 47, 0.05)' : 'rgba(46, 125, 50, 0.05)',
+                                                    borderLeft: `5px solid ${result.is_danger ? theme.palette.error.main : theme.palette.success.main}`,
+                                                    color: result.is_danger ? 'error.main' : 'success.main',
+                                                    display: 'flex', alignItems: 'center', gap: 2,
+                                                    boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
+                                                }}>
+                                                    <LocalHospitalIcon />
+                                                    <Typography fontWeight={800} sx={{ fontSize: '1rem' }}>{result.recommendations.medical_advice}</Typography>
+                                                </Box>
+
+                                                <Grid container spacing={3}>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <Typography variant="subtitle2" fontWeight={800} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 1 }}>
+                                                            <RestaurantIcon fontSize="small" color="primary" /> Diet
+                                                        </Typography>
+                                                        <Box sx={{ pl: 1 }}>
+                                                            {result.recommendations.diet?.map((item, i) => (
+                                                                <Typography key={i} variant="body2" sx={{ mb: 0.8, display: 'flex', alignItems: 'start', gap: 1 }}>
+                                                                    <span style={{ color: theme.palette.primary.main }}>•</span> {item}
+                                                                </Typography>
+                                                            ))}
+                                                            {result.recommendations.diet_plan && (
+                                                                <Typography variant="body2" fontWeight={700} color="error.main" sx={{ mt: 1, p: 1.5, bgcolor: 'rgba(211, 47, 47, 0.08)', borderRadius: 1.5, border: '1px solid rgba(211, 47, 47, 0.2)' }}>
+                                                                    {result.recommendations.diet_plan}
+                                                                </Typography>
+                                                            )}
+                                                        </Box>
+                                                    </Grid>
+
+                                                    <Grid item xs={12} sm={6}>
+                                                        <Typography variant="subtitle2" fontWeight={800} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 1 }}>
+                                                            <FitnessCenterIcon fontSize="small" color="primary" /> Activity
+                                                        </Typography>
+                                                        <Box sx={{ pl: 1 }}>
+                                                            {result.recommendations.exercise?.map((item, i) => (
+                                                                <Typography key={i} variant="body2" sx={{ mb: 0.8, display: 'flex', alignItems: 'start', gap: 1 }}>
+                                                                    <span style={{ color: theme.palette.primary.main }}>•</span> {item}
+                                                                </Typography>
+                                                            ))}
+                                                        </Box>
+                                                    </Grid>
+
+                                                    {(result.recommendations.sample_medicines || result.recommendations.tests) && (
+                                                        <Grid item xs={12}>
+                                                            <Box sx={{ mt: 1, p: 2.5, bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: 2, border: '1px dashed', borderColor: 'divider' }}>
+                                                                <Grid container spacing={3}>
+                                                                    {result.recommendations.sample_medicines && (
+                                                                        <Grid item xs={12} sm={6}>
+                                                                            <Typography variant="subtitle2" fontWeight={800} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'error.main' }}>
+                                                                                <LocalHospitalIcon fontSize="small" /> Sample Medicines (Demo)
+                                                                            </Typography>
+                                                                            {result.recommendations.sample_medicines?.map((item, i) => (
+                                                                                <Typography key={i} variant="caption" sx={{ display: 'block', mb: 0.5, opacity: 0.8 }}>• {item}</Typography>
+                                                                            ))}
+                                                                        </Grid>
+                                                                    )}
+                                                                    {result.recommendations.tests && (
+                                                                        <Grid item xs={12} sm={6}>
+                                                                            <Typography variant="subtitle2" fontWeight={800} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, color: 'secondary.main' }}>
+                                                                                <ScienceIcon fontSize="small" /> Recommended Tests
+                                                                            </Typography>
+                                                                            {result.recommendations.tests?.map((item, i) => (
+                                                                                <Typography key={i} variant="caption" sx={{ display: 'block', mb: 0.5, opacity: 0.8 }}>• {item}</Typography>
+                                                                            ))}
+                                                                        </Grid>
+                                                                    )}
+                                                                </Grid>
+                                                            </Box>
+                                                        </Grid>
+                                                    )}
+                                                </Grid>
+
+                                                {/* Disclaimer */}
+                                                <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'start', gap: 2 }}>
+                                                    <InfoIcon color="warning" sx={{ mt: 0.5 }} />
+                                                    <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ fontStyle: 'italic', lineHeight: 1.5 }}>
+                                                        {result.recommendations.disclaimer}
+                                                    </Typography>
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+                                )}
+                            </Box>
                         )}
                     </AnimatePresence>
                 </Grid>

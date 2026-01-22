@@ -3,10 +3,11 @@ const db = require("../config/db");
 exports.createCase = (data) => {
   db.prepare(`
     INSERT INTO cases
-    (patient_name, symptoms, predictions, risk_score, priority)
-    VALUES (?, ?, ?, ?, ?)
+    (patient_name, type, symptoms, predictions, risk_score, priority)
+    VALUES (?, ?, ?, ?, ?, ?)
   `).run(
     data.patient,
+    data.type || 'SYMPTOMS',
     JSON.stringify(data.symptoms),
     JSON.stringify(data.predictions),
     data.riskScore,
