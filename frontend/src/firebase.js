@@ -1,5 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile
+} from "firebase/auth";
 // (Optional) analytics – safe to keep
 import { getAnalytics } from "firebase/analytics";
 
@@ -19,6 +25,13 @@ const app = initializeApp(firebaseConfig);
 // Optional (no error even if unused)
 getAnalytics(app);
 
-// ✅ THESE WERE MISSING
+// ✅ Auth exports
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+// ✅ Email/Password auth functions
+export {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile
+};

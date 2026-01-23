@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "../api/api";
 import DashboardLayout from "../components/DashboardLayout";
 import SymptomSelect from "../components/SymptomSelect";
@@ -6,7 +6,7 @@ import AnimatedCard from "../components/AnimatedCard";
 import { StatCard } from "../components/AnalyticsCard";
 import {
   Button, TextField, Card, CardContent, Typography,
-  Grid, Chip, Box, LinearProgress, useTheme, Avatar
+  Grid, Chip, Box, LinearProgress, useTheme, Avatar, Stack
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import PersonIcon from "@mui/icons-material/PersonRounded";
@@ -14,6 +14,7 @@ import MedicalServicesIcon from "@mui/icons-material/MedicalServicesRounded";
 import CoronavirusIcon from "@mui/icons-material/CoronavirusRounded";
 import TrendingUpIcon from "@mui/icons-material/TrendingUpRounded";
 import AssessmentIcon from "@mui/icons-material/AssessmentRounded";
+import HistoryIcon from "@mui/icons-material/HistoryRounded";
 
 export default function PatientDashboard() {
   const [name, setName] = useState("");
@@ -21,7 +22,15 @@ export default function PatientDashboard() {
   const [symptoms, setSymptoms] = useState([]);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [myHistory, setMyHistory] = useState([]);
   const theme = useTheme();
+
+  useEffect(() => {
+    // Fetch patient's own history
+    api.get("/cases").then(res => {
+      setMyHistory(res.data);
+    });
+  }, []);
 
   const submit = async () => {
     if (symptoms.length === 0) return;
@@ -30,9 +39,12 @@ export default function PatientDashboard() {
     try {
       const res = await api.post("/cases/submit", {
         patient: name || "Anonymous",
+        phone: phone || "N/A",
         symptoms
       });
       setResult(res.data);
+      // Refresh history after submission
+      api.get("/cases").then(h => setMyHistory(h.data));
     } catch (err) {
       console.error(err);
     } finally {
@@ -57,13 +69,10 @@ export default function PatientDashboard() {
         <Box sx={{ mb: 5, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
           <Box>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary, textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
-              Dashboard
+              Personal Health Record
             </Typography>
             <Typography variant="h4" sx={{ fontWeight: 800, color: theme.palette.text.primary, mt: 0.5 }}>
-              Patient Health Prediction System
-            </Typography>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mt: 1 }}>
-              AI-Powered Clinical Decision Support
+              Patient Health Portal
             </Typography>
           </Box>
         </Box>
@@ -119,304 +128,116 @@ export default function PatientDashboard() {
       )}
 
       <Grid container spacing={4}>
-        {/* LEFT COLUMN: PATIENT INFO & SYMPTOMS */}
-        <Grid item xs={12} md={5} lg={4}>
-          <AnimatedCard delay={0.2} sx={{ height: "100%" }}>
+        <Grid item xs={12} md={5}>
+          <AnimatedCard delay={0.2}>
             <CardContent sx={{ p: 4 }}>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                  <motion.div
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-                  >
-                    <Avatar sx={{ bgcolor: theme.palette.primary.main, color: "white", mr: 2, width: 56, height: 56, boxShadow: `0 10px 30px ${theme.palette.primary.main}40` }}>
-                      <PersonIcon />
-                    </Avatar>
-                  </motion.div>
-                  <Typography variant="h6" fontWeight={700}>
-                    Patient Details
-                  </Typography>
+              <Stack spacing={3}>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  <Avatar sx={{ bgcolor: theme.palette.primary.main, color: "white", mr: 2 }}>
+                    <PersonIcon />
+                  </Avatar>
+                  <Typography variant="h6" fontWeight={700}>New Diagnosis</Typography>
                 </Box>
-              </motion.div>
 
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <TextField
-                    label="Full Name"
-                    fullWidth
-                    variant="outlined"
-                    placeholder="e.g. Sarah Johnson"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <TextField
-                    label="Contact Number"
-                    fullWidth
-                    variant="outlined"
-                    placeholder="+1 (555) 000-0000"
-                    value={phone}
-                    onChange={e => setPhone(e.target.value)}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </motion.div>
+                <TextField
+                  label="Display Name"
+                  fullWidth
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                />
 
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                >
-                  <Box>
-                    <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 700, color: theme.palette.text.primary }}>
-                      Reported Symptoms
-                    </Typography>
-                    <SymptomSelect value={symptoms} setValue={setSymptoms} />
-                  </Box>
-                </motion.div>
+                <TextField
+                  label="Contact Number"
+                  fullWidth
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                  placeholder="e.g. +1 234 567 890"
+                />
 
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Select Symptoms</Typography>
+                  <SymptomSelect value={symptoms} setValue={setSymptoms} />
+                </Box>
+
+                <Button
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  onClick={submit}
+                  disabled={loading}
+                  sx={{ py: 2, fontWeight: 800, borderRadius: 3 }}
                 >
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    size="large"
-                    onClick={submit}
-                    disabled={loading}
-                    sx={{
-                      mt: 2,
-                      py: 1.8,
-                      background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-                      fontWeight: "bold",
-                      fontSize: "1rem",
-                      boxShadow: `0 10px 30px ${theme.palette.primary.main}40`,
-                      "&:hover": {
-                        boxShadow: `0 15px 40px ${theme.palette.primary.main}60`,
-                        transform: "translateY(-2px)",
-                      },
-                      transition: "all 0.3s",
-                    }}
-                  >
-                    {loading ? "Analyzing Vitals..." : "Run Diagnosis"}
-                  </Button>
-                </motion.div>
-              </Box>
+                  {loading ? "Analyzing..." : "Run AI Diagnosis"}
+                </Button>
+              </Stack>
             </CardContent>
           </AnimatedCard>
+
+          <Box sx={{ mt: 4 }}>
+            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="h6" fontWeight={800}>Recent Activity</Typography>
+              <HistoryIcon color="action" />
+            </Box>
+            <Stack spacing={2}>
+              {myHistory.slice(0, 5).map((h, i) => {
+                let s = [];
+                try { s = JSON.parse(h.symptoms); } catch (e) { }
+                return (
+                  <AnimatedCard key={h.id} delay={i * 0.1}>
+                    <CardContent sx={{ py: 2, px: 3 }}>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                        <Box>
+                          <Typography variant="body2" fontWeight={800} color="primary">{h.patient_name || "Anonymous"}</Typography>
+                          <Typography variant="caption" sx={{ display: 'block', opacity: 0.7 }}>{h.phone || "No Number"}</Typography>
+                        </Box>
+                        <Chip label={h.priority} color={h.priority === 'HIGH' ? 'error' : 'success'} size="small" sx={{ fontWeight: 800, height: 20, fontSize: '0.65rem' }} />
+                      </Stack>
+                      <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic', display: 'block', mb: 0.5 }}>
+                        Symptoms: {s.join(", ") || "None"}
+                      </Typography>
+                      <Typography variant="caption" sx={{ opacity: 0.5 }}>
+                        {new Date(h.created_at).toLocaleDateString()} • Case #{h.id}
+                      </Typography>
+                    </CardContent>
+                  </AnimatedCard>
+                );
+              })}
+            </Stack>
+          </Box>
         </Grid>
 
-        {/* RIGHT COLUMN: AI PREDICTIONS */}
-        <Grid item xs={12} md={7} lg={8}>
+        <Grid item xs={12} md={7}>
           <AnimatePresence mode="wait">
+            {!result && !loading && (
+              <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 4, border: '1px dashed grey' }}>
+                <Typography color="text.secondary">Run a diagnosis to see results</Typography>
+              </Box>
+            )}
+
             {loading && (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-              >
-                <Card sx={{ borderRadius: 4, overflow: "hidden" }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <Box sx={{ textAlign: "center", mb: 3 }}>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      >
-                        <MedicalServicesIcon sx={{ fontSize: 60, color: theme.palette.primary.main }} />
-                      </motion.div>
-                    </Box>
-                    <LinearProgress sx={{ borderRadius: 2, height: 8, bgcolor: theme.palette.grey[200], '& .MuiLinearProgress-bar': { borderRadius: 2, bgcolor: theme.palette.primary.main } }} />
-                    <Typography align="center" sx={{ mt: 3, color: theme.palette.text.secondary, fontWeight: 600 }}>
-                      Running AI Analysis...
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </motion.div>
+              <Card sx={{ p: 4, textAlign: 'center', borderRadius: 4 }}>
+                <Typography mb={2}>Analyzing data with MedHive AI...</Typography>
+                <LinearProgress />
+              </Card>
             )}
 
             {result && !loading && (
-              <motion.div
-                key="result"
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.5 }}
-              >
-                <AnimatedCard sx={{ height: "100%", overflow: "visible" }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 4 }}>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <motion.div
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          <Avatar sx={{ bgcolor: theme.palette.success.main, color: "white", mr: 2, width: 56, height: 56, boxShadow: `0 10px 30px ${theme.palette.success.main}40` }}>
-                            <MedicalServicesIcon />
-                          </Avatar>
-                        </motion.div>
+              <AnimatedCard>
+                <CardContent sx={{ p: 4 }}>
+                  <Typography variant="h5" fontWeight={800} mb={3}>AI Diagnostic Result</Typography>
+                  <Stack spacing={2}>
+                    {result.predictions.map((p, i) => (
+                      <Box key={i} sx={{ p: 3, borderRadius: 4, bgcolor: i === 0 ? 'primary.main' : 'rgba(0,0,0,0.02)', color: i === 0 ? 'white' : 'text.primary', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Box>
-                          <Typography variant="h6" fontWeight={700}>
-                            Clinical Insights
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            AI-Powered Assessment
-                          </Typography>
+                          <Typography variant="h6" fontWeight={800}>{p.disease || p.label}</Typography>
+                          <Typography variant="caption" sx={{ opacity: 0.8 }}>Condition Detected</Typography>
                         </Box>
+                        <Typography variant="h4" fontWeight={900}>{p.probability}%</Typography>
                       </Box>
-                      <Chip
-                        label={`Risk Level: ${result.priority}`}
-                        color={getPriorityColor(result.priority)}
-                        variant="filled"
-                        sx={{ fontWeight: "800", borderRadius: "8px", px: 1, fontSize: "0.9rem" }}
-                      />
-                    </Box>
-
-                    <Typography variant="subtitle1" sx={{ color: theme.palette.text.secondary, mb: 3, fontWeight: 500 }}>
-                      Based on the symptoms provided, the AI model has identified the following potential conditions:
-                    </Typography>
-
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                      {result.predictions.map((p, idx) => (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.1 }}
-                          whileHover={{ scale: 1.02, x: 5 }}
-                        >
-                          <Box
-                            sx={{
-                              p: 3,
-                              borderRadius: "16px",
-                              background: idx === 0
-                                ? `linear-gradient(135deg, ${theme.palette.primary.main}15, ${theme.palette.primary.main}05)`
-                                : "white",
-                              border: idx === 0
-                                ? `2px solid ${theme.palette.primary.main}`
-                                : `1px solid ${theme.palette.grey[200]}`,
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              transition: "all 0.3s",
-                              position: "relative",
-                              overflow: "hidden",
-                              "&::before": idx === 0 ? {
-                                content: '""',
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "4px",
-                                height: "100%",
-                                background: `linear-gradient(180deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                              } : {},
-                            }}
-                          >
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                              <Box sx={{
-                                width: 48, height: 48, borderRadius: "50%",
-                                bgcolor: idx === 0 ? theme.palette.primary.main : theme.palette.grey[100],
-                                color: "white",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                boxShadow: idx === 0 ? `0 8px 20px ${theme.palette.primary.main}40` : "none",
-                              }}>
-                                <Typography variant="h6" sx={{ fontSize: "1rem", color: idx === 0 ? "white" : theme.palette.text.secondary, fontWeight: 800 }}>
-                                  {idx + 1}
-                                </Typography>
-                              </Box>
-                              <Box>
-                                <Typography variant="body1" fontWeight={700} sx={{ color: theme.palette.text.primary, fontSize: "1.1rem" }}>
-                                  {p.disease}
-                                </Typography>
-                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary, fontWeight: 500 }}>
-                                  Condition Detected
-                                </Typography>
-                              </Box>
-                            </Box>
-
-                            <Box sx={{ textAlign: "right" }}>
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: idx * 0.1 + 0.3, type: "spring" }}
-                              >
-                                <Typography variant="h4" fontWeight="800" sx={{ color: idx === 0 ? theme.palette.primary.main : theme.palette.text.primary }}>
-                                  {p.probability}%
-                                </Typography>
-                              </motion.div>
-                              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                Confidence
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </motion.div>
-                      ))}
-                    </Box>
-
-                    {result.predictions.length === 0 && (
-                      <Box sx={{ p: 4, textAlign: "center", bgcolor: theme.palette.background.default, borderRadius: 2 }}>
-                        <Typography variant="body1" color="text.secondary" sx={{ fontStyle: "italic" }}>
-                          No specific conditions matched. Please monitor the patient for new symptoms.
-                        </Typography>
-                      </Box>
-                    )}
-                  </CardContent>
-                </AnimatedCard>
-              </motion.div>
-            )}
-
-            {!result && !loading && (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <Box
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: theme.palette.text.secondary,
-                    border: `2px dashed ${theme.palette.grey[300]}`,
-                    borderRadius: "20px",
-                    minHeight: 400,
-                    opacity: 0.7,
-                    background: `linear-gradient(135deg, ${theme.palette.background.default}, ${theme.palette.background.paper})`,
-                  }}
-                >
-                  <motion.div
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <CoronavirusIcon sx={{ fontSize: 80, color: theme.palette.grey[300], mb: 2 }} />
-                  </motion.div>
-                  <Typography variant="h6" fontWeight={500}>
-                    Enter symptoms to generate a diagnosis
-                  </Typography>
-                </Box>
-              </motion.div>
+                    ))}
+                  </Stack>
+                </CardContent>
+              </AnimatedCard>
             )}
           </AnimatePresence>
         </Grid>

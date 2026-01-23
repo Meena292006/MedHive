@@ -14,6 +14,11 @@ app.get("/api/history", (req, res) => {
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/cases", require("./routes/caseRoutes"));
 app.use("/api/doctor", require("./routes/doctorRoutes"));
+app.use("/api/patient", require("./routes/patientRoutes"));
+
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Backend is responsive", time: new Date() });
+});
 
 app.get("/", (req, res) => {
   res.send("MedHive Backend Running");

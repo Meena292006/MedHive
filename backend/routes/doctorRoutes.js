@@ -1,6 +1,12 @@
 const router = require("express").Router();
-const controller = require("../controllers/doctorController");
+const Case = require("../models/case");
+const { verifyToken, isDoctor } = require("../middleware/authMiddleware");
 
-router.post("/prescribe", controller.prescribe);
+router.use(verifyToken);
+router.use(isDoctor);
+
+router.get("/all-patients", (req, res) => {
+    res.json(Case.getAllCases());
+});
 
 module.exports = router;

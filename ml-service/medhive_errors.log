@@ -427,3 +427,33 @@ Traceback (most recent call last):
     )
     ^
 RuntimeError: Input type (double) and bias type (float) should be the same
+2026-01-23 14:50:36,774 - ERROR - ECG prediction failed: torch.compile is not supported on Python 3.14+
+Traceback (most recent call last):
+  File "D:\MedHive\ml-service\app.py", line 418, in predict_ecg_image
+    preds = ecg_model.predict(img_input, verbose=0)[0]
+            ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python314\site-packages\keras\src\utils\traceback_utils.py", line 122, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "C:\Users\Admin\AppData\Roaming\Python\Python314\site-packages\torch\__init__.py", line 2590, in compile
+    raise RuntimeError("torch.compile is not supported on Python 3.14+")
+RuntimeError: torch.compile is not supported on Python 3.14+
+2026-01-23 14:51:52,683 - ERROR - ECG prediction failed: torch.compile is not supported on Python 3.14+
+Traceback (most recent call last):
+  File "D:\MedHive\ml-service\app.py", line 418, in predict_ecg_image
+    preds = ecg_model.predict(img_input, verbose=0)[0]
+            ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python314\site-packages\keras\src\utils\traceback_utils.py", line 122, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "C:\Users\Admin\AppData\Roaming\Python\Python314\site-packages\torch\__init__.py", line 2590, in compile
+    raise RuntimeError("torch.compile is not supported on Python 3.14+")
+RuntimeError: torch.compile is not supported on Python 3.14+
+2026-01-23 14:53:49,208 - ERROR - ECG prediction failed: torch.compile is not supported on Python 3.14+
+Traceback (most recent call last):
+  File "D:\MedHive\ml-service\app.py", line 418, in predict_ecg_image
+    preds = ecg_model.predict(img_input, verbose=0)[0]
+            ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python314\site-packages\keras\src\utils\traceback_utils.py", line 122, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "C:\Users\Admin\AppData\Roaming\Python\Python314\site-packages\torch\__init__.py", line 2590, in compile
+    raise RuntimeError("torch.compile is not supported on Python 3.14+")
+RuntimeError: torch.compile is not supported on Python 3.14+

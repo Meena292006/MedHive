@@ -5,13 +5,16 @@ import './index.css'
 import App from './App.jsx'
 import theme from './styles/theme'
 import ErrorBoundary from './components/ErrorBoundary'
+import { AuthProvider } from './context/AuthContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
   </StrictMode>,

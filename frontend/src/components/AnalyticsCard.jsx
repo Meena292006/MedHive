@@ -4,7 +4,7 @@ import { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveCont
 
 export function StatCard({ label, value, icon, color, delay = 0, trend, trendValue }) {
   const theme = useTheme();
-  
+
   // Convert hex color to rgba for opacity
   const hexToRgba = (hex, alpha) => {
     if (!hex || typeof hex !== 'string') return `rgba(67, 24, 255, ${alpha})`;
@@ -17,7 +17,7 @@ export function StatCard({ label, value, icon, color, delay = 0, trend, trendVal
       return `rgba(67, 24, 255, ${alpha})`;
     }
   };
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}

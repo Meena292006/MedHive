@@ -1,29 +1,21 @@
 import Sidebar from "./Sidebar";
-import AnimatedBackground from "./AnimatedBackground";
-import { Box, useTheme } from "@mui/material";
+import { Box } from "@mui/material";
 
 export default function DashboardLayout({ children }) {
-  const theme = useTheme();
+  const role = localStorage.getItem("role");
+  const isDoctor = role === "doctor";
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", width: "100%", position: "relative", bgcolor: theme.palette.background.default }}>
-      {/* Animated Background */}
-      {/* <AnimatedBackground /> */}
-
-      {/* Sidebar */}
+    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: isDoctor ? "#0f172a" : "#f8fafc" }}>
       <Sidebar />
-
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          width: "100%",
-          padding: { xs: 2, md: 4 },
-          overflowX: "hidden",
-          position: "relative",
-          zIndex: 2,
-          bgcolor: "transparent",
+          p: 0,
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column"
         }}
       >
         {children}

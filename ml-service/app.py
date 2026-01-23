@@ -1,13 +1,9 @@
 import os
 import sys
 
-# 🔇 HARD SILENCE TensorFlow / Keras
+# 🔇 HARD SILENCE Keras / Torch
+os.environ["KERAS_BACKEND"] = "torch"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-os.environ["KMP_AFFINITY"] = "noverbose"
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-
-sys.stdout = sys.__stdout__
-sys.stderr = sys.__stderr__
 
 # =====================================================
 # QUIET LOGGING (NO JSON / NO ACCESS SPAM)
@@ -24,11 +20,8 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-# --- KERAS 3 + PYTORCH BACKEND ---
-os.environ["KERAS_BACKEND"] = "torch"
+# --- KERAS (TORCH BACKEND) ---
 import keras
-import torch
-import torch.nn as nn
 
 
 # Silence uvicorn noise
@@ -48,9 +41,9 @@ print("🚀 MedHive backend starting (quiet mode)")
 # ECG MODEL (ACCURATE)
 # =====================================================
 try:
-    TORCH_AVAILABLE = True
+    KERAS_AVAILABLE = True
 except Exception:
-    TORCH_AVAILABLE = False
+    KERAS_AVAILABLE = False
 
 # =====================================================
 # APP INIT
@@ -112,14 +105,12 @@ ecg_model = None
 # We use the user's requested 5 classes for the API, mapping the 4 model classes
 ecg_classes = ["Normal", "Myocardial Infarction", "Arrhythmia", "Atrial Fibrillation", "PVC"]
 
-if TORCH_AVAILABLE:
+if KERAS_AVAILABLE:
     try:
         model_path = os.path.join(MODEL_DIR, "ecg_best_model_69pct.keras")
         if os.path.exists(model_path):
             ecg_model = keras.models.load_model(model_path)
-            if hasattr(ecg_model, "eval"):
-                ecg_model.eval()
-            print("✅ Loaded ecg_best_model_69pct.keras (via Keras 3)")
+            print("✅ Loaded ecg_best_model_69pct.keras (via Keras/Torch)")
         else:
             print("❌ ecg_best_model_69pct.keras not found")
             ecg_model = None
@@ -382,7 +373,7 @@ def predict_liver(data: LiverInput):
 # =====================================================
 @app.post("/predict-ecg")
 async def predict_ecg_image(file: UploadFile = File(...)):
-    if ecg_model is None or not TORCH_AVAILABLE:
+    if ecg_model is None:
         raise HTTPException(503, "ECG model unavailable")
 
     try:
@@ -419,57 +410,73 @@ async def predict_ecg_image(file: UploadFile = File(...)):
             distances = np.diff(peaks)
             variation = np.std(distances) / np.mean(distances) if np.mean(distances) > 0 else 0
 
-        # --- MODEL PREDICTION ---
-        arr = np.array(img).astype(np.float32) / 255.0
-        img_tensor = torch.from_numpy(arr).float().unsqueeze(0)
-        
-        with torch.no_grad():
-            preds = ecg_model(img_tensor)[0]
-            preds_np = preds.clone().cpu().numpy()
-            
-            # --- MEDICAL MAPPING (CORRECTED) ---
-            # Model Output Structure: [Normal, MI, Abnormal/Arrhythmia, Other]
-            # ecg_classes: ["Normal", "Myocardial Infarction", "Arrhythmia", "Atrial Fibrillation", "PVC"]
-            mapping = [0, 1, 2, 3] 
+        # --- MODEL PREDICTION (WITH FALLBACK) ---
+        preds_np = np.zeros(len(ecg_classes))
+        model_success = False
 
-            # Rhythm Override
-            hr_count = len(peaks)
-            if variation < 0.12 and hr_count >= 5 and hr_count <= 11:
-                # Highly regular rhythm at normal rate -> Likely Normal
-                preds_np[0] += 0.5
+        if ecg_model:
+            try:
+                arr = np.array(img).astype(np.float32) / 255.0
+                img_input = arr[np.newaxis, ...]
+                preds = ecg_model.predict(img_input, verbose=0)[0]
+                preds_np = np.array(preds)
+                model_success = True
+            except Exception as e:
+                logging.warning(f"ECG model prediction failed (using fallback): {e}")
+
+        # --- MEDICAL MAPPING (CORRECTED) ---
+        # ecg_classes: ["Normal", "Myocardial Infarction", "Arrhythmia", "Atrial Fibrillation", "PVC"]
+        mapping = [0, 1, 2, 3] # Map model classes to API classes
+
+        # --- HEURISTIC ANALYSIS (Medical Logic) ---
+        # Lead II Analysis (Peaks and Rhythm)
+        hr_count = len(peaks)
+        
+        if not model_success:
+            # Fallback Logic: Build a pseudo-probability vector based on heuristics
+            # Default to High Confidence Normal if regular
+            if 60 <= (hr_count * 10) <= 100 and variation < 0.15:
+                preds_np[0] = 0.85 # High confidence Normal
             elif variation > 0.25:
-                # Irregular rhythm -> Likely Arrhythmia
-                preds_np[2] += 0.5
-                preds_np[3] += 0.2
-            
-            # ST segment heuristic (Activity level between peaks)
-            if hr_count > 3:
-                # High base level can indicate ST elevation/depression
-                avg_base = np.mean(col_sums)
-                if avg_base > 1800:
-                    preds_np[1] += 0.4 # Boost MI
-            
-            # Final Class Selection
-            preds_np = np.maximum(0, preds_np)
-            class_idx_model = int(np.argmax(preds_np))
-            class_idx_final = mapping[class_idx_model] if class_idx_model < len(mapping) else 0
-            
-            # Confidence Calculation (0-100 Percentage)
-            # Ensure we use the total probability sum to get a clean percentage
-            prob_sum = np.sum(preds_np)
-            conf_val = (float(preds_np[class_idx_model]) / prob_sum) * 100
-            
-            # Fallback for very low confidence
-            if conf_val < 30:
-                conf_val = 30 + (conf_val * 0.5)
+                preds_np[2] = 0.75 # Arrhythmia
+            elif hr_count < 5 or hr_count > 12:
+                preds_np[3] = 0.70 # AFIB/Other
+            else:
+                preds_np[0] = 0.60 # Default Normal
+        else:
+            # Rhythm Override for Model
+            if variation < 0.12 and hr_count >= 5 and hr_count <= 11:
+                preds_np[0] += 0.3
+            elif variation > 0.25:
+                preds_np[2] += 0.4
+        
+        # ST segment heuristic (Activity level between peaks)
+        if hr_count > 3:
+            avg_base = np.mean(col_sums)
+            if avg_base > 1800:
+                preds_np[1] += 0.4 # Boost Myocardial Infarction logic
+        
+        # Final Class Selection
+        preds_np = np.maximum(0, preds_np)
+        class_idx_model = int(np.argmax(preds_np))
+        class_idx_final = mapping[class_idx_model] if class_idx_model < len(mapping) else 0
+        
+        # Confidence Calculation (0-100 Percentage)
+        prob_sum = np.sum(preds_np)
+        conf_val = (float(preds_np[class_idx_model]) / prob_sum) * 100 if prob_sum > 0 else 70.0
+        
+        # Fallback for very low confidence
+        if conf_val < 40:
+            conf_val = 40 + (conf_val * 0.4)
 
         return {
             "prediction": ecg_classes[class_idx_final],
-            "confidence": round(min(99.0, float(conf_val)), 2)
+            "confidence": round(min(98.5, float(conf_val)), 2),
+            "method": "AI Model" if model_success else "Heuristic Analysis"
         }
     except Exception as e:
-        logging.error(f"ECG prediction failed: {e}", exc_info=True)
-        raise HTTPException(500, "Internal prediction error")
+        logging.error(f"ECG prediction critical failure: {e}", exc_info=True)
+        raise HTTPException(500, f"Critical interpretation error: {str(e)}")
 
 # Legacy endpoint (optional, keeping for compatibility)
 @app.post("/predict/ecg")

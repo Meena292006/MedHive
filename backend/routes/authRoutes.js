@@ -1,10 +1,17 @@
 const router = require("express").Router();
-const User = require("../models/user");
+const authController = require("../controllers/authController");
+const { verifyToken } = require("../middleware/authMiddleware");
 
-router.post("/register", (req, res) => {
-  const { name, email, role } = req.body;
-  User.createUser(name, email, role);
-  res.json({ message: "User registered" });
-});
+// Register or login with Firebase token
+router.post("/register-or-login", authController.registerOrLogin);
+
+// Get user profile (protected)
+router.get("/profile", verifyToken, authController.getProfile);
+
+// Update user role (protected)
+router.put("/role", verifyToken, authController.updateRole);
+
+// Legacy register endpoint for backward compatibility
+router.post("/register", authController.register);
 
 module.exports = router;
