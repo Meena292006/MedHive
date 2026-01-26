@@ -25,6 +25,18 @@ export default function Sidebar() {
 
   const isDoctor = role === "doctor";
 
+  // 🔴 PROFESSIONAL RED PALETTE (PATIENT)
+  const PATIENT_RED = {
+    bg: "linear-gradient(180deg, #2A0A0A, #3B0F0F)",
+    card: "rgba(255,255,255,0.04)",
+    activeBg: "rgba(220,38,38,0.25)",
+    hoverBg: "rgba(220,38,38,0.15)",
+    text: "#FEE2E2",
+    textMuted: "#FCA5A5",
+    accent: "#EF4444",
+    border: "rgba(239,68,68,0.35)",
+  };
+
   const patientMenu = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/patient" },
     { text: "Heart Disease", icon: <MonitorHeartIcon />, path: "/patient/heart" },
@@ -43,12 +55,8 @@ export default function Sidebar() {
   const menuItems = isDoctor ? doctorMenu : patientMenu;
 
   const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    await logout();
+    navigate("/login");
   };
 
   return (
@@ -60,40 +68,61 @@ export default function Sidebar() {
         "& .MuiDrawer-paper": {
           width: DRAWER_WIDTH,
           boxSizing: "border-box",
-          borderRight: "1px solid rgba(0,0,0,0.08)",
-          background: isDoctor ? "#1a1f2e" : "white",
-          color: isDoctor ? "white" : "text.primary",
+          background: isDoctor ? "#1a1f2e" : PATIENT_RED.bg,
+          color: isDoctor ? "white" : PATIENT_RED.text,
+          borderRight: isDoctor ? "1px solid rgba(255,255,255,0.08)" : `1px solid ${PATIENT_RED.border}`,
         },
       }}
     >
+      {/* LOGO & USER */}
       <Box sx={{ p: 4, textAlign: "center" }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, mb: 1 }}>
-          <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 40, height: 40 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mb: 1 }}>
+          <Avatar
+            sx={{
+              bgcolor: isDoctor ? theme.palette.primary.main : PATIENT_RED.accent,
+              width: 44,
+              height: 44,
+              boxShadow: isDoctor ? "none" : "0 0 15px rgba(239,68,68,0.6)",
+            }}
+          >
             <LocalHospitalIcon />
           </Avatar>
-          <Typography variant="h6" fontWeight={800} sx={{ color: isDoctor ? "white" : "primary.main" }}>
+          <Typography
+            variant="h6"
+            fontWeight={800}
+            sx={{ color: isDoctor ? "white" : PATIENT_RED.text }}
+          >
             MedHive
           </Typography>
         </Box>
+
         {user && (
-          <Typography variant="caption" sx={{ color: isDoctor ? "rgba(255,255,255,0.6)" : "text.secondary", display: 'block', mt: 1 }}>
+          <Typography
+            variant="caption"
+            sx={{ color: isDoctor ? "rgba(255,255,255,0.6)" : PATIENT_RED.textMuted }}
+          >
             {user.displayName || user.email}
           </Typography>
         )}
-        <Typography variant="caption" sx={{
-          color: isDoctor ? "rgba(96, 165, 250, 1)" : "primary.main",
-          display: 'block',
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          fontSize: '0.7rem',
-          mt: 0.5
-        }}>
+
+        <Typography
+          variant="caption"
+          sx={{
+            display: "block",
+            mt: 0.5,
+            fontWeight: 700,
+            letterSpacing: 1,
+            textTransform: "uppercase",
+            color: isDoctor ? "#60A5FA" : PATIENT_RED.accent,
+          }}
+        >
           {isDoctor ? "Doctor" : "Patient"}
         </Typography>
       </Box>
 
-      <Divider sx={{ mx: 2, opacity: isDoctor ? 0.1 : 1 }} />
+      <Divider sx={{ mx: 2, opacity: 0.25 }} />
 
+      {/* MENU */}
       <List sx={{ p: 2 }}>
         {menuItems.map((item) => {
           const active = location.pathname === item.path;
@@ -102,20 +131,35 @@ export default function Sidebar() {
               <ListItemButton
                 onClick={() => navigate(item.path)}
                 sx={{
-                  borderRadius: 2,
-                  bgcolor: active ? (isDoctor ? "rgba(59, 130, 246, 0.2)" : "rgba(59, 130, 246, 0.08)") : "transparent",
-                  color: active ? (isDoctor ? "#60a5fa" : "primary.main") : (isDoctor ? "rgba(255,255,255,0.6)" : "text.secondary"),
+                  borderRadius: 3,
+                  bgcolor: active
+                    ? isDoctor
+                      ? "rgba(59,130,246,0.2)"
+                      : PATIENT_RED.activeBg
+                    : "transparent",
+                  color: active
+                    ? isDoctor
+                      ? "#60A5FA"
+                      : "#FEE2E2"
+                    : isDoctor
+                      ? "rgba(255,255,255,0.6)"
+                      : PATIENT_RED.textMuted,
                   "&:hover": {
-                    bgcolor: isDoctor ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.02)",
+                    bgcolor: isDoctor
+                      ? "rgba(255,255,255,0.05)"
+                      : PATIENT_RED.hoverBg,
                   },
                 }}
               >
-                <ListItemIcon sx={{ color: "inherit", minWidth: 40 }}>
+                <ListItemIcon sx={{ color: "inherit", minWidth: 42 }}>
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText
                   primary={item.text}
-                  primaryTypographyProps={{ fontWeight: active ? 700 : 500, variant: "body2" }}
+                  primaryTypographyProps={{
+                    fontWeight: active ? 700 : 500,
+                    variant: "body2",
+                  }}
                 />
               </ListItemButton>
             </ListItem>
@@ -125,19 +169,27 @@ export default function Sidebar() {
 
       <Box sx={{ flexGrow: 1 }} />
 
+      {/* LOGOUT */}
       <Box sx={{ p: 2 }}>
         <ListItemButton
           onClick={handleLogout}
           sx={{
-            borderRadius: 2,
-            color: "error.main",
-            "&:hover": { bgcolor: isDoctor ? "rgba(239, 68, 68, 0.1)" : "rgba(239, 68, 68, 0.08)" }
+            borderRadius: 3,
+            color: isDoctor ? "error.main" : "#FCA5A5",
+            "&:hover": {
+              bgcolor: isDoctor
+                ? "rgba(239,68,68,0.1)"
+                : "rgba(239,68,68,0.15)",
+            },
           }}
         >
-          <ListItemIcon sx={{ color: "inherit", minWidth: 40 }}>
+          <ListItemIcon sx={{ color: "inherit", minWidth: 42 }}>
             <LogoutIcon />
           </ListItemIcon>
-          <ListItemText primary="Logout" primaryTypographyProps={{ fontWeight: 600, variant: "body2" }} />
+          <ListItemText
+            primary="Logout"
+            primaryTypographyProps={{ fontWeight: 600, variant: "body2" }}
+          />
         </ListItemButton>
       </Box>
     </Drawer>

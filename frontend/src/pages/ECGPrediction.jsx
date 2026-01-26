@@ -12,7 +12,8 @@ import {
   CircularProgress,
   useTheme,
   Avatar,
-  LinearProgress
+  LinearProgress,
+  Grid
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import FavoriteIcon from "@mui/icons-material/FavoriteRounded";
@@ -83,25 +84,123 @@ export default function ECGPrediction() {
 
   return (
     <DashboardLayout>
+      {/* Animated Background Illustrations */}
+      <Box sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        pointerEvents: 'none',
+        zIndex: 0,
+        overflow: 'hidden',
+        background: 'linear-gradient(135deg, #7F1D1D 0%, #B91C1C 100%)', // Deep wine red gradient
+      }}>
+        {/* Floating ECG Wave */}
+        <motion.div
+          animate={{
+            y: [0, -20, 0],
+            rotate: [0, 5, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            position: 'absolute',
+            top: '20%',
+            right: '10%',
+            opacity: 0.1
+          }}
+        >
+          <FavoriteIcon sx={{ fontSize: 120, color: '#EF4444' }} />
+        </motion.div>
+
+        {/* Pulsing Heartbeat */}
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            position: 'absolute',
+            bottom: '30%',
+            left: '15%'
+          }}
+        >
+          <CloudUploadIcon sx={{ fontSize: 100, color: '#F87171' }} />
+        </motion.div>
+
+        {/* Breathing Medical Cross */}
+        <motion.div
+          animate={{
+            y: [0, -10, 0],
+            rotate: [-2, 2, -2]
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            position: 'absolute',
+            top: '40%',
+            left: '5%',
+            opacity: 0.08
+          }}
+        >
+          <CheckCircleIcon sx={{ fontSize: 80, color: '#DC2626' }} />
+        </motion.div>
+
+        {/* Healing Cross */}
+        <motion.div
+          animate={{
+            rotate: [0, 360],
+            scale: [1, 1.05, 1]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          style={{
+            position: 'absolute',
+            bottom: '20%',
+            right: '20%',
+            opacity: 0.06
+          }}
+        >
+          <WarningIcon sx={{ fontSize: 90, color: '#B91C1C' }} />
+        </motion.div>
+      </Box>
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        style={{ position: 'relative', zIndex: 1 }}
       >
         <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
           <motion.div
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Avatar sx={{ bgcolor: theme.palette.error.main, width: 56, height: 56, boxShadow: `0 10px 30px ${theme.palette.error.main}40` }}>
+            <Avatar sx={{ bgcolor: '#B91C1C', width: 56, height: 56, boxShadow: '0 10px 30px rgba(185, 28, 28, 0.4)' }}>
               <FavoriteIcon />
             </Avatar>
           </motion.div>
           <Box>
-            <Typography variant="h4" fontWeight={800}>
+            <Typography variant="h4" fontWeight={800} sx={{ color: '#FECACA' }}>
               ECG Scan Analysis
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography variant="body2" sx={{ mt: 0.5, color: '#FCA5A5' }}>
               AI-powered electrocardiogram interpretation
             </Typography>
           </Box>
@@ -196,12 +295,12 @@ export default function ECGPrediction() {
                   disabled={loading || !file}
                   sx={{
                     py: 1.8,
-                    background: `linear-gradient(135deg, ${theme.palette.error.main}, ${theme.palette.error.dark})`,
+                    background: 'linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)',
                     fontWeight: 700,
                     fontSize: "1.1rem",
-                    boxShadow: `0 10px 30px ${theme.palette.error.main}40`,
+                    boxShadow: '0 10px 30px rgba(185, 28, 28, 0.4)',
                     "&:hover": {
-                      boxShadow: `0 15px 40px ${theme.palette.error.main}60`,
+                      boxShadow: '0 15px 40px rgba(185, 28, 28, 0.6)',
                     },
                     "&:disabled": {
                       opacity: 0.6,

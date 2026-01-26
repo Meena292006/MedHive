@@ -457,3 +457,275 @@ Traceback (most recent call last):
   File "C:\Users\Admin\AppData\Roaming\Python\Python314\site-packages\torch\__init__.py", line 2590, in compile
     raise RuntimeError("torch.compile is not supported on Python 3.14+")
 RuntimeError: torch.compile is not supported on Python 3.14+
+2026-01-26 19:14:29,336 - ERROR - Failed loading disease_prediction_model.pkl
+Traceback (most recent call last):
+  File "D:\medhive-hospital\ml-service\app.py", line 77, in load_model_safe
+    model = joblib.load(os.path.join(MODEL_DIR, name))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 749, in load
+    obj = _unpickle(
+          ^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 626, in _unpickle
+    obj = unpickler.load()
+          ^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1213, in load
+    dispatch[key[0]](self)
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1538, in load_stack_global
+    self.append(self.find_class(module, name))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1580, in find_class
+    __import__(module, level=0)
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\__init__.py", line 70, in <module>
+    from sklearn.base import clone  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\base.py", line 20, in <module>
+    from sklearn.utils._missing import is_pandas_na, is_scalar_nan
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\__init__.py", line 9, in <module>
+    from sklearn.utils._chunking import gen_batches, gen_even_slices
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_chunking.py", line 11, in <module>
+    from sklearn.utils._param_validation import Interval, validate_params
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_param_validation.py", line 14, in <module>
+    from scipy.sparse import csr_matrix, issparse
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\__init__.py", line 274, in <module>
+    from ._csr import *
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\_csr.py", line 11, in <module>
+    from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
+ImportError: numpy.core.multiarray failed to import
+2026-01-26 19:14:29,471 - ERROR - Failed loading heart_model.pkl
+Traceback (most recent call last):
+  File "D:\medhive-hospital\ml-service\app.py", line 77, in load_model_safe
+    model = joblib.load(os.path.join(MODEL_DIR, name))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 749, in load
+    obj = _unpickle(
+          ^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 626, in _unpickle
+    obj = unpickler.load()
+          ^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1213, in load
+    dispatch[key[0]](self)
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1538, in load_stack_global
+    self.append(self.find_class(module, name))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1580, in find_class
+    __import__(module, level=0)
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\__init__.py", line 70, in <module>
+    from sklearn.base import clone  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\base.py", line 20, in <module>
+    from sklearn.utils._missing import is_pandas_na, is_scalar_nan
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\__init__.py", line 9, in <module>
+    from sklearn.utils._chunking import gen_batches, gen_even_slices
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_chunking.py", line 11, in <module>
+    from sklearn.utils._param_validation import Interval, validate_params
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_param_validation.py", line 14, in <module>
+    from scipy.sparse import csr_matrix, issparse
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\__init__.py", line 274, in <module>
+    from ._csr import *
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\_csr.py", line 11, in <module>
+    from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
+ImportError: numpy.core.multiarray failed to import
+2026-01-26 19:14:29,553 - ERROR - Failed loading diabetes_model_cleaned.pkl
+Traceback (most recent call last):
+  File "D:\medhive-hospital\ml-service\app.py", line 77, in load_model_safe
+    model = joblib.load(os.path.join(MODEL_DIR, name))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 749, in load
+    obj = _unpickle(
+          ^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 626, in _unpickle
+    obj = unpickler.load()
+          ^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1213, in load
+    dispatch[key[0]](self)
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1538, in load_stack_global
+    self.append(self.find_class(module, name))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1580, in find_class
+    __import__(module, level=0)
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\__init__.py", line 70, in <module>
+    from sklearn.base import clone  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\base.py", line 20, in <module>
+    from sklearn.utils._missing import is_pandas_na, is_scalar_nan
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\__init__.py", line 9, in <module>
+    from sklearn.utils._chunking import gen_batches, gen_even_slices
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_chunking.py", line 11, in <module>
+    from sklearn.utils._param_validation import Interval, validate_params
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_param_validation.py", line 14, in <module>
+    from scipy.sparse import csr_matrix, issparse
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\__init__.py", line 274, in <module>
+    from ._csr import *
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\_csr.py", line 11, in <module>
+    from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
+ImportError: numpy.core.multiarray failed to import
+2026-01-26 19:14:29,793 - ERROR - Failed loading liver_model.pkl
+Traceback (most recent call last):
+  File "D:\medhive-hospital\ml-service\app.py", line 77, in load_model_safe
+    model = joblib.load(os.path.join(MODEL_DIR, name))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 749, in load
+    obj = _unpickle(
+          ^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 626, in _unpickle
+    obj = unpickler.load()
+          ^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1213, in load
+    dispatch[key[0]](self)
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1538, in load_stack_global
+    self.append(self.find_class(module, name))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1580, in find_class
+    __import__(module, level=0)
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\__init__.py", line 70, in <module>
+    from sklearn.base import clone  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\base.py", line 20, in <module>
+    from sklearn.utils._missing import is_pandas_na, is_scalar_nan
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\__init__.py", line 9, in <module>
+    from sklearn.utils._chunking import gen_batches, gen_even_slices
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_chunking.py", line 11, in <module>
+    from sklearn.utils._param_validation import Interval, validate_params
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_param_validation.py", line 14, in <module>
+    from scipy.sparse import csr_matrix, issparse
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\__init__.py", line 274, in <module>
+    from ._csr import *
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\_csr.py", line 11, in <module>
+    from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
+ImportError: numpy.core.multiarray failed to import
+2026-01-26 19:41:45,658 - ERROR - Failed loading disease_prediction_model.pkl
+Traceback (most recent call last):
+  File "D:\medhive-hospital\ml-service\app.py", line 77, in load_model_safe
+    model = joblib.load(os.path.join(MODEL_DIR, name))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 749, in load
+    obj = _unpickle(
+          ^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 626, in _unpickle
+    obj = unpickler.load()
+          ^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1213, in load
+    dispatch[key[0]](self)
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1538, in load_stack_global
+    self.append(self.find_class(module, name))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1580, in find_class
+    __import__(module, level=0)
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\__init__.py", line 70, in <module>
+    from sklearn.base import clone  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\base.py", line 20, in <module>
+    from sklearn.utils._missing import is_pandas_na, is_scalar_nan
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\__init__.py", line 9, in <module>
+    from sklearn.utils._chunking import gen_batches, gen_even_slices
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_chunking.py", line 11, in <module>
+    from sklearn.utils._param_validation import Interval, validate_params
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_param_validation.py", line 14, in <module>
+    from scipy.sparse import csr_matrix, issparse
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\__init__.py", line 274, in <module>
+    from ._csr import *
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\_csr.py", line 11, in <module>
+    from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
+ImportError: numpy.core.multiarray failed to import
+2026-01-26 19:41:45,725 - ERROR - Failed loading heart_model.pkl
+Traceback (most recent call last):
+  File "D:\medhive-hospital\ml-service\app.py", line 77, in load_model_safe
+    model = joblib.load(os.path.join(MODEL_DIR, name))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 749, in load
+    obj = _unpickle(
+          ^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 626, in _unpickle
+    obj = unpickler.load()
+          ^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1213, in load
+    dispatch[key[0]](self)
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1538, in load_stack_global
+    self.append(self.find_class(module, name))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1580, in find_class
+    __import__(module, level=0)
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\__init__.py", line 70, in <module>
+    from sklearn.base import clone  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\base.py", line 20, in <module>
+    from sklearn.utils._missing import is_pandas_na, is_scalar_nan
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\__init__.py", line 9, in <module>
+    from sklearn.utils._chunking import gen_batches, gen_even_slices
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_chunking.py", line 11, in <module>
+    from sklearn.utils._param_validation import Interval, validate_params
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_param_validation.py", line 14, in <module>
+    from scipy.sparse import csr_matrix, issparse
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\__init__.py", line 274, in <module>
+    from ._csr import *
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\_csr.py", line 11, in <module>
+    from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
+ImportError: numpy.core.multiarray failed to import
+2026-01-26 19:41:45,779 - ERROR - Failed loading diabetes_model_cleaned.pkl
+Traceback (most recent call last):
+  File "D:\medhive-hospital\ml-service\app.py", line 77, in load_model_safe
+    model = joblib.load(os.path.join(MODEL_DIR, name))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 749, in load
+    obj = _unpickle(
+          ^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 626, in _unpickle
+    obj = unpickler.load()
+          ^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1213, in load
+    dispatch[key[0]](self)
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1538, in load_stack_global
+    self.append(self.find_class(module, name))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1580, in find_class
+    __import__(module, level=0)
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\__init__.py", line 70, in <module>
+    from sklearn.base import clone  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\base.py", line 20, in <module>
+    from sklearn.utils._missing import is_pandas_na, is_scalar_nan
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\__init__.py", line 9, in <module>
+    from sklearn.utils._chunking import gen_batches, gen_even_slices
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_chunking.py", line 11, in <module>
+    from sklearn.utils._param_validation import Interval, validate_params
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_param_validation.py", line 14, in <module>
+    from scipy.sparse import csr_matrix, issparse
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\__init__.py", line 274, in <module>
+    from ._csr import *
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\_csr.py", line 11, in <module>
+    from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
+ImportError: numpy.core.multiarray failed to import
+2026-01-26 19:41:45,887 - ERROR - Failed loading liver_model.pkl
+Traceback (most recent call last):
+  File "D:\medhive-hospital\ml-service\app.py", line 77, in load_model_safe
+    model = joblib.load(os.path.join(MODEL_DIR, name))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 749, in load
+    obj = _unpickle(
+          ^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\joblib\numpy_pickle.py", line 626, in _unpickle
+    obj = unpickler.load()
+          ^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1213, in load
+    dispatch[key[0]](self)
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1538, in load_stack_global
+    self.append(self.find_class(module, name))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\meena\AppData\Local\Programs\Python\Python311\Lib\pickle.py", line 1580, in find_class
+    __import__(module, level=0)
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\__init__.py", line 70, in <module>
+    from sklearn.base import clone  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\base.py", line 20, in <module>
+    from sklearn.utils._missing import is_pandas_na, is_scalar_nan
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\__init__.py", line 9, in <module>
+    from sklearn.utils._chunking import gen_batches, gen_even_slices
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_chunking.py", line 11, in <module>
+    from sklearn.utils._param_validation import Interval, validate_params
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\sklearn\utils\_param_validation.py", line 14, in <module>
+    from scipy.sparse import csr_matrix, issparse
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\__init__.py", line 274, in <module>
+    from ._csr import *
+  File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\_csr.py", line 11, in <module>
+    from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
+ImportError: numpy.core.multiarray failed to import

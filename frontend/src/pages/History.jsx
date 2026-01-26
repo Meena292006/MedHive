@@ -26,8 +26,8 @@ export default function History() {
   return (
     <DashboardLayout>
       <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
-        <HistoryIcon sx={{ fontSize: 40, color: "text.secondary" }} />
-        <Typography variant="h4" fontWeight={800}>
+        <HistoryIcon sx={{ fontSize: 40, color: '#F87171' }} />
+        <Typography variant="h4" fontWeight={800} sx={{ color: '#FECACA' }}>
           Prediction History
         </Typography>
       </Box>

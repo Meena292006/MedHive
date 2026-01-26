@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { mlApi } from "../api/mlApi";
 import { api } from "../api/api";
 import DashboardLayout from "../components/DashboardLayout";
@@ -17,7 +17,13 @@ import {
   MenuItem,
   useTheme,
   Avatar,
-  LinearProgress
+  LinearProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Tooltip
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import FavoriteIcon from "@mui/icons-material/FavoriteRounded";
@@ -29,6 +35,10 @@ import LocalHospitalIcon from "@mui/icons-material/LocalHospitalRounded";
 import InfoIcon from "@mui/icons-material/InfoRounded";
 import ScienceIcon from "@mui/icons-material/ScienceRounded";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafetyRounded";
+import CloseIcon from "@mui/icons-material/Close";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
+import HealingIcon from "@mui/icons-material/Healing";
 
 export default function HeartPrediction() {
   const [formData, setFormData] = useState({
@@ -122,25 +132,123 @@ export default function HeartPrediction() {
 
   return (
     <DashboardLayout>
+      {/* Animated Background Illustrations */}
+      <Box sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        pointerEvents: 'none',
+        zIndex: 0,
+        overflow: 'hidden',
+        background: 'linear-gradient(135deg, #7F1D1D 0%, #B91C1C 100%)', // Deep wine red gradient
+      }}>
+        {/* Floating Heart */}
+        <motion.div
+          animate={{
+            y: [0, -20, 0],
+            rotate: [0, 5, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            position: 'absolute',
+            top: '20%',
+            right: '10%',
+            opacity: 0.1
+          }}
+        >
+          <FavoriteIcon sx={{ fontSize: 120, color: '#EF4444' }} />
+        </motion.div>
+
+        {/* Pulsing Lungs */}
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            position: 'absolute',
+            bottom: '30%',
+            left: '15%'
+          }}
+        >
+          <MonitorHeartIcon sx={{ fontSize: 100, color: '#F87171' }} />
+        </motion.div>
+
+        {/* Breathing ECG Waveform */}
+        <motion.div
+          animate={{
+            y: [0, -10, 0],
+            rotate: [-2, 2, -2]
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            position: 'absolute',
+            top: '40%',
+            left: '5%',
+            opacity: 0.08
+          }}
+        >
+          <HealingIcon sx={{ fontSize: 80, color: '#DC2626' }} />
+        </motion.div>
+
+        {/* Healing Cross */}
+        <motion.div
+          animate={{
+            rotate: [0, 360],
+            scale: [1, 1.05, 1]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          style={{
+            position: 'absolute',
+            bottom: '20%',
+            right: '20%',
+            opacity: 0.06
+          }}
+        >
+          <HealthAndSafetyIcon sx={{ fontSize: 90, color: '#B91C1C' }} />
+        </motion.div>
+      </Box>
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        style={{ position: 'relative', zIndex: 1 }}
       >
         <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
           <motion.div
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Avatar sx={{ bgcolor: theme.palette.error.main, width: 56, height: 56, boxShadow: `0 10px 30px ${theme.palette.error.main}40` }}>
+            <Avatar sx={{ bgcolor: '#B91C1C', width: 56, height: 56, boxShadow: '0 10px 30px rgba(185, 28, 28, 0.4)' }}>
               <FavoriteIcon />
             </Avatar>
           </motion.div>
           <Box>
-            <Typography variant="h4" fontWeight={800}>
+            <Typography variant="h4" fontWeight={800} sx={{ color: '#FECACA' }}>
               Heart Disease Analysis
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography variant="body2" sx={{ mt: 0.5, color: '#FCA5A5' }}>
               Comprehensive cardiovascular risk assessment
             </Typography>
           </Box>
@@ -251,12 +359,12 @@ export default function HeartPrediction() {
                       disabled={loading}
                       sx={{
                         py: 1.8,
-                        background: `linear-gradient(135deg, ${theme.palette.error.main}, ${theme.palette.error.dark})`,
+                        background: 'linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)',
                         fontWeight: 700,
                         fontSize: "1.1rem",
-                        boxShadow: `0 10px 30px ${theme.palette.error.main}40`,
+                        boxShadow: '0 10px 30px rgba(185, 28, 28, 0.4)',
                         "&:hover": {
-                          boxShadow: `0 15px 40px ${theme.palette.error.main}60`,
+                          boxShadow: '0 15px 40px rgba(185, 28, 28, 0.6)',
                         },
                       }}
                     >
@@ -295,29 +403,195 @@ export default function HeartPrediction() {
 
             {result && !loading && (
               <Box>
+                {/* Prediction Cards */}
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  {/* Possible Conditions */}
+                  <Grid item xs={12} sm={6}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      <Card sx={{
+                        borderRadius: 3,
+                        background: 'rgba(185, 28, 28, 0.9)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        boxShadow: '0 8px 32px rgba(185, 28, 28, 0.3)',
+                        color: '#FECACA'
+                      }}>
+                        <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                          <Typography variant="h6" fontWeight={700} sx={{ mb: 1, color: '#FECACA' }}>
+                            Possible Conditions
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: '#FCA5A5' }}>
+                            {result.label}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  {/* Severity Level */}
+                  <Grid item xs={12} sm={6}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <Card sx={{
+                        borderRadius: 3,
+                        background: result.isDanger ? 'rgba(127, 29, 29, 0.9)' : 'rgba(220, 38, 38, 0.9)',
+                        backdropFilter: 'blur(20px)',
+                        border: result.isDanger ? '1px solid rgba(127, 29, 29, 0.3)' : '1px solid rgba(220, 38, 38, 0.3)',
+                        boxShadow: result.isDanger ? '0 8px 32px rgba(127, 29, 29, 0.3)' : '0 8px 32px rgba(220, 38, 38, 0.3)',
+                        color: '#FECACA'
+                      }}>
+                        <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                          <Typography variant="h6" fontWeight={700} sx={{ mb: 1, color: '#FECACA' }}>
+                            Severity Level
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: '#FCA5A5' }}>
+                            {result.isDanger ? 'High' : 'Low'}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  {/* Risk Score */}
+                  <Grid item xs={12} sm={6}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <Card sx={{
+                        borderRadius: 3,
+                        background: 'rgba(185, 28, 28, 0.9)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        boxShadow: '0 8px 32px rgba(185, 28, 28, 0.3)',
+                        color: '#FECACA'
+                      }}>
+                        <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                          <Typography variant="h6" fontWeight={700} sx={{ mb: 1, color: '#FECACA' }}>
+                            Risk Score
+                          </Typography>
+                          <Typography variant="h4" fontWeight={900} sx={{ color: '#FECACA' }}>
+                            {result.probability}%
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  {/* AI Confidence */}
+                  <Grid item xs={12} sm={6}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <Card sx={{
+                        borderRadius: 3,
+                        background: 'rgba(185, 28, 28, 0.9)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        boxShadow: '0 8px 32px rgba(185, 28, 28, 0.3)',
+                        color: '#FECACA'
+                      }}>
+                        <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                          <Typography variant="h6" fontWeight={700} sx={{ mb: 1, color: '#FECACA' }}>
+                            AI Confidence
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: '#FCA5A5' }}>
+                            High
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  {/* Recommended Action */}
+                  <Grid item xs={12} sm={6}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <Card sx={{
+                        borderRadius: 3,
+                        background: 'rgba(185, 28, 28, 0.9)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        boxShadow: '0 8px 32px rgba(185, 28, 28, 0.3)',
+                        color: '#FECACA'
+                      }}>
+                        <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                          <Typography variant="h6" fontWeight={700} sx={{ mb: 1, color: '#FECACA' }}>
+                            Recommended Action
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: '#FCA5A5' }}>
+                            {result.isDanger ? 'Consult Doctor' : 'Monitor Health'}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  {/* Next Steps */}
+                  <Grid item xs={12} sm={6}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                    >
+                      <Card sx={{
+                        borderRadius: 3,
+                        background: 'rgba(185, 28, 28, 0.9)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        boxShadow: '0 8px 32px rgba(185, 28, 28, 0.3)',
+                        color: '#FECACA'
+                      }}>
+                        <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                          <Typography variant="h6" fontWeight={700} sx={{ mb: 1, color: '#FECACA' }}>
+                            Next Steps
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: '#FCA5A5' }}>
+                            {result.isDanger ? 'Schedule Checkup' : 'Continue Monitoring'}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+                </Grid>
+
+                {/* Main Result Card */}
                 <motion.div
                   key="result"
                   initial={{ opacity: 0, scale: 0.9, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.5, type: "spring" }}
+                  transition={{ duration: 0.5, type: "spring", delay: 0.7 }}
                 >
                   <AnimatedCard
                     sx={{
                       border: 2,
-                      borderColor: result.isDanger ? "error.main" : "success.main",
-                      background: result.isDanger
-                        ? `linear-gradient(135deg, ${theme.palette.error.light}10, ${theme.palette.error.light}05)`
-                        : `linear-gradient(135deg, ${theme.palette.success.light}10, ${theme.palette.success.light}05)`,
+                      borderColor: result.isDanger ? "#7F1D1D" : "#DC2626",
+                      background: 'rgba(185, 28, 28, 0.9)',
+                      backdropFilter: 'blur(20px)',
                       position: "relative",
                       overflow: "hidden",
+                      color: '#FECACA'
                     }}
                   >
                     <CardContent sx={{ textAlign: "center", p: 4 }}>
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                        transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
                       >
                         <Avatar
                           sx={{
@@ -325,8 +599,8 @@ export default function HeartPrediction() {
                             height: 80,
                             mx: "auto",
                             mb: 2,
-                            bgcolor: result.isDanger ? "error.main" : "success.main",
-                            boxShadow: `0 10px 30px ${result.isDanger ? theme.palette.error.main : theme.palette.success.main}40`,
+                            bgcolor: result.isDanger ? "#7F1D1D" : "#DC2626",
+                            boxShadow: `0 10px 30px ${result.isDanger ? 'rgba(127, 29, 29, 0.4)' : 'rgba(220, 38, 38, 0.4)'}`,
                           }}
                         >
                           {result.isDanger ? <WarningIcon sx={{ fontSize: 40 }} /> : <CheckCircleIcon sx={{ fontSize: 40 }} />}
@@ -336,9 +610,9 @@ export default function HeartPrediction() {
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
+                        transition={{ delay: 0.9 }}
                       >
-                        <Typography variant="h6" fontWeight={700} color={result.isDanger ? "error" : "success.main"} sx={{ mb: 2 }}>
+                        <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: '#FECACA' }}>
                           {result.label}
                         </Typography>
                       </motion.div>
@@ -346,14 +620,14 @@ export default function HeartPrediction() {
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ delay: 0.5, type: "spring" }}
+                        transition={{ delay: 1.0, type: "spring" }}
                       >
-                        <Typography variant="h2" fontWeight={900} sx={{ my: 2, color: result.isDanger ? "error.main" : "success.main" }}>
+                        <Typography variant="h2" fontWeight={900} sx={{ my: 2, color: '#FECACA' }}>
                           {result.probability}%
                         </Typography>
                       </motion.div>
 
-                      <Typography color="text.secondary" fontWeight={600}>
+                      <Typography sx={{ color: '#FCA5A5', fontWeight: 600 }}>
                         Prediction Confidence
                       </Typography>
                     </CardContent>
