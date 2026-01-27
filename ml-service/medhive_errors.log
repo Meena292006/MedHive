@@ -729,3 +729,13 @@ Traceback (most recent call last):
   File "D:\medhive-hospital\ml-service\venv\Lib\site-packages\scipy\sparse\_csr.py", line 11, in <module>
     from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
 ImportError: numpy.core.multiarray failed to import
+2026-01-27 14:02:50,382 - ERROR - Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2026-01-27 21:42:27,953 - ERROR - Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+

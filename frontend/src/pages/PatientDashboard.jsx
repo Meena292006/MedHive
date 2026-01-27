@@ -608,7 +608,7 @@ export default function PatientDashboard() {
                                     label="Most Likely"
                                     size="small"
                                     sx={{
-                                      bgcolor: 'rgba(255,255,255,0.2)',
+                                      bgcolor: 'rgba(192, 27, 27, 0.2)',
                                       color: 'white',
                                       fontWeight: 600,
                                       fontSize: '0.7rem'

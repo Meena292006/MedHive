@@ -1,4 +1,4 @@
- import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { api } from "../api/api";
 import DashboardLayout from "../components/DashboardLayout";
 import {
@@ -35,6 +35,8 @@ import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, RadialBarChart, RadialBar, ComposedChart } from 'recharts';
 import PatientCard from "../components/doctor/PatientCard";
 import PatientReportModal from "../components/doctor/PatientReportModal";
+import { fadeUp } from "../animations/motionPresets";
+import AnimatedBackground from "../components/AnimatedBackground";
 
 export default function DoctorDashboard() {
   const [allCases, setAllCases] = useState([]);
@@ -132,128 +134,17 @@ export default function DoctorDashboard() {
 
   return (
     <DashboardLayout>
-      {/* Animated Background Illustrations */}
-      <Box sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        pointerEvents: 'none',
-        zIndex: 0,
-        overflow: 'hidden'
-      }}>
-        {/* Floating Medical Brain */}
-        <motion.div
-          animate={{
-            y: [0, -20, 0],
-            rotate: [0, 3, 0],
-            scale: [1, 1.08, 1]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          style={{
-            position: 'absolute',
-            top: '12%',
-            right: '6%',
-            opacity: 0.06
-          }}
-        >
-          <PsychologyIcon sx={{ fontSize: 160, color: '#00D4FF' }} />
-        </motion.div>
+      <AnimatedBackground />
 
-        {/* Pulsing Heartbeat Waveform */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.08, 0.12, 0.08]
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          style={{
-            position: 'absolute',
-            bottom: '20%',
-            left: '10%'
-          }}
-        >
-          <MonitorHeartIcon sx={{ fontSize: 140, color: '#3B82F6' }} />
-        </motion.div>
-
-        {/* Rotating DNA Helix */}
-        <motion.div
-          animate={{
-            rotate: [0, 360],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          style={{
-            position: 'absolute',
-            top: '30%',
-            left: '5%',
-            opacity: 0.05
-          }}
-        >
-          <BiotechIcon sx={{ fontSize: 120, color: '#06B6D4' }} />
-        </motion.div>
-
-        {/* Floating AI Healthcare Symbol */}
-        <motion.div
-          animate={{
-            y: [0, -25, 0],
-            x: [0, 8, 0]
-          }}
-          transition={{
-            duration: 9,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          style={{
-            position: 'absolute',
-            bottom: '12%',
-            right: '12%',
-            opacity: 0.07
-          }}
-        >
-          <LocalHospitalIcon sx={{ fontSize: 130, color: '#00D4FF' }} />
-        </motion.div>
-
-        {/* Subtle Circuit Pattern */}
-        <motion.div
-          animate={{
-            opacity: [0.04, 0.08, 0.04]
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          style={{
-            position: 'absolute',
-            top: '45%',
-            right: '20%',
-            opacity: 0.03
-          }}
-        >
-          <HealingIcon sx={{ fontSize: 100, color: '#3B82F6' }} />
-        </motion.div>
-      </Box>
-
-      <Container maxWidth="xl" sx={{ py: 6, minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
+      <Container
+        maxWidth="xl"
+        sx={{
+          position: "relative",
+          zIndex: 1,
+          py: 6,
+        }}
+      >
+        <motion.div {...fadeUp}>
           <Box sx={{ mb: 6, textAlign: 'center' }}>
             <Typography variant="h3" fontWeight={800} sx={{
               color: '#00D4FF',
@@ -321,24 +212,14 @@ export default function DoctorDashboard() {
           {/* Top KPI Cards */}
           <Grid container spacing={4} sx={{ mb: 6 }}>
             <Grid item xs={12} sm={6} md={3}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
+              <motion.div {...fadeUp}>
                 <Card sx={{
                   p: 4,
                   textAlign: 'center',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0, 212, 255, 0.2)',
                   borderRadius: 4,
-                  boxShadow: '0 8px 32px rgba(0, 212, 255, 0.1)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(0, 212, 255, 0.2)',
-                    border: '1px solid rgba(0, 212, 255, 0.4)',
                   }
                 }}>
                   <PeopleIcon sx={{ fontSize: 56, color: '#00D4FF', mb: 3 }} />
@@ -359,24 +240,14 @@ export default function DoctorDashboard() {
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
+              <motion.div {...fadeUp}>
                 <Card sx={{
                   p: 4,
                   textAlign: 'center',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
                   borderRadius: 4,
-                  boxShadow: '0 8px 32px rgba(239, 68, 68, 0.1)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(239, 68, 68, 0.2)',
-                    border: '1px solid rgba(239, 68, 68, 0.5)',
                   }
                 }}>
                   <WarningIcon sx={{ fontSize: 56, color: '#EF4444', mb: 3 }} />
@@ -397,24 +268,14 @@ export default function DoctorDashboard() {
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
+              <motion.div {...fadeUp}>
                 <Card sx={{
                   p: 4,
                   textAlign: 'center',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
                   borderRadius: 4,
-                  boxShadow: '0 8px 32px rgba(59, 130, 246, 0.1)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(59, 130, 246, 0.2)',
-                    border: '1px solid rgba(59, 130, 246, 0.4)',
                   }
                 }}>
                   <TodayIcon sx={{ fontSize: 56, color: '#3B82F6', mb: 3 }} />
@@ -435,24 +296,14 @@ export default function DoctorDashboard() {
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
+              <motion.div {...fadeUp}>
                 <Card sx={{
                   p: 4,
                   textAlign: 'center',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(6, 182, 212, 0.2)',
                   borderRadius: 4,
-                  boxShadow: '0 8px 32px rgba(6, 182, 212, 0.1)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(6, 182, 212, 0.2)',
-                    border: '1px solid rgba(6, 182, 212, 0.4)',
                   }
                 }}>
                   <AssessmentIcon sx={{ fontSize: 56, color: '#06B6D4', mb: 3 }} />
@@ -481,11 +332,7 @@ export default function DoctorDashboard() {
             <Card sx={{
               p: 4,
               mb: 6,
-              background: 'rgba(15, 23, 42, 0.95)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0, 212, 255, 0.2)',
-              borderRadius: 4,
-              boxShadow: '0 8px 32px rgba(0, 212, 255, 0.1)'
+              borderRadius: 4
             }}>
               <Typography variant="h5" fontWeight={700} sx={{ color: '#00D4FF', mb: 4, textAlign: 'center' }}>
                 Real-time Patient Monitoring
@@ -584,24 +431,14 @@ export default function DoctorDashboard() {
           <Grid container spacing={4} sx={{ mb: 6 }}>
             {/* Patient Trends Chart */}
             <Grid item xs={12} lg={8}>
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              >
+              <motion.div {...fadeUp}>
                 <Card sx={{
                   p: 4,
                   height: '100%',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0, 212, 255, 0.2)',
                   borderRadius: 4,
-                  boxShadow: '0 8px 32px rgba(0, 212, 255, 0.1)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: '0 20px 40px rgba(0, 212, 255, 0.2)',
-                    border: '1px solid rgba(0, 212, 255, 0.4)',
                   }
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
@@ -681,16 +518,10 @@ export default function DoctorDashboard() {
                 <Card sx={{
                   p: 4,
                   height: '100%',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
                   borderRadius: 4,
-                  boxShadow: '0 8px 32px rgba(59, 130, 246, 0.1)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: '0 20px 40px rgba(59, 130, 246, 0.2)',
-                    border: '1px solid rgba(59, 130, 246, 0.4)',
                   }
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
@@ -705,10 +536,20 @@ export default function DoctorDashboard() {
                     </Box>
                   </Box>
                   <ResponsiveContainer width="100%" height={380}>
-                    <BarChart data={conditionData} layout="horizontal">
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(59, 130, 246, 0.1)" />
-                      <XAxis type="number" stroke="#64748B" fontSize={12} />
-                      <YAxis dataKey="name" type="category" stroke="#64748B" width={90} fontSize={11} />
+                    <PieChart>
+                      <Pie
+                        data={conditionData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={120}
+                        fill="#8884d8"
+                        dataKey="cases"
+                        label={({ name, percentage }) => `${name}: ${percentage}%`}
+                      >
+                        {conditionData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={['#06B6D4', '#00D4FF', '#3B82F6', '#EF4444'][index % 4]} />
+                        ))}
+                      </Pie>
                       <Tooltip
                         contentStyle={{
                           background: 'rgba(15, 23, 42, 0.95)',
@@ -718,8 +559,7 @@ export default function DoctorDashboard() {
                           backdropFilter: 'blur(10px)'
                         }}
                       />
-                      <Bar dataKey="cases" fill="#06B6D4" radius={[0, 6, 6, 0]} />
-                    </BarChart>
+                    </PieChart>
                   </ResponsiveContainer>
                   <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: 'rgba(6, 182, 212, 0.08)', border: '1px solid rgba(6, 182, 212, 0.2)' }}>
                     <Typography variant="body2" sx={{ color: '#06B6D4', fontWeight: 600, textAlign: 'center' }}>
@@ -734,24 +574,14 @@ export default function DoctorDashboard() {
           {/* Performance Analytics */}
           <Grid container spacing={4} sx={{ mb: 6 }}>
             <Grid item xs={12} md={6}>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.0 }}
-              >
+              <motion.div {...fadeUp}>
                 <Card sx={{
                   p: 4,
                   height: '100%',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(6, 182, 212, 0.2)',
                   borderRadius: 4,
-                  boxShadow: '0 8px 32px rgba(6, 182, 212, 0.1)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: '0 20px 40px rgba(6, 182, 212, 0.2)',
-                    border: '1px solid rgba(6, 182, 212, 0.4)',
                   }
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
@@ -801,16 +631,10 @@ export default function DoctorDashboard() {
                 <Card sx={{
                   p: 4,
                   height: '100%',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
                   borderRadius: 4,
-                  boxShadow: '0 8px 32px rgba(59, 130, 246, 0.1)',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: '0 20px 40px rgba(59, 130, 246, 0.2)',
-                    border: '1px solid rgba(59, 130, 246, 0.4)',
                   }
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
@@ -862,7 +686,7 @@ export default function DoctorDashboard() {
                       <Chip label="Pending" size="small" sx={{ bgcolor: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B', fontWeight: 600, border: '1px solid rgba(245, 158, 11, 0.3)' }} />
                     </ListItem>
                   </List>
-                  <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: 'rgba(0, 212, 255, 0.08)', border: '1px solid rgba(0, 212, 255, 0.2)' }}>
+                  <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: 'rgba(24, 60, 67, 0.08)', border: '1px solid rgba(0, 212, 255, 0.2)' }}>
                     <Typography variant="body2" sx={{ color: '#00D4FF', fontWeight: 600, textAlign: 'center' }}>
                       6 total referrals this month • $4,800 additional revenue
                     </Typography>
@@ -874,17 +698,29 @@ export default function DoctorDashboard() {
         </motion.div>
 
         <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-          <TextField
-            placeholder="Search patients name or ID..."
-            size="small"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            sx={{ width: 350 }}
-            InputProps={{
-              startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment>,
-              sx: { borderRadius: 3, bgcolor: 'background.paper' }
+          <Box
+            sx={{
+              "& .MuiOutlinedInput-root.Mui-focused": {
+                borderColor: "#00D4FF",
+                boxShadow: "0 0 0 3px rgba(0,212,255,0.25)",
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "#00D4FF",
+              },
             }}
-          />
+          >
+            <TextField
+              placeholder="Search patients name or ID..."
+              size="small"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              sx={{ width: 350 }}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment>,
+                sx: { borderRadius: 3, bgcolor: 'background.paper' }
+              }}
+            />
+          </Box>
           <ToggleButtonGroup
             value={filter}
             exclusive
@@ -899,8 +735,12 @@ export default function DoctorDashboard() {
         </Box>
 
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-            <CircularProgress />
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 10 }}>
+            <CircularProgress sx={{ mb: 2 }} />
+            <Typography variant="body1" sx={{ color: '#94A3B8', mb: 2 }}>
+              Loading patient data...
+            </Typography>
+            <LinearProgress sx={{ width: '200px', borderRadius: 2 }} />
           </Box>
         ) : error ? (
           <Alert severity="error" sx={{ borderRadius: 3 }}>{error}</Alert>

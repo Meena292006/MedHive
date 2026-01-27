@@ -259,7 +259,36 @@ export default function HeartPrediction() {
         <Grid item xs={12} md={8}>
           <AnimatedCard delay={0.2}>
             <CardContent sx={{ p: 4 }}>
-              <Grid container spacing={3}>
+              <Box
+                sx={{
+                  /* DEFAULT */
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(239, 68, 68, 0.4)",
+                  },
+
+                  /* HOVER */
+                  "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#F87171",
+                  },
+
+                  /* FOCUS */
+                  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#EF4444",
+                    borderWidth: 2,
+                  },
+
+                  /* FOCUS GLOW */
+                  "& .MuiOutlinedInput-root.Mui-focused": {
+                    boxShadow: "0 0 0 3px rgba(239, 68, 68, 0.25)",
+                  },
+
+                  /* LABEL */
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#EF4444",
+                  },
+                }}
+              >
+                <Grid container spacing={3}>
                 {[
                   { label: "Age", name: "age", type: "number" },
                   { label: "Sex", name: "sex", type: "select", options: [{ value: 1, label: "Male" }, { value: 0, label: "Female" }] },
@@ -324,7 +353,7 @@ export default function HeartPrediction() {
                       transition={{ delay: 0.3 + idx * 0.05 }}
                     >
                       {field.type === "select" ? (
-                        <FormControl fullWidth>
+                        <FormControl fullWidth color="error">
                           <InputLabel>{field.label}</InputLabel>
                           <Select name={field.name} value={formData[field.name]} onChange={handleChange}>
                             {field.options.map(opt => (
@@ -335,6 +364,7 @@ export default function HeartPrediction() {
                       ) : (
                         <TextField
                           fullWidth
+                          color="error"
                           label={field.label}
                           name={field.name}
                           type={field.type}
@@ -373,6 +403,7 @@ export default function HeartPrediction() {
                   </motion.div>
                 </Grid>
               </Grid>
+              </Box>
             </CardContent>
           </AnimatedCard>
         </Grid>

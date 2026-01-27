@@ -212,25 +212,55 @@ export default function DiabetesPrediction() {
                 <Grid item xs={12} md={8}>
                     <AnimatedCard delay={0.2}>
                         <CardContent sx={{ p: 4 }}>
-                            <Grid container spacing={3}>
-                                {fields.map((field, idx) => (
-                                    <Grid item xs={6} key={field.name}>
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: 0.3 + idx * 0.05 }}
-                                        >
-                                            <TextField
-                                                fullWidth
-                                                label={field.label}
-                                                name={field.name}
-                                                type={field.type}
-                                                value={formData[field.name]}
-                                                onChange={handleChange}
-                                            />
-                                        </motion.div>
-                                    </Grid>
-                                ))}
+                            <Box
+                                sx={{
+                                  /* DEFAULT */
+                                  "& .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "rgba(239, 68, 68, 0.4)",
+                                  },
+
+                                  /* HOVER */
+                                  "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "#F87171",
+                                  },
+
+                                  /* FOCUS */
+                                  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "#EF4444",
+                                    borderWidth: 2,
+                                  },
+
+                                  /* FOCUS GLOW */
+                                  "& .MuiOutlinedInput-root.Mui-focused": {
+                                    boxShadow: "0 0 0 3px rgba(239, 68, 68, 0.25)",
+                                  },
+
+                                  /* LABEL */
+                                  "& .MuiInputLabel-root.Mui-focused": {
+                                    color: "#EF4444",
+                                  },
+                                }}
+                            >
+                                <Grid container spacing={3}>
+                                    {fields.map((field, idx) => (
+                                        <Grid item xs={6} key={field.name}>
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.3 + idx * 0.05 }}
+                                            >
+                                                <TextField
+                                                    fullWidth
+                                                    color="error"
+                                                    label={field.label}
+                                                    name={field.name}
+                                                    type={field.type}
+                                                    value={formData[field.name]}
+                                                    onChange={handleChange}
+                                                />
+                                            </motion.div>
+                                        </Grid>
+                                    ))}
 
                                 <Grid item xs={12}>
                                     <motion.div
@@ -259,6 +289,7 @@ export default function DiabetesPrediction() {
                                     </motion.div>
                                 </Grid>
                             </Grid>
+                            </Box>
                         </CardContent>
                     </AnimatedCard>
                 </Grid>

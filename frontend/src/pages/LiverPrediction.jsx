@@ -105,57 +105,87 @@ export default function LiverPrediction() {
         <Grid item xs={12} md={8}>
           <AnimatedCard delay={0.2}>
             <CardContent sx={{ p: 4 }}>
-              <Grid container spacing={3}>
-                {fields.map((field, idx) => (
-                  <Grid item xs={6} key={field.name}>
+              <Box
+                sx={{
+                  /* DEFAULT */
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(239, 68, 68, 0.4)",
+                  },
+
+                  /* HOVER */
+                  "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#F87171",
+                  },
+
+                  /* FOCUS */
+                  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#EF4444",
+                    borderWidth: 2,
+                  },
+
+                  /* FOCUS GLOW */
+                  "& .MuiOutlinedInput-root.Mui-focused": {
+                    boxShadow: "0 0 0 3px rgba(239, 68, 68, 0.25)",
+                  },
+
+                  /* LABEL */
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#EF4444",
+                  },
+                }}
+              >
+                <Grid container spacing={3}>
+                  {fields.map((field, idx) => (
+                    <Grid item xs={6} key={field.name}>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 + idx * 0.05 }}
+                      >
+                        {field.type === "select" ? (
+                          <FormControl fullWidth color="error">
+                            <InputLabel>{field.label}</InputLabel>
+                            <Select name={field.name} value={formData[field.name]} label={field.label} onChange={handleChange}>
+                              {field.options.map(opt => (
+                                <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        ) : (
+                          <TextField fullWidth color="error" label={field.label} name={field.name} value={formData[field.name]} onChange={handleChange} />
+                        )}
+                      </motion.div>
+                    </Grid>
+                  ))}
+
+                  <Grid item xs={12}>
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 + idx * 0.05 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      {field.type === "select" ? (
-                        <FormControl fullWidth>
-                          <InputLabel>{field.label}</InputLabel>
-                          <Select name={field.name} value={formData[field.name]} label={field.label} onChange={handleChange}>
-                            {field.options.map(opt => (
-                              <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      ) : (
-                        <TextField fullWidth label={field.label} name={field.name} value={formData[field.name]} onChange={handleChange} />
-                      )}
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        onClick={submit}
+                        disabled={loading}
+                        sx={{
+                          py: 1.8,
+                          background: `linear-gradient(135deg, ${theme.palette.success.main}, ${theme.palette.success.dark})`,
+                          fontWeight: 700,
+                          fontSize: "1.1rem",
+                          boxShadow: `0 10px 30px ${theme.palette.success.main}40`,
+                          "&:hover": {
+                            boxShadow: `0 15px 40px ${theme.palette.success.main}60`,
+                          },
+                        }}
+                      >
+                        {loading ? "Analyzing..." : "Predict Liver Disease Risk"}
+                      </Button>
                     </motion.div>
                   </Grid>
-                ))}
-
-                <Grid item xs={12}>
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      size="large"
-                      onClick={submit}
-                      disabled={loading}
-                      sx={{
-                        py: 1.8,
-                        background: `linear-gradient(135deg, ${theme.palette.success.main}, ${theme.palette.success.dark})`,
-                        fontWeight: 700,
-                        fontSize: "1.1rem",
-                        boxShadow: `0 10px 30px ${theme.palette.success.main}40`,
-                        "&:hover": {
-                          boxShadow: `0 15px 40px ${theme.palette.success.main}60`,
-                        },
-                      }}
-                    >
-                      {loading ? "Analyzing..." : "Predict Liver Disease Risk"}
-                    </Button>
-                  </motion.div>
                 </Grid>
-              </Grid>
+              </Box>
             </CardContent>
           </AnimatedCard>
         </Grid>

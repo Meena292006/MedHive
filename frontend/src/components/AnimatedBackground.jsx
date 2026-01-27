@@ -6,129 +6,56 @@ export default function AnimatedBackground() {
     <Box
       sx={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
+        inset: 0,
         zIndex: 0,
         overflow: "hidden",
         pointerEvents: "none",
       }}
     >
-      {/* Animated gradient orbs */}
-      <motion.div
-        style={{
+      {/* Gradient mesh */}
+      <Box
+        sx={{
           position: "absolute",
-          width: "600px",
-          height: "600px",
-          borderRadius: "50%",
-          background: "linear-gradient(135deg, #4318FF 0%, #6AD2FF 100%)",
-          filter: "blur(100px)",
-          opacity: 0.3,
-          top: "-200px",
-          left: "-200px",
-        }}
-        animate={{
-          x: [0, 100, 0],
-          y: [0, 50, 0],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      
-      <motion.div
-        style={{
-          position: "absolute",
-          width: "500px",
-          height: "500px",
-          borderRadius: "50%",
-          background: "linear-gradient(135deg, #6AD2FF 0%, #05CD99 100%)",
-          filter: "blur(100px)",
-          opacity: 0.25,
-          bottom: "-150px",
-          right: "-150px",
-        }}
-        animate={{
-          x: [0, -80, 0],
-          y: [0, -40, 0],
-          scale: [1, 1.15, 1],
-        }}
-        transition={{
-          duration: 25,
-          repeat: Infinity,
-          ease: "easeInOut",
+          inset: 0,
+          background: `
+            radial-gradient(600px at 20% 20%, rgba(0,212,255,0.18), transparent 40%),
+            radial-gradient(500px at 80% 30%, rgba(59,130,246,0.15), transparent 45%),
+            radial-gradient(700px at 50% 80%, rgba(6,182,212,0.12), transparent 50%)
+          `,
         }}
       />
 
+      {/* Floating blob 1 */}
       <motion.div
+        animate={{ y: [0, -40, 0], x: [0, 30, 0] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
         style={{
           position: "absolute",
-          width: "400px",
-          height: "400px",
+          width: 420,
+          height: 420,
+          top: "10%",
+          left: "5%",
           borderRadius: "50%",
-          background: "linear-gradient(135deg, #EE5D50 0%, #FFB547 100%)",
-          filter: "blur(80px)",
-          opacity: 0.2,
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.2, 0.3, 0.2],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut",
+          background: "rgba(0,212,255,0.12)",
+          filter: "blur(120px)",
         }}
       />
 
-      {/* Floating particles */}
-      {(() => {
-        const particles = [];
-        for (let i = 0; i < 20; i++) {
-          const size = (i % 5) * 0.8 + 2;
-          const color = i % 2 === 0 ? "67, 24, 255" : "106, 210, 255";
-          const opacity = 0.3 + (i % 3) * 0.2;
-          const left = (i * 5) % 100;
-          const top = (i * 7) % 100;
-          const duration = 2 + (i % 3);
-          const delay = (i % 4) * 0.5;
-          const xOffset = (i % 3 - 1) * 10;
-          
-          particles.push(
-            <motion.div
-              key={i}
-              style={{
-                position: "absolute",
-                width: `${size}px`,
-                height: `${size}px`,
-                borderRadius: "50%",
-                background: `rgba(${color}, ${opacity})`,
-                left: `${left}%`,
-                top: `${top}%`,
-              }}
-              animate={{
-                y: [0, -30, 0],
-                x: [0, xOffset, 0],
-                opacity: [opacity, opacity + 0.4, opacity],
-              }}
-              transition={{
-                duration: duration,
-                repeat: Infinity,
-                delay: delay,
-                ease: "easeInOut",
-              }}
-            />
-          );
-        }
-        return particles;
-      })()}
+      {/* Floating blob 2 */}
+      <motion.div
+        animate={{ y: [0, 50, 0], x: [0, -40, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "absolute",
+          width: 500,
+          height: 500,
+          bottom: "10%",
+          right: "10%",
+          borderRadius: "50%",
+          background: "rgba(59,130,246,0.14)",
+          filter: "blur(140px)",
+        }}
+      />
     </Box>
   );
 }
