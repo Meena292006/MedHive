@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import { useTheme } from "@mui/material";
 import { mlApi } from "../api/mlApi";
 
 export default function SymptomSelect({ value, setValue }) {
+  const theme = useTheme();
   const [options, setOptions] = useState([]);
   const [error, setError] = useState(null);
 
@@ -39,7 +41,7 @@ export default function SymptomSelect({ value, setValue }) {
         )}
       />
       {error && (
-        <div style={{ color: 'red', fontSize: '0.8rem', marginTop: '4px' }}>
+        <div style={{ color: theme.palette.error.main, fontSize: '0.8rem', marginTop: '4px' }}>
           Backend not connected. Is it running on port 8000?
         </div>
       )}

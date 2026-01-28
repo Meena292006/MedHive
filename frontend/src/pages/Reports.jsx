@@ -152,8 +152,8 @@ export default function Reports() {
 
   return (
     <DashboardLayout>
-      <Box sx={{ mb: 4, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ mb: 4, mt: 4, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
           <DescriptionIcon sx={{ fontSize: 40, color: "primary.main" }} />
           <Box>
             <Typography variant="h4" fontWeight={900}>
@@ -264,7 +264,7 @@ export default function Reports() {
                           <HistoryIcon sx={{ fontSize: 16 }} /> {new Date(report.created_at).toLocaleString()}
                         </Typography>
 
-                        <Box sx={{ p: 1.5, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 2, mb: 2, border: '1px solid rgba(0,0,0,0.04)' }}>
+                        <Box sx={{ p: 1.5, bgcolor: theme.palette.background.default, borderRadius: 2, mb: 2, border: `1px solid ${theme.palette.divider}` }}>
                           <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
                             Analysis Result
                           </Typography>
