@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { ThemeProvider, CssBaseline } from '@mui/material'
 import './index.css'
 import App from './App.jsx'
-import theme from './theme/theme'
+import theme from './styles/theme'
 import ErrorBoundary from './components/ErrorBoundary'
 import { AuthProvider } from './context/AuthContext'
 

@@ -86,7 +86,7 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: theme.gradients.main,
+        background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, #0f172a 50%, ${theme.palette.primary.dark} 100%)`,
         position: "relative",
         overflow: "hidden"
       }}
@@ -102,9 +102,9 @@ export default function Login() {
             width: { xs: "90%", sm: 450 },
             borderRadius: 6,
             backdropFilter: "blur(30px)",
-            background: theme.palette.background.paper,
-            boxShadow: `0 25px 50px ${theme.palette.common.black}40, 0 0 0 1px ${theme.palette.divider}`,
-            border: `1px solid ${theme.palette.divider}`,
+            background: "rgba(255, 255, 255, 0.08)",
+            boxShadow: "0 25px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.15)",
             position: "relative",
             zIndex: 1,
           }}
@@ -117,7 +117,7 @@ export default function Login() {
             >
               <Box sx={{
                 width: 100, height: 100, margin: "0 auto",
-                background: theme.gradients.linear,
+                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                 borderRadius: "24px",
                 display: "flex", alignItems: "center", justifyContent: "center", mb: 3,
                 boxShadow: `0 20px 40px ${theme.palette.primary.main}40`,
@@ -144,7 +144,7 @@ export default function Login() {
                   color: "white",
                   letterSpacing: 2,
                   mb: 1,
-                  background: `linear-gradient(135deg, ${theme.palette.text.primary}, ${theme.palette.secondary.light})`,
+                  background: `linear-gradient(135deg, #ffffff, ${theme.palette.secondary.light})`,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}
@@ -156,7 +156,7 @@ export default function Login() {
                 variant="body1"
                 sx={{ color: "rgba(255,255,255,0.9)", mb: 5, fontWeight: 500, fontSize: "1rem" }}
               >
-                Next-Gen Hospital Care
+                Next-Gen Clinical Decision Support
               </Typography>
             </motion.div>
 
@@ -165,11 +165,11 @@ export default function Login() {
                 severity="error"
                 sx={{
                   mb: 2,
-                  backgroundColor: theme.palette.error.light,
-                  color: theme.palette.text.primary,
-                  border: `1px solid ${theme.palette.error.main}30`,
+                  backgroundColor: "rgba(220, 38, 38, 0.15)",
+                  color: "#fca5a5",
+                  border: "1px solid rgba(220, 38, 38, 0.3)",
                   "& .MuiAlert-icon": {
-                    color: theme.palette.error.main
+                    color: "#fca5a5"
                   }
                 }}
                 onClose={() => setAuthError("")}
@@ -195,14 +195,14 @@ export default function Login() {
                       py: 1.8,
                       fontSize: "1.1rem",
                       fontWeight: 700,
-                      background: theme.palette.text.primary,
+                      background: "linear-gradient(135deg, #ffffff, #f8fafc)",
                       color: theme.palette.primary.dark,
                       borderRadius: 3,
-                      boxShadow: `0 10px 30px ${theme.palette.text.primary}30`,
+                      boxShadow: "0 10px 30px rgba(255,255,255,0.3)",
                       "&:hover": {
-                        background: theme.palette.text.primary,
+                        background: "linear-gradient(135deg, #f8fafc, #ffffff)",
                         transform: "translateY(-2px)",
-                        boxShadow: `0 15px 40px ${theme.palette.text.primary}40`,
+                        boxShadow: "0 15px 40px rgba(255,255,255,0.4)",
                       },
                       "&:disabled": {
                         background: "linear-gradient(135deg, #e2e8f0, #cbd5e1)",
@@ -230,16 +230,16 @@ export default function Login() {
                       py: 1.8,
                       fontSize: "1.05rem",
                       fontWeight: 700,
-                      color: theme.palette.text.primary,
-                      backgroundColor: theme.palette.primary.light,
-                      borderColor: theme.palette.primary.main,
+                      color: "#ffffff",
+                      backgroundColor: "rgba(59, 130, 246, 0.15)",
+                      borderColor: "rgba(59, 130, 246, 0.5)",
                       borderWidth: 2,
                       borderRadius: 3,
                       "&:hover": {
-                        borderColor: theme.palette.secondary.main,
-                        backgroundColor: theme.palette.secondary.light,
+                        borderColor: "rgba(59, 130, 246, 0.8)",
+                        backgroundColor: "rgba(59, 130, 246, 0.25)",
                         transform: "translateY(-2px)",
-                        boxShadow: `0 10px 25px ${theme.palette.primary.main}30`,
+                        boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)",
                       },
                       transition: "all 0.3s",
                     }}

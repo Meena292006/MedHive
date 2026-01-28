@@ -7,14 +7,14 @@ export function StatCard({ label, value, icon, color, delay = 0, trend, trendVal
 
   // Convert hex color to rgba for opacity
   const hexToRgba = (hex, alpha) => {
-    if (!hex || typeof hex !== 'string') return theme.palette.primary.light;
+    if (!hex || typeof hex !== 'string') return `rgba(67, 24, 255, ${alpha})`;
     try {
       const r = parseInt(hex.slice(1, 3), 16);
       const g = parseInt(hex.slice(3, 5), 16);
       const b = parseInt(hex.slice(5, 7), 16);
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     } catch (e) {
-      return theme.palette.primary.light;
+      return `rgba(67, 24, 255, ${alpha})`;
     }
   };
 
@@ -29,8 +29,8 @@ export function StatCard({ label, value, icon, color, delay = 0, trend, trendVal
         sx={{
           height: "100%",
           borderRadius: 4,
-          background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.background.default})`,
-          border: `1px solid ${theme.palette.divider}`,
+          background: `linear-gradient(135deg, ${hexToRgba(color, 0.15)}, ${hexToRgba(color, 0.05)})`,
+          border: `1px solid ${hexToRgba(color, 0.3)}`,
           position: "relative",
           overflow: "hidden",
           "&::before": {
@@ -40,17 +40,17 @@ export function StatCard({ label, value, icon, color, delay = 0, trend, trendVal
             left: 0,
             right: 0,
             height: "4px",
-            background: `linear-gradient(90deg, ${color || theme.palette.primary.main}, ${theme.palette.primary.light})`,
+            background: `linear-gradient(90deg, ${color}, ${hexToRgba(color, 0.8)})`,
           },
         }}
       >
         <CardContent sx={{ p: 3 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
             <Box>
-              <Typography variant="caption" fontWeight={700} sx={{ color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: 1 }}>
+              <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: 1 }}>
                 {label}
               </Typography>
-              <Typography variant="h3" fontWeight={900} sx={{ mt: 1, color: "#FFFFFF" }}>
+              <Typography variant="h3" fontWeight={900} sx={{ mt: 1, color: color }}>
                 {value}
               </Typography>
               {trend && (
@@ -104,7 +104,7 @@ export function TrendChart({ data, color, delay = 0 }) {
                 contentStyle={{
                   borderRadius: 12,
                   border: "none",
-                  boxShadow: `0 10px 30px ${theme.palette.shadow}`,
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
                 }}
               />
               <Area
@@ -140,7 +140,7 @@ export function PieChartCard({ data, colors, delay = 0 }) {
                 labelLine={false}
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 outerRadius={80}
-                fill={theme.palette.primary.main}
+                fill="#8884d8"
                 dataKey="value"
                 animationBegin={0}
                 animationDuration={1000}

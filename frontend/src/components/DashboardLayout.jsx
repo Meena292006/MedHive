@@ -6,7 +6,7 @@ export default function DashboardLayout({ children }) {
   const isDoctor = role === "doctor";
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: isDoctor ? "#0f172a" : "#f8fafc" }}>
       <Sidebar />
       <Box
         component="main"

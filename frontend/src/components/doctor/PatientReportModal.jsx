@@ -53,7 +53,7 @@ export default function PatientReportModal({ open, handleClose, patientCase }) {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 3, border: `1px solid ${theme.palette.divider}` }}>
+                        <Box sx={{ p: 2, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 3, border: '1px solid rgba(0,0,0,0.05)' }}>
                             <Typography variant="caption" fontWeight={700} color="text.secondary" uppercase sx={{ display: 'block', mb: 2 }}>AI Diagnostic Results</Typography>
                             {JSON.parse(patientCase.predictions || "[]").map((p, i) => (
                                 <Stack key={i} direction="row" justifyContent="space-between" mb={1}>
