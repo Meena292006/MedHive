@@ -25,17 +25,19 @@ export default function Sidebar() {
 
   const isDoctor = role === "doctor";
 
-  // 🔴 PROFESSIONAL RED PALETTE (PATIENT)
-  const PATIENT_RED = {
-    bg: "linear-gradient(180deg, #2A0A0A, #3B0F0F)",
-    card: "rgba(255,255,255,0.04)",
-    activeBg: "rgba(220,38,38,0.25)",
-    hoverBg: "rgba(220,38,38,0.15)",
-    text: "#FEE2E2",
-    textMuted: "#FCA5A5",
-    accent: "#EF4444",
-    border: "rgba(239,68,68,0.35)",
+  // 🔵 MODERN MEDICAL PALETTE (PATIENT)
+  // 🔵 SHARED THEME REFERENCING TOKENS
+  const SHARED_THEME = {
+    bg: theme.gradients.main,
+    card: theme.palette.background.paper,
+    activeBg: theme.palette.primary.light,
+    hoverBg: theme.palette.action.hover,
+    text: theme.palette.text.primary,
+    textMuted: theme.palette.text.secondary,
+    accent: theme.palette.secondary.main,
+    border: theme.palette.divider,
   };
+
 
   const patientMenu = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/patient" },
@@ -68,9 +70,9 @@ export default function Sidebar() {
         "& .MuiDrawer-paper": {
           width: DRAWER_WIDTH,
           boxSizing: "border-box",
-          background: isDoctor ? "#1a1f2e" : PATIENT_RED.bg,
-          color: isDoctor ? "white" : PATIENT_RED.text,
-          borderRight: isDoctor ? "1px solid rgba(255,255,255,0.08)" : `1px solid ${PATIENT_RED.border}`,
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          borderRight: `1px solid ${theme.palette.divider}`,
         },
       }}
     >
@@ -79,10 +81,10 @@ export default function Sidebar() {
         <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mb: 1 }}>
           <Avatar
             sx={{
-              bgcolor: isDoctor ? theme.palette.primary.main : PATIENT_RED.accent,
+              bgcolor: theme.palette.primary.main,
               width: 44,
               height: 44,
-              boxShadow: isDoctor ? "none" : "0 0 15px rgba(239,68,68,0.6)",
+              boxShadow: `0 4px 12px ${theme.palette.primary.light}`,
             }}
           >
             <LocalHospitalIcon />
@@ -90,7 +92,7 @@ export default function Sidebar() {
           <Typography
             variant="h6"
             fontWeight={800}
-            sx={{ color: isDoctor ? "white" : PATIENT_RED.text }}
+            sx={{ color: theme.palette.text.primary }}
           >
             MedHive
           </Typography>
@@ -99,7 +101,7 @@ export default function Sidebar() {
         {user && (
           <Typography
             variant="caption"
-            sx={{ color: isDoctor ? "rgba(255,255,255,0.6)" : PATIENT_RED.textMuted }}
+            sx={{ color: theme.palette.text.secondary }}
           >
             {user.displayName || user.email}
           </Typography>
@@ -113,10 +115,10 @@ export default function Sidebar() {
             fontWeight: 700,
             letterSpacing: 1,
             textTransform: "uppercase",
-            color: isDoctor ? "#60A5FA" : PATIENT_RED.accent,
+            color: theme.palette.secondary.main,
           }}
         >
-          {isDoctor ? "Doctor" : "Patient"}
+          Secure Access • MedHive
         </Typography>
       </Box>
 
@@ -133,21 +135,13 @@ export default function Sidebar() {
                 sx={{
                   borderRadius: 3,
                   bgcolor: active
-                    ? isDoctor
-                      ? "rgba(59,130,246,0.2)"
-                      : PATIENT_RED.activeBg
+                    ? theme.palette.primary.light
                     : "transparent",
                   color: active
-                    ? isDoctor
-                      ? "#60A5FA"
-                      : "#FEE2E2"
-                    : isDoctor
-                      ? "rgba(255,255,255,0.6)"
-                      : PATIENT_RED.textMuted,
+                    ? "#FFFFFF"
+                    : theme.palette.text.secondary,
                   "&:hover": {
-                    bgcolor: isDoctor
-                      ? "rgba(255,255,255,0.05)"
-                      : PATIENT_RED.hoverBg,
+                    bgcolor: theme.palette.action.hover,
                   },
                 }}
               >
@@ -175,11 +169,9 @@ export default function Sidebar() {
           onClick={handleLogout}
           sx={{
             borderRadius: 3,
-            color: isDoctor ? "error.main" : "#FCA5A5",
+            color: theme.palette.error.main,
             "&:hover": {
-              bgcolor: isDoctor
-                ? "rgba(239,68,68,0.1)"
-                : "rgba(239,68,68,0.15)",
+              bgcolor: theme.palette.error.light,
             },
           }}
         >

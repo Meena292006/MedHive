@@ -17,11 +17,13 @@ import {
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import FavoriteIcon from "@mui/icons-material/FavoriteRounded";
+import { useAuth } from "../context/AuthContext";
 import CloudUploadIcon from "@mui/icons-material/CloudUploadRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircleRounded";
 import WarningIcon from "@mui/icons-material/WarningRounded";
 
 export default function ECGPrediction() {
+  const { user } = useAuth();
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -60,7 +62,7 @@ export default function ECGPrediction() {
       // Save to Reports
       try {
         await api.post("/cases/save", {
-          patient: "Patient",
+          patient: user?.displayName || user?.email?.split('@')[0] || "Patient",
           type: "ECG",
           result: res.data.prediction,
           probability: res.data.confidence,
@@ -94,7 +96,7 @@ export default function ECGPrediction() {
         pointerEvents: 'none',
         zIndex: 0,
         overflow: 'hidden',
-        background: 'linear-gradient(135deg, #7F1D1D 0%, #B91C1C 100%)', // Deep wine red gradient
+        background: theme.gradients.main,
       }}>
         {/* Floating ECG Wave */}
         <motion.div
@@ -115,7 +117,7 @@ export default function ECGPrediction() {
             opacity: 0.1
           }}
         >
-          <FavoriteIcon sx={{ fontSize: 120, color: '#EF4444' }} />
+          <FavoriteIcon sx={{ fontSize: 120, color: theme.palette.primary.main }} />
         </motion.div>
 
         {/* Pulsing Heartbeat */}
@@ -135,7 +137,7 @@ export default function ECGPrediction() {
             left: '15%'
           }}
         >
-          <CloudUploadIcon sx={{ fontSize: 100, color: '#F87171' }} />
+          <CloudUploadIcon sx={{ fontSize: 100, color: theme.palette.secondary.main }} />
         </motion.div>
 
         {/* Breathing Medical Cross */}
@@ -156,7 +158,7 @@ export default function ECGPrediction() {
             opacity: 0.08
           }}
         >
-          <CheckCircleIcon sx={{ fontSize: 80, color: '#DC2626' }} />
+          <CheckCircleIcon sx={{ fontSize: 80, color: theme.palette.primary.main }} />
         </motion.div>
 
         {/* Healing Cross */}
@@ -177,7 +179,7 @@ export default function ECGPrediction() {
             opacity: 0.06
           }}
         >
-          <WarningIcon sx={{ fontSize: 90, color: '#B91C1C' }} />
+          <WarningIcon sx={{ fontSize: 90, color: theme.palette.secondary.main }} />
         </motion.div>
       </Box>
 
@@ -187,20 +189,25 @@ export default function ECGPrediction() {
         transition={{ duration: 0.5 }}
         style={{ position: 'relative', zIndex: 1 }}
       >
-        <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ mb: 4, mt: 4, display: "flex", alignItems: "center", gap: 4 }}>
           <motion.div
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Avatar sx={{ bgcolor: '#B91C1C', width: 56, height: 56, boxShadow: '0 10px 30px rgba(185, 28, 28, 0.4)' }}>
+            <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 56, height: 56, boxShadow: `0 10px 30px ${theme.palette.primary.main}40` }}>
               <FavoriteIcon />
             </Avatar>
           </motion.div>
           <Box>
-            <Typography variant="h4" fontWeight={800} sx={{ color: '#FECACA' }}>
+            <Typography variant="h4" fontWeight={800} sx={{
+              background: `linear-gradient(135deg, ${theme.palette.text.primary}, ${theme.palette.primary.main})`,
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
               ECG Scan Analysis
             </Typography>
-            <Typography variant="body2" sx={{ mt: 0.5, color: '#FCA5A5' }}>
+            <Typography variant="body2" sx={{ mt: 0.5, color: theme.palette.text.secondary }}>
               AI-powered electrocardiogram interpretation
             </Typography>
           </Box>
@@ -295,12 +302,12 @@ export default function ECGPrediction() {
                   disabled={loading || !file}
                   sx={{
                     py: 1.8,
-                    background: 'linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)',
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                     fontWeight: 700,
                     fontSize: "1.1rem",
-                    boxShadow: '0 10px 30px rgba(185, 28, 28, 0.4)',
+                    boxShadow: `0 10px 30px ${theme.palette.primary.main}40`,
                     "&:hover": {
-                      boxShadow: '0 15px 40px rgba(185, 28, 28, 0.6)',
+                      boxShadow: `0 15px 40px ${theme.palette.primary.main}60`,
                     },
                     "&:disabled": {
                       opacity: 0.6,
@@ -322,106 +329,145 @@ export default function ECGPrediction() {
             </CardContent>
           </AnimatedCard>
         </Box>
-
-        <Box sx={{ width: { xs: "100%", md: 400 } }}>
-          <AnimatePresence mode="wait">
-            {result && !loading && (
-              <motion.div
-                key="result"
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5, type: "spring" }}
-              >
-                <AnimatedCard
-                  sx={{
-                    bgcolor: isDisease
-                      ? `linear-gradient(135deg, ${theme.palette.error.light}10, ${theme.palette.error.light}05)`
-                      : `linear-gradient(135deg, ${theme.palette.success.light}10, ${theme.palette.success.light}05)`,
-                    border: 2,
-                    borderColor: isDisease ? "error.main" : "success.main",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  <CardContent sx={{ textAlign: "center", p: 4 }}>
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                    >
-                      <Avatar
-                        sx={{
-                          width: 80,
-                          height: 80,
-                          mx: "auto",
-                          mb: 2,
-                          bgcolor: isDisease ? "error.main" : "success.main",
-                          boxShadow: `0 10px 30px ${isDisease ? theme.palette.error.main : theme.palette.success.main}40`,
-                        }}
-                      >
-                        {isDisease ? <WarningIcon sx={{ fontSize: 40 }} /> : <CheckCircleIcon sx={{ fontSize: 40 }} />}
-                      </Avatar>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                    >
-                      <Typography
-                        variant="h5"
-                        fontWeight={700}
-                        color={isDisease ? "error.main" : "success.main"}
-                        sx={{ mb: 2 }}
-                      >
-                        {result.prediction}
-                      </Typography>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.5, type: "spring" }}
-                    >
-                      <Typography variant="h2" fontWeight={900} sx={{ my: 2, color: isDisease ? "error.main" : "success.main" }}>
-                        {result.confidence}%
-                      </Typography>
-                    </motion.div>
-
-                    <Typography color="text.secondary" fontWeight={600}>
-                      Model Confidence
-                    </Typography>
-                  </CardContent>
-                </AnimatedCard>
-              </motion.div>
-            )}
-
-            {!result && !loading && (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <Card sx={{ borderRadius: 4, border: `2px dashed ${theme.palette.divider}` }}>
-                  <CardContent sx={{ p: 4, textAlign: "center", minHeight: 300, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                    <motion.div
-                      animate={{ y: [0, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <FavoriteIcon sx={{ fontSize: 80, color: theme.palette.grey[300], mb: 2 }} />
-                    </motion.div>
-                    <Typography variant="h6" color="text.secondary" fontWeight={600}>
-                      Upload an ECG image to get started
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Box>
       </Box>
-    </DashboardLayout>
+
+      <AnimatePresence mode="wait">
+        {result && !loading && (
+          <Box sx={{
+            mt: 8,
+            mb: 6,
+            p: { xs: 4, md: 8 },
+            borderRadius: 8,
+            background: 'rgba(15, 23, 42, 0.4)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+          }}>
+            {/* Prediction Cards Grid - Full Width */}
+            <Grid container spacing={3} sx={{ mb: 6 }}>
+              {[
+                { label: "Observed Rhythm", value: result.prediction, color: theme.palette.primary.main },
+                { label: "Clinical Priority", value: isDisease ? 'Urgent' : 'Routine', color: isDisease ? theme.palette.secondary.main : theme.palette.primary.main },
+                { label: "Analysis Confidence", value: `${result.confidence}%`, color: theme.palette.secondary.main },
+                { label: "AI Interpretation", value: "Enhanced", color: theme.palette.primary.main },
+                { label: "Action Plan", value: isDisease ? 'Consult Cardiologist' : 'Continue Monitoring', color: theme.palette.secondary.main },
+                { label: "Next Follow-up", value: isDisease ? 'Immediate' : 'As Scheduled', color: theme.palette.primary.main },
+              ].map((card, idx) => (
+                <Grid item xs={12} sm={4} md={2} key={idx}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Card sx={{
+                      borderRadius: 0,
+                      background: `${card.color}DA`,
+                      backdropFilter: 'blur(20px)',
+                      border: `1px solid rgba(255,255,255,0.1)`,
+                      boxShadow: `0 8px 32px rgba(0,0,0,0.2)`,
+                      color: 'white',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      minHeight: 110
+                    }}>
+                      <CardContent sx={{ p: 2, textAlign: 'center' }}>
+                        <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 1, color: 'white', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                          {card.label}
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.9rem' }}>
+                          {card.value}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Main Result Card */}
+            <motion.div
+              key="result"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.5, type: "spring" }}
+            >
+              <AnimatedCard
+                sx={{
+                  borderRadius: 0,
+                  border: 2,
+                  borderColor: isDisease ? theme.palette.primary.main : theme.palette.success.main,
+                  background: theme.palette.secondary.main,
+                  backdropFilter: 'blur(20px)',
+                  position: "relative",
+                  overflow: "hidden",
+                  color: 'white'
+                }}
+              >
+                <CardContent sx={{ textAlign: "center", p: 6 }}>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                  >
+                    <Avatar
+                      sx={{
+                        width: 80,
+                        height: 80,
+                        mx: "auto",
+                        mb: 2,
+                        bgcolor: isDisease ? theme.palette.primary.main : theme.palette.success.main,
+                        boxShadow: `0 10px 30px rgba(0,0,0,0.2)`,
+                      }}
+                    >
+                      {isDisease ? <WarningIcon sx={{ fontSize: 40 }} /> : <CheckCircleIcon sx={{ fontSize: 40 }} />}
+                    </Avatar>
+                  </motion.div>
+
+                  <Typography variant="h4" fontWeight={800} sx={{ mb: 1, color: 'white' }}>
+                    {result.prediction}
+                  </Typography>
+
+                  <Typography variant="h2" fontWeight={800} sx={{ my: 2, color: 'white' }}>
+                    {result.confidence}%
+                  </Typography>
+
+                  <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>
+                    Model Confidence
+                  </Typography>
+                </CardContent>
+              </AnimatedCard>
+            </motion.div>
+          </Box>
+        )}
+      </AnimatePresence>
+
+      {
+        !result && !loading && (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Card sx={{ borderRadius: 4, border: `2px dashed ${theme.palette.divider}` }}>
+              <CardContent sx={{ p: 4, textAlign: "center", minHeight: 300, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <FavoriteIcon sx={{ fontSize: 80, color: theme.palette.grey[300], mb: 2 }} />
+                </motion.div>
+                <Typography variant="h6" color="text.secondary" fontWeight={600}>
+                  Upload an ECG image to get started
+                </Typography>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )
+      }
+    </DashboardLayout >
   );
 }

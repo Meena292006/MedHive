@@ -2,10 +2,15 @@
 
 :root {
     --font-base: 'Inter', system-ui, -apple-system, sans-serif;
+    --primary: #2A90B8;
+    --secondary: #F56477;
+    --bg-light: #BADEED;
+    --text-primary: #FFFFFF;
 }
 
 * {
     box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
@@ -13,8 +18,9 @@ body {
     font-family: var(--font-base);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: linear-gradient(135deg, #f4f7fe 0%, #e8f0fe 100%);
-    color: #1b2559;
+    background: linear-gradient(135deg, #BADEED 0%, #FFFFFF 100%);
+    background-attachment: fixed;
+    color: var(--text-primary);
     overflow-x: hidden;
 }
 
@@ -34,13 +40,13 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #4318FF, #6AD2FF);
+    background: linear-gradient(135deg, #2A90B8, #BADEED);
     border-radius: 10px;
     transition: background 0.3s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #2a0d9e, #00a0d6);
+    background: linear-gradient(135deg, #1e6b8a, #98c9e0);
 }
 
 /* Glassmorphism Utilities */
@@ -53,29 +59,26 @@ html {
 
 /* Animation utilities */
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0px);
     }
+
     50% {
         transform: translateY(-20px);
     }
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.5;
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -1000px 0;
-    }
-    100% {
-        background-position: 1000px 0;
     }
 }
 
@@ -89,31 +92,26 @@ html {
 
 /* Gradient text */
 .gradient-text {
-    background: linear-gradient(135deg, #4318FF, #6AD2FF);
+    background: linear-gradient(135deg, #2A90B8, #F56477);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-/* Smooth transitions */
-* {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
 /* Focus styles */
 *:focus-visible {
-    outline: 2px solid #4318FF;
+    outline: 2px solid #2A90B8;
     outline-offset: 2px;
     border-radius: 4px;
 }
 
 /* Selection styles */
 ::selection {
-    background: rgba(67, 24, 255, 0.3);
-    color: #1b2559;
+    background: rgba(42, 144, 184, 0.2);
+    color: #1B2559;
 }
 
 ::-moz-selection {
-    background: rgba(67, 24, 255, 0.3);
-    color: #1b2559;
+    background: rgba(42, 144, 184, 0.2);
+    color: #1B2559;
 }

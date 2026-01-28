@@ -4,11 +4,12 @@ import DashboardLayout from "../components/DashboardLayout";
 import {
   Card, CardContent, Typography, Box, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Paper, Chip,
-  Skeleton
+  Skeleton, useTheme
 } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/HistoryRounded";
 
 export default function History() {
+  const theme = useTheme();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,9 +26,14 @@ export default function History() {
 
   return (
     <DashboardLayout>
-      <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
-        <HistoryIcon sx={{ fontSize: 40, color: '#F87171' }} />
-        <Typography variant="h4" fontWeight={800} sx={{ color: '#FECACA' }}>
+      <Box sx={{ mb: 4, mt: 4, display: "flex", alignItems: "center", gap: 2 }}>
+        <HistoryIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />
+        <Typography variant="h4" fontWeight={800} sx={{
+          background: `linear-gradient(135deg, ${theme.palette.text.primary}, ${theme.palette.secondary.main})`,
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}>
           Prediction History
         </Typography>
       </Box>
@@ -93,7 +99,7 @@ export default function History() {
                           label={row.priority}
                           color={row.priority === "HIGH" ? "error" : "success"}
                           size="small"
-                          sx={{ fontWeight: "bold" }}
+                          sx={{ fontWeight: "bold", borderRadius: 1 }}
                         />
                       </TableCell>
                     </TableRow>

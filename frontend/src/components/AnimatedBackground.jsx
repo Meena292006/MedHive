@@ -1,7 +1,8 @@
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { motion } from "framer-motion";
 
 export default function AnimatedBackground() {
+  const theme = useTheme();
   return (
     <Box
       sx={{
@@ -18,9 +19,9 @@ export default function AnimatedBackground() {
           position: "absolute",
           inset: 0,
           background: `
-            radial-gradient(600px at 20% 20%, rgba(0,212,255,0.18), transparent 40%),
-            radial-gradient(500px at 80% 30%, rgba(59,130,246,0.15), transparent 45%),
-            radial-gradient(700px at 50% 80%, rgba(6,182,212,0.12), transparent 50%)
+            radial-gradient(600px at 20% 20%, ${theme.palette.secondary.light}, transparent 40%),
+            radial-gradient(500px at 80% 30%, ${theme.palette.primary.light}, transparent 45%),
+            radial-gradient(700px at 50% 80%, ${theme.palette.secondary.light}80, transparent 50%)
           `,
         }}
       />
@@ -36,7 +37,7 @@ export default function AnimatedBackground() {
           top: "10%",
           left: "5%",
           borderRadius: "50%",
-          background: "rgba(0,212,255,0.12)",
+          background: theme.palette.secondary.light,
           filter: "blur(120px)",
         }}
       />
@@ -52,7 +53,7 @@ export default function AnimatedBackground() {
           bottom: "10%",
           right: "10%",
           borderRadius: "50%",
-          background: "rgba(59,130,246,0.14)",
+          background: theme.palette.primary.light,
           filter: "blur(140px)",
         }}
       />

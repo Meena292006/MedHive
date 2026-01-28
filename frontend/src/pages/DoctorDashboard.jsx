@@ -121,8 +121,8 @@ export default function DoctorDashboard() {
   ];
 
   const pieData = [
-    { name: 'Normal', value: stats.normalCases, color: '#10b981' },
-    { name: 'High Risk', value: stats.highRiskCases, color: '#ef4444' }
+    { name: 'Normal', value: stats.normalCases, color: theme.palette.success.main },
+    { name: 'High Risk', value: stats.highRiskCases, color: theme.palette.error.main }
   ];
 
   const conditionData = [
@@ -147,15 +147,15 @@ export default function DoctorDashboard() {
         <motion.div {...fadeUp}>
           <Box sx={{ mb: 6, textAlign: 'center' }}>
             <Typography variant="h3" fontWeight={800} sx={{
-              color: '#00D4FF',
+              color: '#FFFFFF',
               mb: 2,
-              textShadow: '0 0 30px rgba(0, 212, 255, 0.4)',
+              textShadow: `0 0 30px ${theme.palette.secondary.main}66`,
               letterSpacing: '-0.02em'
             }}>
               MedHive Analytics Dashboard
             </Typography>
             <Typography variant="h6" sx={{
-              color: '#94A3B8',
+              color: '#FFFFFF',
               opacity: 0.9,
               mb: 4,
               fontWeight: 400,
@@ -168,12 +168,12 @@ export default function DoctorDashboard() {
                 label="🤖 AI-Powered Analytics"
                 size="small"
                 sx={{
-                  bgcolor: 'rgba(0, 212, 255, 0.12)',
-                  color: '#00D4FF',
-                  border: '1px solid rgba(0, 212, 255, 0.3)',
+                  bgcolor: `${theme.palette.secondary.main}20`,
+                  color: theme.palette.secondary.main,
+                  border: `1px solid ${theme.palette.secondary.main}50`,
                   fontWeight: 600,
                   backdropFilter: 'blur(12px)',
-                  boxShadow: '0 0 15px rgba(0, 212, 255, 0.2)',
+                  boxShadow: `0 0 15px ${theme.palette.secondary.main}30`,
                   fontSize: '0.8rem',
                   px: 2
                 }}
@@ -182,12 +182,12 @@ export default function DoctorDashboard() {
                 label="📈 Real-time Monitoring"
                 size="small"
                 sx={{
-                  bgcolor: 'rgba(59, 130, 246, 0.12)',
-                  color: '#3B82F6',
-                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                  bgcolor: `${theme.palette.primary.main}20`,
+                  color: theme.palette.primary.main,
+                  border: `1px solid ${theme.palette.primary.main}50`,
                   fontWeight: 600,
                   backdropFilter: 'blur(12px)',
-                  boxShadow: '0 0 15px rgba(59, 130, 246, 0.2)',
+                  boxShadow: `0 0 15px ${theme.palette.primary.main}30`,
                   fontSize: '0.8rem',
                   px: 2
                 }}
@@ -222,16 +222,16 @@ export default function DoctorDashboard() {
                     transform: 'translateY(-8px)',
                   }
                 }}>
-                  <PeopleIcon sx={{ fontSize: 56, color: '#00D4FF', mb: 3 }} />
-                  <Typography variant="h2" fontWeight={800} sx={{ color: '#E2E8F0', mb: 2, fontSize: '3rem' }}>
+                  <PeopleIcon sx={{ fontSize: 56, color: theme.palette.secondary.main, mb: 3 }} />
+                  <Typography variant="h2" fontWeight={800} sx={{ color: '#FFFFFF', mb: 2, fontSize: '3rem' }}>
                     {stats.totalPatients}
                   </Typography>
                   <Typography variant="h6" sx={{ color: '#94A3B8', mb: 3, fontWeight: 500 }}>
                     Total Patients Today
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                    <TrendingUpIcon sx={{ color: '#06B6D4', fontSize: 18 }} />
-                    <Typography variant="body2" sx={{ color: '#06B6D4', fontWeight: 600 }}>
+                    <TrendingUpIcon sx={{ color: theme.palette.secondary.main, fontSize: 18 }} />
+                    <Typography variant="body2" sx={{ color: theme.palette.secondary.main, fontWeight: 600 }}>
                       +12% from yesterday
                     </Typography>
                   </Box>
@@ -251,7 +251,7 @@ export default function DoctorDashboard() {
                   }
                 }}>
                   <WarningIcon sx={{ fontSize: 56, color: '#EF4444', mb: 3 }} />
-                  <Typography variant="h2" fontWeight={800} sx={{ color: '#E2E8F0', mb: 2, fontSize: '3rem' }}>
+                  <Typography variant="h2" fontWeight={800} sx={{ color: '#FFFFFF', mb: 2, fontSize: '3rem' }}>
                     {stats.highRiskCases}
                   </Typography>
                   <Typography variant="h6" sx={{ color: '#94A3B8', mb: 3, fontWeight: 500 }}>
@@ -278,7 +278,7 @@ export default function DoctorDashboard() {
                     transform: 'translateY(-8px)',
                   }
                 }}>
-                  <TodayIcon sx={{ fontSize: 56, color: '#3B82F6', mb: 3 }} />
+                  <TodayIcon sx={{ fontSize: 56, color: theme.palette.primary.main, mb: 3 }} />
                   <Typography variant="h2" fontWeight={800} sx={{ color: '#E2E8F0', mb: 2, fontSize: '3rem' }}>
                     24
                   </Typography>
@@ -306,7 +306,7 @@ export default function DoctorDashboard() {
                     transform: 'translateY(-8px)',
                   }
                 }}>
-                  <AssessmentIcon sx={{ fontSize: 56, color: '#06B6D4', mb: 3 }} />
+                  <AssessmentIcon sx={{ fontSize: 56, color: theme.palette.primary.main, mb: 3 }} />
                   <Typography variant="h2" fontWeight={800} sx={{ color: '#E2E8F0', mb: 2, fontSize: '3rem' }}>
                     94%
                   </Typography>
@@ -334,7 +334,7 @@ export default function DoctorDashboard() {
               mb: 6,
               borderRadius: 4
             }}>
-              <Typography variant="h5" fontWeight={700} sx={{ color: '#00D4FF', mb: 4, textAlign: 'center' }}>
+              <Typography variant="h5" fontWeight={700} sx={{ color: theme.palette.secondary.main, mb: 4, textAlign: 'center' }}>
                 Real-time Patient Monitoring
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -358,20 +358,20 @@ export default function DoctorDashboard() {
                       p: 3,
                       borderRadius: 3,
                       background: alert.severity === 'critical' ? 'rgba(239, 68, 68, 0.08)' :
-                                 alert.severity === 'moderate' ? 'rgba(59, 130, 246, 0.08)' :
-                                 'rgba(6, 182, 212, 0.08)',
+                        alert.severity === 'moderate' ? 'rgba(59, 130, 246, 0.08)' :
+                          'rgba(6, 182, 212, 0.08)',
                       border: `1px solid ${alert.severity === 'critical' ? 'rgba(239, 68, 68, 0.3)' :
-                                          alert.severity === 'moderate' ? 'rgba(59, 130, 246, 0.3)' :
-                                          'rgba(6, 182, 212, 0.3)'}`,
+                        alert.severity === 'moderate' ? 'rgba(59, 130, 246, 0.3)' :
+                          'rgba(6, 182, 212, 0.3)'}`,
                       boxShadow: alert.severity === 'critical' ? '0 4px 12px rgba(239, 68, 68, 0.15)' :
-                                 alert.severity === 'moderate' ? '0 4px 12px rgba(59, 130, 246, 0.15)' :
-                                 '0 4px 12px rgba(6, 182, 212, 0.15)',
+                        alert.severity === 'moderate' ? '0 4px 12px rgba(59, 130, 246, 0.15)' :
+                          '0 4px 12px rgba(6, 182, 212, 0.15)',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
                         transform: 'translateX(4px)',
                         boxShadow: alert.severity === 'critical' ? '0 8px 20px rgba(239, 68, 68, 0.25)' :
-                                   alert.severity === 'moderate' ? '0 8px 20px rgba(59, 130, 246, 0.25)' :
-                                   '0 8px 20px rgba(6, 182, 212, 0.25)',
+                          alert.severity === 'moderate' ? '0 8px 20px rgba(59, 130, 246, 0.25)' :
+                            '0 8px 20px rgba(6, 182, 212, 0.25)',
                       }
                     }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -380,10 +380,10 @@ export default function DoctorDashboard() {
                           height: 16,
                           borderRadius: '50%',
                           backgroundColor: alert.severity === 'critical' ? '#EF4444' :
-                                          alert.severity === 'moderate' ? '#3B82F6' : '#06B6D4',
+                            alert.severity === 'moderate' ? '#3B82F6' : '#06B6D4',
                           boxShadow: alert.severity === 'critical' ? '0 0 12px rgba(239, 68, 68, 0.6)' :
-                                    alert.severity === 'moderate' ? '0 0 12px rgba(59, 130, 246, 0.6)' :
-                                    '0 0 12px rgba(6, 182, 212, 0.6)',
+                            alert.severity === 'moderate' ? '0 0 12px rgba(59, 130, 246, 0.6)' :
+                              '0 0 12px rgba(6, 182, 212, 0.6)',
                           animation: alert.severity === 'critical' ? 'pulse 2s infinite' : 'none'
                         }} />
                         <Box>
@@ -404,15 +404,15 @@ export default function DoctorDashboard() {
                           size="small"
                           sx={{
                             bgcolor: alert.severity === 'critical' ? 'rgba(239, 68, 68, 0.15)' :
-                                    alert.severity === 'moderate' ? 'rgba(59, 130, 246, 0.15)' :
-                                    'rgba(6, 182, 212, 0.15)',
+                              alert.severity === 'moderate' ? 'rgba(59, 130, 246, 0.15)' :
+                                'rgba(6, 182, 212, 0.15)',
                             color: alert.severity === 'critical' ? '#EF4444' :
-                                   alert.severity === 'moderate' ? '#3B82F6' : '#06B6D4',
+                              alert.severity === 'moderate' ? '#3B82F6' : '#06B6D4',
                             fontWeight: 700,
                             fontSize: '0.75rem',
                             border: `1px solid ${alert.severity === 'critical' ? 'rgba(239, 68, 68, 0.4)' :
-                                              alert.severity === 'moderate' ? 'rgba(59, 130, 246, 0.4)' :
-                                              'rgba(6, 182, 212, 0.4)'}`,
+                              alert.severity === 'moderate' ? 'rgba(59, 130, 246, 0.4)' :
+                                'rgba(6, 182, 212, 0.4)'}`,
                             px: 2
                           }}
                         />
@@ -442,7 +442,7 @@ export default function DoctorDashboard() {
                   }
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                    <TimelineIcon sx={{ color: '#00D4FF', mr: 3, fontSize: 32 }} />
+                    <TimelineIcon sx={{ color: theme.palette.secondary.main, mr: 3, fontSize: 32 }} />
                     <Box>
                       <Typography variant="h5" fontWeight={700} sx={{ color: '#E2E8F0', mb: 0.5 }}>
                         Patient Intake Trends
@@ -456,12 +456,12 @@ export default function DoctorDashboard() {
                     <AreaChart data={weeklyData}>
                       <defs>
                         <linearGradient id="colorCases" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#00D4FF" stopOpacity={0.4}/>
-                          <stop offset="95%" stopColor="#00D4FF" stopOpacity={0.05}/>
+                          <stop offset="5%" stopColor="#00D4FF" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#00D4FF" stopOpacity={0.05} />
                         </linearGradient>
                         <linearGradient id="colorRisk" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.4}/>
-                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.05}/>
+                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.05} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 212, 255, 0.1)" />
@@ -479,7 +479,7 @@ export default function DoctorDashboard() {
                       <Area
                         type="monotone"
                         dataKey="cases"
-                        stroke="#00D4FF"
+                        stroke={theme.palette.secondary.main}
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorCases)"
@@ -487,7 +487,7 @@ export default function DoctorDashboard() {
                       <Area
                         type="monotone"
                         dataKey="highRisk"
-                        stroke="#3B82F6"
+                        stroke={theme.palette.primary.main}
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorRisk)"
@@ -496,11 +496,11 @@ export default function DoctorDashboard() {
                   </ResponsiveContainer>
                   <Box sx={{ display: 'flex', justifyContent: 'center', gap: 6, mt: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Box sx={{ width: 14, height: 14, borderRadius: '50%', bgcolor: '#00D4FF', boxShadow: '0 0 10px rgba(0, 212, 255, 0.5)' }} />
+                      <Box sx={{ width: 14, height: 14, borderRadius: '50%', bgcolor: theme.palette.secondary.main, boxShadow: `0 0 10px ${theme.palette.secondary.main}80` }} />
                       <Typography variant="body2" sx={{ color: '#94A3B8', fontWeight: 500 }}>Total Cases</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Box sx={{ width: 14, height: 14, borderRadius: '50%', bgcolor: '#3B82F6', boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)' }} />
+                      <Box sx={{ width: 14, height: 14, borderRadius: '50%', bgcolor: theme.palette.primary.main, boxShadow: `0 0 10px ${theme.palette.primary.main}80` }} />
                       <Typography variant="body2" sx={{ color: '#94A3B8', fontWeight: 500 }}>High Risk</Typography>
                     </Box>
                   </Box>
@@ -525,7 +525,7 @@ export default function DoctorDashboard() {
                   }
                 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                    <BarChartIcon sx={{ color: '#3B82F6', mr: 3, fontSize: 32 }} />
+                    <BarChartIcon sx={{ color: theme.palette.primary.main, mr: 3, fontSize: 32 }} />
                     <Box>
                       <Typography variant="h5" fontWeight={700} sx={{ color: '#E2E8F0', mb: 0.5 }}>
                         Condition Analysis
@@ -596,12 +596,12 @@ export default function DoctorDashboard() {
                     </Box>
                   </Box>
                   <Box sx={{ textAlign: 'center', mb: 4 }}>
-                    <Typography variant="h1" fontWeight={800} sx={{ color: '#00D4FF', mb: 2, fontSize: '4rem' }}>
+                    <Typography variant="h1" fontWeight={800} sx={{ color: theme.palette.secondary.main, mb: 2, fontSize: '4rem' }}>
                       4.8/5
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3, gap: 1 }}>
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <StarIcon key={star} sx={{ color: '#00D4FF', fontSize: 28 }} />
+                        <StarIcon key={star} sx={{ color: theme.palette.secondary.main, fontSize: 28 }} />
                       ))}
                     </Box>
                     <Typography variant="body1" sx={{ color: '#94A3B8', fontWeight: 500 }}>
@@ -651,7 +651,7 @@ export default function DoctorDashboard() {
                   <List sx={{ p: 0 }}>
                     <ListItem sx={{ px: 0, py: 2, borderRadius: 2, mb: 1, bgcolor: 'rgba(0, 212, 255, 0.04)', border: '1px solid rgba(0, 212, 255, 0.15)' }}>
                       <ListItemIcon>
-                        <Avatar sx={{ bgcolor: 'rgba(0, 212, 255, 0.2)', color: '#00D4FF', fontWeight: 700 }}>
+                        <Avatar sx={{ bgcolor: `${theme.palette.secondary.main}30`, color: theme.palette.secondary.main, fontWeight: 700 }}>
                           JD
                         </Avatar>
                       </ListItemIcon>
@@ -659,7 +659,7 @@ export default function DoctorDashboard() {
                         primary={<Typography sx={{ color: '#E2E8F0', fontWeight: 600 }}>Dr. John Doe</Typography>}
                         secondary={<Typography sx={{ color: '#94A3B8' }}>Referred 3 patients • +$2,400 revenue</Typography>}
                       />
-                      <Chip label="Active" size="small" sx={{ bgcolor: 'rgba(0, 212, 255, 0.15)', color: '#00D4FF', fontWeight: 600, border: '1px solid rgba(0, 212, 255, 0.3)' }} />
+                      <Chip label="Active" size="small" sx={{ bgcolor: `${theme.palette.secondary.main}20`, color: theme.palette.secondary.main, fontWeight: 600, border: `1px solid ${theme.palette.secondary.main}50` }} />
                     </ListItem>
                     <ListItem sx={{ px: 0, py: 2, borderRadius: 2, mb: 1, bgcolor: 'rgba(59, 130, 246, 0.04)', border: '1px solid rgba(59, 130, 246, 0.15)' }}>
                       <ListItemIcon>
@@ -686,8 +686,8 @@ export default function DoctorDashboard() {
                       <Chip label="Pending" size="small" sx={{ bgcolor: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B', fontWeight: 600, border: '1px solid rgba(245, 158, 11, 0.3)' }} />
                     </ListItem>
                   </List>
-                  <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: 'rgba(24, 60, 67, 0.08)', border: '1px solid rgba(0, 212, 255, 0.2)' }}>
-                    <Typography variant="body2" sx={{ color: '#00D4FF', fontWeight: 600, textAlign: 'center' }}>
+                  <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: `${theme.palette.secondary.main}10`, border: `1px solid ${theme.palette.secondary.main}30` }}>
+                    <Typography variant="body2" sx={{ color: theme.palette.secondary.main, fontWeight: 600, textAlign: 'center' }}>
                       6 total referrals this month • $4,800 additional revenue
                     </Typography>
                   </Box>
@@ -701,11 +701,11 @@ export default function DoctorDashboard() {
           <Box
             sx={{
               "& .MuiOutlinedInput-root.Mui-focused": {
-                borderColor: "#00D4FF",
-                boxShadow: "0 0 0 3px rgba(0,212,255,0.25)",
+                borderColor: theme.palette.secondary.main,
+                boxShadow: `0 0 0 3px ${theme.palette.secondary.main}40`,
               },
               "& .MuiInputLabel-root.Mui-focused": {
-                color: "#00D4FF",
+                color: theme.palette.secondary.main,
               },
             }}
           >

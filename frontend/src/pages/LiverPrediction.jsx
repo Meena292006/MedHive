@@ -7,11 +7,14 @@ import {
   Grid, Box, FormControl, InputLabel, Select, MenuItem, useTheme, Avatar, LinearProgress
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
+import { api } from "../api/api";
 import ScienceIcon from "@mui/icons-material/ScienceRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircleRounded";
 import WarningIcon from "@mui/icons-material/WarningRounded";
 
 export default function LiverPrediction() {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     age: "45",
     gender: "1",
@@ -53,6 +56,19 @@ export default function LiverPrediction() {
 
       const res = await mlApi.post("/predict/liver", payload);
       setResult(res.data);
+
+      // Save to Reports
+      try {
+        await api.post("/cases/save", {
+          patient: user?.displayName || user?.email?.split('@')[0] || "Patient",
+          type: "LIVER",
+          result: res.data.prediction,
+          probability: res.data.probability,
+          is_danger: res.data.is_danger
+        });
+      } catch (saveErr) {
+        console.error("Failed to save report:", saveErr);
+      }
     } catch (err) {
       alert("Prediction failed");
       console.error(err);
@@ -81,12 +97,12 @@ export default function LiverPrediction() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ mb: 4, mt: 4, display: "flex", alignItems: "center", gap: 4 }}>
           <motion.div
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Avatar sx={{ bgcolor: theme.palette.success.main, width: 56, height: 56, boxShadow: `0 10px 30px ${theme.palette.success.main}40` }}>
+            <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 56, height: 56, boxShadow: `0 10px 30px ${theme.palette.primary.main}40` }}>
               <ScienceIcon />
             </Avatar>
           </motion.div>
@@ -107,30 +123,25 @@ export default function LiverPrediction() {
             <CardContent sx={{ p: 4 }}>
               <Box
                 sx={{
-                  /* DEFAULT */
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(239, 68, 68, 0.4)",
-                  },
-
                   /* HOVER */
                   "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#F87171",
+                    borderColor: theme.palette.secondary.main,
                   },
 
                   /* FOCUS */
                   "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#EF4444",
+                    borderColor: theme.palette.primary.main,
                     borderWidth: 2,
                   },
 
                   /* FOCUS GLOW */
                   "& .MuiOutlinedInput-root.Mui-focused": {
-                    boxShadow: "0 0 0 3px rgba(239, 68, 68, 0.25)",
+                    boxShadow: `0 0 0 3px ${theme.palette.primary.main}40`,
                   },
 
                   /* LABEL */
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#EF4444",
+                    color: theme.palette.primary.main,
                   },
                 }}
               >
@@ -152,7 +163,7 @@ export default function LiverPrediction() {
                             </Select>
                           </FormControl>
                         ) : (
-                          <TextField fullWidth color="error" label={field.label} name={field.name} value={formData[field.name]} onChange={handleChange} />
+                          <TextField fullWidth color="primary" label={field.label} name={field.name} value={formData[field.name]} onChange={handleChange} />
                         )}
                       </motion.div>
                     </Grid>
@@ -171,12 +182,12 @@ export default function LiverPrediction() {
                         disabled={loading}
                         sx={{
                           py: 1.8,
-                          background: `linear-gradient(135deg, ${theme.palette.success.main}, ${theme.palette.success.dark})`,
+                          background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                           fontWeight: 700,
                           fontSize: "1.1rem",
-                          boxShadow: `0 10px 30px ${theme.palette.success.main}40`,
+                          boxShadow: `0 10px 30px ${theme.palette.primary.main}40`,
                           "&:hover": {
-                            boxShadow: `0 15px 40px ${theme.palette.success.main}60`,
+                            boxShadow: `0 15px 40px ${theme.palette.primary.main}60`,
                           },
                         }}
                       >
@@ -190,100 +201,120 @@ export default function LiverPrediction() {
           </AnimatedCard>
         </Grid>
 
-        <Grid item xs={12} md={4}>
-          <AnimatePresence mode="wait">
-            {loading && (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-              >
-                <Card sx={{ borderRadius: 4, overflow: "hidden" }}>
-                  <CardContent sx={{ p: 4, textAlign: "center" }}>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    >
-                      <ScienceIcon sx={{ fontSize: 60, color: theme.palette.success.main, mb: 2 }} />
-                    </motion.div>
-                    <LinearProgress sx={{ borderRadius: 2, height: 8, mt: 2 }} />
-                    <Typography sx={{ mt: 2, color: "text.secondary" }}>Analyzing...</Typography>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-
-            {result && !loading && (
-              <motion.div
-                key="result"
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5, type: "spring" }}
-              >
-                <AnimatedCard
-                  sx={{
-                    bgcolor: result.is_danger
-                      ? `linear-gradient(135deg, ${theme.palette.error.light}10, ${theme.palette.error.light}05)`
-                      : `linear-gradient(135deg, ${theme.palette.success.light}10, ${theme.palette.success.light}05)`,
-                    border: 2,
-                    borderColor: result.is_danger ? "error.main" : "success.main",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  <CardContent sx={{ textAlign: "center", p: 4 }}>
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                    >
-                      <Avatar
-                        sx={{
-                          width: 80,
-                          height: 80,
-                          mx: "auto",
-                          mb: 2,
-                          bgcolor: result.is_danger ? "error.main" : "success.main",
-                          boxShadow: `0 10px 30px ${result.is_danger ? theme.palette.error.main : theme.palette.success.main}40`,
-                        }}
-                      >
-                        {result.is_danger ? <WarningIcon sx={{ fontSize: 40 }} /> : <CheckCircleIcon sx={{ fontSize: 40 }} />}
-                      </Avatar>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                    >
-                      <Typography variant="h5" fontWeight={700}
-                        color={result.is_danger ? "error" : "success.main"} sx={{ mb: 2 }}>
-                        {result.prediction}
-                      </Typography>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.5, type: "spring" }}
-                    >
-                      <Typography variant="h2" fontWeight={800} sx={{ my: 2, color: result.is_danger ? "error.main" : "success.main" }}>
-                        {result.probability}%
-                      </Typography>
-                    </motion.div>
-
-                    <Typography color="text.secondary" fontWeight={600}>
-                      Confidence Score
-                    </Typography>
-                  </CardContent>
-                </AnimatedCard>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Grid>
       </Grid>
+
+      <AnimatePresence mode="wait">
+        {result && !loading && (
+          <Box sx={{
+            mt: 8,
+            mb: 6,
+            p: { xs: 4, md: 8 },
+            borderRadius: 8,
+            background: 'rgba(15, 23, 42, 0.4)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+          }}>
+            {/* Prediction Cards Grid - Full Width */}
+            <Grid container spacing={3} sx={{ mb: 6 }}>
+              {[
+                { label: "Detected Condition", value: result.prediction, color: theme.palette.primary.main },
+                { label: "Severity Level", value: result.is_danger ? 'High' : 'Low', color: result.is_danger ? theme.palette.secondary.main : theme.palette.primary.main },
+                { label: "Confidence Score", value: `${result.probability}%`, color: theme.palette.secondary.main },
+                { label: "AI Verification", value: "Verified", color: theme.palette.primary.main },
+                { label: "Recommended Action", value: result.is_danger ? 'Consult Doctor' : 'Monitor Health', color: theme.palette.secondary.main },
+                { label: "Next Steps", value: result.is_danger ? 'Schedule Tests' : 'Annual Checkup', color: theme.palette.primary.main },
+              ].map((card, idx) => (
+                <Grid item xs={12} sm={4} md={2} key={idx}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Card sx={{
+                      borderRadius: 0,
+                      background: `${card.color}DA`,
+                      backdropFilter: 'blur(20px)',
+                      border: `1px solid rgba(255,255,255,0.1)`,
+                      boxShadow: `0 8px 32px rgba(0,0,0,0.2)`,
+                      color: 'white',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      minHeight: 110
+                    }}>
+                      <CardContent sx={{ p: 2, textAlign: 'center' }}>
+                        <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 1, color: 'white', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                          {card.label}
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.9rem' }}>
+                          {card.value}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Main Result Card */}
+            <motion.div
+              key="result"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.5, type: "spring" }}
+            >
+              <AnimatedCard
+                sx={{
+                  borderRadius: 0,
+                  border: 2,
+                  borderColor: result.is_danger ? theme.palette.primary.main : theme.palette.success.main,
+                  background: theme.palette.secondary.main,
+                  backdropFilter: 'blur(20px)',
+                  position: "relative",
+                  overflow: "hidden",
+                  color: 'white'
+                }}
+              >
+                <CardContent sx={{ textAlign: "center", p: 6 }}>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                  >
+                    <Avatar
+                      sx={{
+                        width: 80,
+                        height: 80,
+                        mx: "auto",
+                        mb: 2,
+                        bgcolor: result.is_danger ? theme.palette.primary.main : theme.palette.success.main,
+                        boxShadow: `0 10px 30px rgba(0,0,0,0.2)`,
+                      }}
+                    >
+                      {result.is_danger ? <WarningIcon sx={{ fontSize: 40 }} /> : <CheckCircleIcon sx={{ fontSize: 40 }} />}
+                    </Avatar>
+                  </motion.div>
+
+                  <Typography variant="h4" fontWeight={800} sx={{ mb: 1, color: 'white' }}>
+                    {result.prediction}
+                  </Typography>
+
+                  <Typography variant="h2" fontWeight={800} sx={{ my: 2, color: 'white' }}>
+                    {result.probability}%
+                  </Typography>
+
+                  <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>
+                    Confidence Score
+                  </Typography>
+                </CardContent>
+              </AnimatedCard>
+            </motion.div>
+          </Box>
+        )}
+      </AnimatePresence>
     </DashboardLayout>
   );
 }

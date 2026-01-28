@@ -1,6 +1,6 @@
 import {
   Drawer, List, ListItem, ListItemButton,
-  ListItemIcon, ListItemText, Button, Box
+  ListItemIcon, ListItemText, Button, Box, useTheme
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PsychologyIcon from "@mui/icons-material/Psychology";
@@ -12,6 +12,7 @@ const DRAWER_WIDTH = 260;
 
 export default function PatientSidebar() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <Drawer
@@ -20,9 +21,9 @@ export default function PatientSidebar() {
         width: DRAWER_WIDTH,
         "& .MuiDrawer-paper": {
           width: DRAWER_WIDTH,
-          backgroundColor: "#7F1D1D", // Dark burgundy red
-          color: "#F87171", // Soft rose red
-          borderRight: "1px solid rgba(185, 28, 28, 0.3)",
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          borderRight: `1px solid ${theme.palette.divider}`,
         },
       }}
     >
@@ -46,8 +47,8 @@ export default function PatientSidebar() {
               },
             }}
           >
-            <ListItemIcon sx={{ color: '#F87171' }}><DashboardIcon /></ListItemIcon>
-            <ListItemText primary="My Dashboard" sx={{ '& .MuiTypography-root': { color: '#F87171' } }} />
+            <ListItemIcon sx={{ color: 'primary.main' }}><DashboardIcon /></ListItemIcon>
+            <ListItemText primary="My Dashboard" sx={{ '& .MuiTypography-root': { color: 'text.primary', fontWeight: 600 } }} />
           </ListItemButton>
         </ListItem>
 
@@ -70,8 +71,8 @@ export default function PatientSidebar() {
               },
             }}
           >
-            <ListItemIcon sx={{ color: '#F87171' }}><PsychologyIcon /></ListItemIcon>
-            <ListItemText primary="AI Diagnosis" sx={{ '& .MuiTypography-root': { color: '#F87171' } }} />
+            <ListItemIcon sx={{ color: 'primary.main' }}><PsychologyIcon /></ListItemIcon>
+            <ListItemText primary="AI Diagnosis" sx={{ '& .MuiTypography-root': { color: 'text.primary', fontWeight: 600 } }} />
           </ListItemButton>
         </ListItem>
       </List>
@@ -81,7 +82,7 @@ export default function PatientSidebar() {
           fullWidth
           startIcon={<LogoutIcon />}
           onClick={logout}
-          sx={{ color: "#ef4444" }}
+          sx={{ color: "error.main", fontWeight: 700 }}
         >
           Logout
         </Button>

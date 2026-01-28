@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { api } from "../api/api";
+import { useAuth } from "../context/AuthContext";
 import DashboardLayout from "../components/DashboardLayout";
 import SymptomSelect from "../components/SymptomSelect";
 import AnimatedCard from "../components/AnimatedCard";
@@ -15,7 +16,6 @@ import MedicalServicesIcon from "@mui/icons-material/MedicalServicesRounded";
 import CoronavirusIcon from "@mui/icons-material/CoronavirusRounded";
 import TrendingUpIcon from "@mui/icons-material/TrendingUpRounded";
 import AssessmentIcon from "@mui/icons-material/AssessmentRounded";
-import HistoryIcon from "@mui/icons-material/HistoryRounded";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import ThermometerIcon from "@mui/icons-material/LocalHospital";
@@ -28,23 +28,25 @@ import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
 export default function PatientDashboard() {
-  const [name, setName] = useState("");
+  const { user } = useAuth();
+  const [name, setName] = useState(user?.displayName || user?.email?.split('@')[0] || "");
   const [phone, setPhone] = useState("");
   const [symptoms, setSymptoms] = useState([]);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [myHistory, setMyHistory] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const theme = useTheme();
 
   const steps = ['Personal Info', 'Select Symptoms', 'AI Diagnosis'];
 
   useEffect(() => {
-    // Fetch patient's own history
-    api.get("/cases").then(res => {
-      setMyHistory(res.data);
-    });
   }, []);
+
+  useEffect(() => {
+    if (user && !name) {
+      setName(user.displayName || user.email?.split('@')[0] || "");
+    }
+  }, [user]);
 
   const submit = async () => {
     if (symptoms.length === 0) return;
@@ -57,8 +59,6 @@ export default function PatientDashboard() {
         symptoms
       });
       setResult(res.data);
-      // Refresh history after submission
-      api.get("/cases").then(h => setMyHistory(h.data));
     } catch (err) {
       console.error(err);
     } finally {
@@ -85,7 +85,7 @@ export default function PatientDashboard() {
         pointerEvents: 'none',
         zIndex: 0,
         overflow: 'hidden',
-        background: 'linear-gradient(135deg, #7F1D1D 0%, #B91C1C 100%)', // Deep wine red gradient
+        background: theme.gradients.main,
       }}>
         {/* Floating Heart */}
         <motion.div
@@ -103,10 +103,10 @@ export default function PatientDashboard() {
             position: 'absolute',
             top: '20%',
             right: '10%',
-            opacity: 0.1
+            opacity: 0.15
           }}
         >
-          <FavoriteIcon sx={{ fontSize: 120, color: '#EF4444' }} />
+          <FavoriteIcon sx={{ fontSize: 120, color: theme.palette.error.main }} />
         </motion.div>
 
         {/* Pulsing Lungs */}
@@ -126,7 +126,7 @@ export default function PatientDashboard() {
             left: '15%'
           }}
         >
-          <MonitorHeartIcon sx={{ fontSize: 100, color: '#F87171' }} />
+          <MonitorHeartIcon sx={{ fontSize: 100, color: theme.palette.primary.main }} />
         </motion.div>
 
         {/* Breathing Thermometer */}
@@ -144,10 +144,10 @@ export default function PatientDashboard() {
             position: 'absolute',
             top: '40%',
             left: '5%',
-            opacity: 0.08
+            opacity: 0.1
           }}
         >
-          <ThermometerIcon sx={{ fontSize: 80, color: '#DC2626' }} />
+          <ThermometerIcon sx={{ fontSize: 80, color: theme.palette.primary.main }} />
         </motion.div>
 
         {/* Healing Cross */}
@@ -165,10 +165,10 @@ export default function PatientDashboard() {
             position: 'absolute',
             bottom: '20%',
             right: '20%',
-            opacity: 0.06
+            opacity: 0.12
           }}
         >
-          <HealingIcon sx={{ fontSize: 90, color: '#B91C1C' }} />
+          <HealingIcon sx={{ fontSize: 90, color: theme.palette.secondary.main }} />
         </motion.div>
       </Box>
 
@@ -178,14 +178,14 @@ export default function PatientDashboard() {
         transition={{ duration: 0.5 }}
         style={{ position: 'relative', zIndex: 1 }}
       >
-        <Box sx={{ mb: 5, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+        <Box sx={{ mb: 5, mt: 4, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
           <Box>
             <Typography variant="caption" sx={{
-              color: '#F87171',
+              color: theme.palette.primary.main,
               textTransform: "uppercase",
               letterSpacing: 1.5,
               fontWeight: 700,
-              background: 'linear-gradient(135deg, #B91C1C, #F87171)',
+              background: theme.gradients.linear,
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
@@ -194,13 +194,10 @@ export default function PatientDashboard() {
             </Typography>
             <Typography variant="h4" sx={{
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #B91C1C, #F87171)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: '#FFFFFF',
               mt: 0.5
             }}>
-              MedHive Symptom Checker
+              MedHive Health Assistant
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
@@ -208,9 +205,9 @@ export default function PatientDashboard() {
               label="AI-Powered"
               size="small"
               sx={{
-                bgcolor: 'rgba(185, 28, 28, 0.2)',
-                color: '#B91C1C',
-                border: '1px solid rgba(185, 28, 28, 0.3)',
+                bgcolor: theme.palette.primary.light,
+                color: theme.palette.primary.main,
+                border: `1px solid ${theme.palette.divider}`,
                 fontWeight: 600
               }}
             />
@@ -218,15 +215,16 @@ export default function PatientDashboard() {
               label="HIPAA Compliant"
               size="small"
               sx={{
-                bgcolor: 'rgba(239, 68, 68, 0.2)',
-                color: '#EF4444',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
+                bgcolor: `rgba(59, 130, 246, 0.1)`,
+                color: theme.palette.primary.main,
+                border: `1px solid rgba(59, 130, 246, 0.2)`,
                 fontWeight: 600
               }}
             />
           </Box>
         </Box>
       </motion.div>
+
 
       {/* Analytics Stats */}
       {result && (
@@ -243,6 +241,7 @@ export default function PatientDashboard() {
                 icon={<AssessmentIcon />}
                 color={theme.palette.primary.main}
                 delay={0.1}
+                sx={{ minHeight: 140, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -277,8 +276,8 @@ export default function PatientDashboard() {
         </motion.div>
       )}
 
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={5}>
+      <Grid container spacing={4} justifyContent="center">
+        <Grid item xs={12} md={result ? 5 : 7}>
           <AnimatedCard delay={0.2}>
             <CardContent sx={{ p: 4 }}>
               <Stack spacing={3}>
@@ -296,24 +295,24 @@ export default function PatientDashboard() {
                   onChange={e => setName(e.target.value)}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      backgroundColor: 'rgba(185, 28, 28, 0.05)',
+                      backgroundColor: 'rgba(42, 144, 184, 0.05)',
                       '& fieldset': {
-                        borderColor: 'rgba(185, 28, 28, 0.3)',
+                        borderColor: 'rgba(42, 144, 184, 0.3)',
                       },
                       '&:hover fieldset': {
-                        borderColor: '#B91C1C',
+                        borderColor: theme.palette.primary.main,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#B91C1C',
+                        borderColor: theme.palette.primary.main,
                       },
                       '& input': {
-                        color: '#B91C1C',
+                        color: theme.palette.text.primary,
                       },
                     },
                     '& .MuiInputLabel-root': {
-                      color: '#EF4444',
+                      color: theme.palette.text.secondary,
                       '&.Mui-focused': {
-                        color: '#B91C1C',
+                        color: theme.palette.primary.main,
                       },
                     },
                   }}
@@ -327,28 +326,28 @@ export default function PatientDashboard() {
                   placeholder="e.g. +1 234 567 890"
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      backgroundColor: 'rgba(185, 28, 28, 0.05)',
+                      backgroundColor: 'rgba(42, 144, 184, 0.05)',
                       '& fieldset': {
-                        borderColor: 'rgba(185, 28, 28, 0.3)',
+                        borderColor: 'rgba(42, 144, 184, 0.3)',
                       },
                       '&:hover fieldset': {
-                        borderColor: '#B91C1C',
+                        borderColor: theme.palette.primary.main,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#B91C1C',
+                        borderColor: theme.palette.primary.main,
                       },
                       '& input': {
-                        color: '#B91C1C',
+                        color: theme.palette.text.primary,
                       },
                       '& input::placeholder': {
-                        color: '#F87171',
+                        color: '#4A5568',
                         opacity: 0.7,
                       },
                     },
                     '& .MuiInputLabel-root': {
-                      color: '#EF4444',
+                      color: theme.palette.text.secondary,
                       '&.Mui-focused': {
-                        color: '#B91C1C',
+                        color: theme.palette.primary.main,
                       },
                     },
                   }}
@@ -369,10 +368,10 @@ export default function PatientDashboard() {
                     py: 2,
                     fontWeight: 800,
                     borderRadius: 3,
-                    background: 'linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)',
+                    background: theme.gradients.linear,
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)',
-                      boxShadow: '0 8px 32px rgba(185, 28, 28, 0.4)',
+                      background: theme.gradients.linear,
+                      boxShadow: `0 8px 32px ${theme.palette.primary.light}`,
                       transform: 'translateY(-2px)',
                     },
                   }}
@@ -383,37 +382,6 @@ export default function PatientDashboard() {
             </CardContent>
           </AnimatedCard>
 
-          <Box sx={{ mt: 4 }}>
-            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="h6" fontWeight={800}>Recent Activity</Typography>
-              <HistoryIcon color="action" />
-            </Box>
-            <Stack spacing={2}>
-              {myHistory.slice(0, 5).map((h, i) => {
-                let s = [];
-                try { s = JSON.parse(h.symptoms); } catch (e) { }
-                return (
-                  <AnimatedCard key={h.id} delay={i * 0.1}>
-                    <CardContent sx={{ py: 2, px: 3 }}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                        <Box>
-                          <Typography variant="body2" fontWeight={800} color="primary">{h.patient_name || "Anonymous"}</Typography>
-                          <Typography variant="caption" sx={{ display: 'block', opacity: 0.7 }}>{h.phone || "No Number"}</Typography>
-                        </Box>
-                        <Chip label={h.priority} color={h.priority === 'HIGH' ? 'error' : 'success'} size="small" sx={{ fontWeight: 800, height: 20, fontSize: '0.65rem' }} />
-                      </Stack>
-                      <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic', display: 'block', mb: 0.5 }}>
-                        Symptoms: {s.join(", ") || "None"}
-                      </Typography>
-                      <Typography variant="caption" sx={{ opacity: 0.5 }}>
-                        {new Date(h.created_at).toLocaleDateString()} • Case #{h.id}
-                      </Typography>
-                    </CardContent>
-                  </AnimatedCard>
-                );
-              })}
-            </Stack>
-          </Box>
         </Grid>
 
         <Grid item xs={12} md={7}>
@@ -431,18 +399,18 @@ export default function PatientDashboard() {
                       animate={{ y: [0, -10, 0] }}
                       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <HomeIcon sx={{ fontSize: 80, color: '#B91C1C', mb: 3, opacity: 0.7 }} />
+                      <HomeIcon sx={{ fontSize: 80, color: '#2A90B8', mb: 3, opacity: 0.7 }} />
                     </motion.div>
                     <Typography variant="h5" sx={{
-                      color: '#B91C1C',
-                      fontWeight: 700,
+                      color: '#FFFFFF',
+                      fontWeight: 800,
                       mb: 2
                     }}>
                       Welcome to MedHive AI
                     </Typography>
                     <Typography variant="body1" sx={{
-                      color: '#EF4444',
-                      opacity: 0.8,
+                      color: '#FFFFFF',
+                      opacity: 0.9,
                       mb: 4,
                       maxWidth: 400,
                       mx: 'auto'
@@ -453,16 +421,16 @@ export default function PatientDashboard() {
                       <Chip
                         label="🔒 HIPAA Compliant"
                         sx={{
-                          bgcolor: 'rgba(185, 28, 28, 0.1)',
-                          color: '#B91C1C',
+                          bgcolor: `rgba(59, 130, 246, 0.1)`,
+                          color: theme.palette.primary.main,
                           fontWeight: 600
                         }}
                       />
                       <Chip
                         label="🤖 AI-Powered"
                         sx={{
-                          bgcolor: 'rgba(239, 68, 68, 0.1)',
-                          color: '#EF4444',
+                          bgcolor: 'rgba(42, 144, 184, 0.1)',
+                          color: '#2A90B8',
                           fontWeight: 600
                         }}
                       />
@@ -485,18 +453,18 @@ export default function PatientDashboard() {
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <LocalHospitalIcon sx={{ fontSize: 80, color: '#B91C1C', mb: 3 }} />
+                      <LocalHospitalIcon sx={{ fontSize: 80, color: '#2A90B8', mb: 3 }} />
                     </motion.div>
                     <Typography variant="h5" sx={{
-                      color: '#B91C1C',
-                      fontWeight: 700,
+                      color: '#FFFFFF',
+                      fontWeight: 800,
                       mb: 2
                     }}>
                       Analyzing Your Symptoms
                     </Typography>
                     <Typography variant="body1" sx={{
-                      color: '#EF4444',
-                      opacity: 0.8,
+                      color: '#FFFFFF',
+                      opacity: 0.9,
                       mb: 4
                     }}>
                       MedHive AI is processing your information with advanced machine learning algorithms...
@@ -506,22 +474,22 @@ export default function PatientDashboard() {
                         sx={{
                           height: 8,
                           borderRadius: 4,
-                          bgcolor: '#991B1B',
+                          bgcolor: theme.palette.primary.main,
                           '& .MuiLinearProgress-bar': {
-                            bgcolor: 'linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)',
+                            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                             borderRadius: 4,
                           },
                         }}
                       />
                     </Box>
                     <Stack spacing={1}>
-                      <Typography variant="body2" sx={{ color: '#EF4444', opacity: 0.7 }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.primary.main, opacity: 0.7 }}>
                         ✓ Validating symptoms
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#EF4444', opacity: 0.7 }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.primary.main, opacity: 0.7 }}>
                         ⏳ Analyzing patterns
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#EF4444', opacity: 0.5 }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.primary.main, opacity: 0.5 }}>
                         ○ Generating insights
                       </Typography>
                     </Stack>
@@ -540,9 +508,9 @@ export default function PatientDashboard() {
                 <AnimatedCard>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                      <CheckCircleIcon sx={{ color: '#B91C1C', mr: 2, fontSize: 32 }} />
+                      <CheckCircleIcon sx={{ color: '#2A90B8', mr: 2, fontSize: 32 }} />
                       <Typography variant="h5" sx={{
-                        color: '#B91C1C',
+                        color: '#FFFFFF',
                         fontWeight: 800
                       }}>
                         AI Diagnostic Results
@@ -550,7 +518,7 @@ export default function PatientDashboard() {
                     </Box>
 
                     <Typography variant="body1" sx={{
-                      color: '#EF4444',
+                      color: theme.palette.primary.main,
                       opacity: 0.8,
                       mb: 4
                     }}>
@@ -569,16 +537,14 @@ export default function PatientDashboard() {
                             p: 3,
                             borderRadius: 4,
                             background: i === 0
-                              ? 'linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)'
-                              : 'rgba(185, 28, 28, 0.05)',
-                            border: i === 0
-                              ? '2px solid #B91C1C'
-                              : '1px solid rgba(185, 28, 28, 0.2)',
-                            color: i === 0 ? 'white' : '#B91C1C',
+                              ? theme.gradients.linear
+                              : 'rgba(255, 255, 255, 0.05)',
+                            border: `1px solid ${theme.palette.primary.main}40`,
+                            color: '#FFFFFF',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            boxShadow: i === 0 ? '0 8px 32px rgba(185, 28, 28, 0.3)' : 'none',
+                            boxShadow: i === 0 ? `0 8px 32px ${theme.palette.primary.light}` : 'none',
                             position: 'relative',
                             overflow: 'hidden'
                           }}>
@@ -589,7 +555,7 @@ export default function PatientDashboard() {
                                 right: 0,
                                 width: 100,
                                 height: 100,
-                                background: `radial-gradient(circle, rgba(156, 50, 50, 0.1) 0%, transparent 70%)`,
+                                background: `radial-gradient(circle, ${theme.palette.secondary.main}20 0%, transparent 70%)`,
                                 borderRadius: '50%',
                                 transform: 'translate(30px, -30px)'
                               }} />
@@ -608,7 +574,7 @@ export default function PatientDashboard() {
                                     label="Most Likely"
                                     size="small"
                                     sx={{
-                                      bgcolor: 'rgba(192, 27, 27, 0.2)',
+                                      bgcolor: 'rgba(255, 255, 255, 0.2)',
                                       color: 'white',
                                       fontWeight: 600,
                                       fontSize: '0.7rem'
@@ -617,8 +583,9 @@ export default function PatientDashboard() {
                                 )}
                               </Box>
                               <Typography variant="caption" sx={{
-                                opacity: i === 0 ? 0.9 : 0.7,
-                                fontSize: '0.8rem'
+                                opacity: 0.9,
+                                fontSize: '0.8rem',
+                                color: '#FFFFFF'
                               }}>
                                 AI Confidence Score
                               </Typography>
@@ -628,13 +595,15 @@ export default function PatientDashboard() {
                               <Typography variant="h3" sx={{
                                 fontWeight: 900,
                                 fontSize: '2.5rem',
-                                lineHeight: 1
+                                lineHeight: 1,
+                                color: i === 0 ? 'white' : theme.palette.primary.main
                               }}>
                                 {p.probability}%
                               </Typography>
                               <Typography variant="caption" sx={{
-                                opacity: i === 0 ? 0.9 : 0.7,
-                                fontSize: '0.7rem'
+                                opacity: 0.9,
+                                fontSize: '0.7rem',
+                                color: '#FFFFFF'
                               }}>
                                 Probability
                               </Typography>
@@ -644,14 +613,14 @@ export default function PatientDashboard() {
                       ))}
                     </Stack>
 
-                    <Box sx={{ mt: 4, p: 3, borderRadius: 3, bgcolor: 'rgba(185, 28, 28, 0.05)', border: '1px solid rgba(185, 28, 28, 0.2)' }}>
+                    <Box sx={{ mt: 4, p: 3, borderRadius: 3, bgcolor: `rgba(59, 130, 246, 0.05)`, border: `1px solid rgba(59, 130, 246, 0.2)` }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <WarningIcon sx={{ color: '#EF4444', mr: 1, fontSize: 20 }} />
-                        <Typography variant="subtitle2" sx={{ color: '#B91C1C', fontWeight: 600 }}>
+                        <WarningIcon sx={{ color: theme.palette.primary.main, mr: 1, fontSize: 20 }} />
+                        <Typography variant="subtitle2" sx={{ color: theme.palette.primary.main, fontWeight: 600 }}>
                           Important Medical Disclaimer
                         </Typography>
                       </Box>
-                      <Typography variant="body2" sx={{ color: '#EF4444', opacity: 0.8, fontSize: '0.8rem' }}>
+                      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', opacity: 0.9, fontSize: '0.8rem' }}>
                         This AI analysis is for informational purposes only and should not replace professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare providers for medical concerns.
                       </Typography>
                     </Box>
@@ -665,11 +634,11 @@ export default function PatientDashboard() {
                         }}
                         sx={{
                           flex: 1,
-                          borderColor: '#EF4444',
-                          color: '#EF4444',
+                          borderColor: theme.palette.primary.main,
+                          color: theme.palette.primary.main,
                           '&:hover': {
-                            borderColor: '#B91C1C',
-                            color: '#B91C1C',
+                            borderColor: theme.palette.primary.dark,
+                            color: theme.palette.primary.dark,
                           },
                         }}
                       >
@@ -679,9 +648,9 @@ export default function PatientDashboard() {
                         variant="contained"
                         sx={{
                           flex: 1,
-                          background: 'linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)',
+                          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                           '&:hover': {
-                            background: 'linear-gradient(135deg, #B91C1C 0%, #EF4444 100%)',
+                            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                             transform: 'translateY(-1px)',
                           },
                         }}

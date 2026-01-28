@@ -24,13 +24,13 @@ export default function DoctorSidebar() {
   const { user } = useAuth();
 
   const menuItems = [
-    { icon: DashboardIcon, label: "Dashboard", path: "/doctor", color: "#0EA5E9" },
-    { icon: PeopleIcon, label: "Patient List", path: "/doctor/patients", color: "#14B8A6" },
-    { icon: WarningIcon, label: "Symptom Alerts", path: "/doctor/alerts", color: "#EF4444", badge: 3 },
-    { icon: AnalyticsIcon, label: "Reports", path: "/doctor/reports", color: "#F59E0B" },
-    { icon: EventNoteIcon, label: "Appointments", path: "/doctor/appointments", color: "#10B981" },
-    { icon: MessageIcon, label: "Messages", path: "/doctor/messages", color: "#6366F1", badge: 2 },
-    { icon: PersonIcon, label: "Profile", path: "/doctor/profile", color: "#8B5CF6" }
+    { icon: DashboardIcon, label: "Dashboard", path: "/doctor", color: theme.palette.primary.main },
+    { icon: PeopleIcon, label: "Patient List", path: "/doctor/patients", color: theme.palette.secondary.main },
+    { icon: WarningIcon, label: "Symptom Alerts", path: "/doctor/alerts", color: theme.palette.error.main, badge: 3 },
+    { icon: AnalyticsIcon, label: "Reports", path: "/doctor/reports", color: theme.palette.warning.main },
+    { icon: EventNoteIcon, label: "Appointments", path: "/doctor/appointments", color: theme.palette.success.main },
+    { icon: MessageIcon, label: "Messages", path: "/doctor/messages", color: theme.palette.info.main, badge: 2 },
+    { icon: PersonIcon, label: "Profile", path: "/doctor/profile", color: theme.palette.primary.light }
   ];
 
   return (
@@ -135,7 +135,7 @@ export default function DoctorSidebar() {
                   {item.badge ? (
                     <Badge badgeContent={item.badge} color="error" sx={{
                       '& .MuiBadge-badge': {
-                        background: '#EF4444',
+                        background: theme.palette.error.main,
                         color: 'white',
                         fontSize: '0.7rem',
                         minWidth: 16,
@@ -175,7 +175,7 @@ export default function DoctorSidebar() {
             py: 1.5,
             fontWeight: 500,
             backdropFilter: "blur(10px)",
-            background: "rgba(239, 68, 68, 0.05)",
+            background: theme.palette.error.light,
             '&:hover': {
               bgcolor: 'rgba(239, 68, 68, 0.1)',
               borderColor: "#FCA5A5",

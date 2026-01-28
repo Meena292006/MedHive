@@ -2,7 +2,10 @@ import { Card, CardContent, Typography, Box, Chip, Divider, Avatar, Stack, Butto
 import PersonIcon from "@mui/icons-material/PersonRounded";
 import { motion } from "framer-motion";
 
+import { useTheme } from "@mui/material";
+
 export default function PatientCard({ patientCase, onViewReport }) {
+    const theme = useTheme();
     const getPriorityColor = (p) => (p === "HIGH" ? "error" : "success");
 
     return (
@@ -14,12 +17,11 @@ export default function PatientCard({ patientCase, onViewReport }) {
             <Card
                 sx={{
                     borderRadius: 4,
-                    borderLeft: `6px solid ${patientCase.priority === "HIGH" ? "#ef4444" : "#10b981"
-                        }`,
-                    border: `1px solid rgba(0,0,0,0.08)`,
+                    borderLeft: `6px solid ${patientCase.priority === "HIGH" ? theme.palette.error.main : theme.palette.success.main}`,
+                    border: `1px solid ${theme.palette.divider}`,
                     transition: "all .25s",
                     "&:hover": {
-                        boxShadow: "0 18px 45px rgba(0,0,0,0.1)",
+                        boxShadow: `0 18px 45px ${theme.palette.shadow}`,
                     },
                     height: "100%",
                     display: "flex",
@@ -31,9 +33,9 @@ export default function PatientCard({ patientCase, onViewReport }) {
                         <Stack direction="row" spacing={2} alignItems="center">
                             <Avatar
                                 sx={{
-                                    bgcolor: "rgba(0,0,0,0.04)",
+                                    bgcolor: theme.palette.primary.light,
                                     color: "primary.main",
-                                    boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
+                                    boxShadow: `0 8px 20px ${theme.palette.shadow}`,
                                 }}
                             >
                                 <PersonIcon />
@@ -53,7 +55,7 @@ export default function PatientCard({ patientCase, onViewReport }) {
                             label={patientCase.priority}
                             color={getPriorityColor(patientCase.priority)}
                             size="small"
-                            sx={{ fontWeight: 800, height: 24 }}
+                            sx={{ fontWeight: 800, height: 24, borderRadius: 1 }}
                         />
                     </Stack>
 
@@ -69,7 +71,7 @@ export default function PatientCard({ patientCase, onViewReport }) {
                                 key={i}
                                 label={s}
                                 size="small"
-                                sx={{ bgcolor: "rgba(0,0,0,0.03)", fontWeight: 500, fontSize: "0.65rem" }}
+                                sx={{ bgcolor: theme.palette.primary.light, fontWeight: 500, fontSize: "0.65rem", borderRadius: 1 }}
                             />
                         ))}
                         {JSON.parse(patientCase.symptoms || "[]").length > 3 && (
@@ -82,8 +84,8 @@ export default function PatientCard({ patientCase, onViewReport }) {
                             mt: 2,
                             p: 1.5,
                             borderRadius: 3,
-                            bgcolor: "rgba(0,0,0,0.02)",
-                            border: `1px dashed rgba(0,0,0,0.1)`
+                            bgcolor: theme.palette.background.default,
+                            border: `1px dashed ${theme.palette.divider}`
                         }}
                     >
                         <Typography variant="caption" fontWeight={700} color="text.secondary">
