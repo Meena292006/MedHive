@@ -5,18 +5,20 @@ exports.verifyToken = async (req, res, next) => {
     // Development mode bypass if Firebase Admin is not initialized
     if (!admin.apps.length) {
         const devUid = req.headers["x-user-uid"];
-        if (devUid) {
-            const user = User.findByUid(devUid);
-            if (user) {
-                req.user = { ...user, uid: devUid, dbUser: user };
-                return next();
-            }
+        if (!devUid) {
+            return res.status(401).json({
+                message: "DEV MODE: Missing x-user-uid header. Refusing to guess a user."
+            });
         }
 
-        console.warn("DEV MODE: No x-user-uid header or user not found. Assigning last user.");
-        const allUsers = User.getAllUsers();
-        const mockUser = allUsers.length > 0 ? allUsers[allUsers.length - 1] : { id: 1, uid: "mock_uid", email: "mock@medhive.com", role: "doctor" };
-        req.user = { ...mockUser, dbUser: mockUser };
+        const user = User.findByUid(devUid);
+        if (!user) {
+            return res.status(401).json({
+                message: "DEV MODE: User not found for provided x-user-uid."
+            });
+        }
+
+        req.user = { ...user, uid: devUid, dbUser: user };
         return next();
     }
 
@@ -33,11 +35,13 @@ exports.verifyToken = async (req, res, next) => {
 
         // Attach database user record
         const user = User.findByUid(decodedToken.uid);
-        if (user) {
-            req.user.id = user.id;
-            req.user.role = user.role;
-            req.user.dbUser = user;
+        if (!user) {
+            return res.status(401).json({ message: "User not found in database" });
         }
+
+        req.user.id = user.id;
+        req.user.role = user.role;
+        req.user.dbUser = user;
 
         next();
     } catch (error) {

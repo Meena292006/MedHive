@@ -14,7 +14,7 @@ export default function History() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/cases")
+    api.get("/patient/my-reports")
       .then(res => {
         if (Array.isArray(res.data)) setHistory(res.data);
       })

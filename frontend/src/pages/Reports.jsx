@@ -3,7 +3,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import {
   Box, Typography, Button, Card, CardContent, Grid,
   Stack, Avatar, useTheme, Chip, CircularProgress,
-  IconButton, Tooltip
+  IconButton, Tooltip, Dialog, DialogTitle, DialogContent, Divider
 } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/DescriptionRounded";
 import DownloadIcon from "@mui/icons-material/DownloadRounded";
@@ -21,11 +21,13 @@ export default function Reports() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [isViewOpen, setIsViewOpen] = useState(false);
   const theme = useTheme();
 
   const fetchReports = () => {
     setLoading(true);
-    api.get("/cases")
+    api.get("/patient/my-reports")
       .then(res => {
         console.log("Reports data fetched:", res.data);
         if (Array.isArray(res.data)) setReports(res.data);
@@ -50,6 +52,16 @@ export default function Reports() {
       case "ECG": return <FavoriteIcon />;
       default: return <DescriptionIcon />;
     }
+  };
+
+  const openView = (report) => {
+    setSelectedReport(report);
+    setIsViewOpen(true);
+  };
+
+  const closeView = () => {
+    setIsViewOpen(false);
+    setSelectedReport(null);
   };
 
   const downloadReport = (report) => {
@@ -264,6 +276,10 @@ export default function Reports() {
                           <HistoryIcon sx={{ fontSize: 16 }} /> {new Date(report.created_at).toLocaleString()}
                         </Typography>
 
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                          Patient: <strong>{report.patient_name || "N/A"}</strong>
+                        </Typography>
+
                         <Box sx={{ p: 1.5, bgcolor: theme.palette.background.default, borderRadius: 2, mb: 2, border: `1px solid ${theme.palette.divider}` }}>
                           <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
                             Analysis Result
@@ -282,6 +298,7 @@ export default function Reports() {
                             variant="outlined"
                             startIcon={<VisibilityIcon />}
                             sx={{ borderRadius: 2, fontWeight: 700 }}
+                            onClick={() => openView(report)}
                           >
                             View
                           </Button>
@@ -308,6 +325,93 @@ export default function Reports() {
           </AnimatePresence>
         </Grid>
       )}
+
+      <Dialog
+        open={isViewOpen}
+        onClose={closeView}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 900 }}>
+          Report Details
+        </DialogTitle>
+        <DialogContent dividers>
+          {selectedReport ? (() => {
+            let preds = [];
+            let symptoms = [];
+            try {
+              preds = typeof selectedReport.predictions === "string"
+                ? JSON.parse(selectedReport.predictions)
+                : selectedReport.predictions || [];
+            } catch (e) { /* ignore */ }
+            try {
+              symptoms = typeof selectedReport.symptoms === "string"
+                ? JSON.parse(selectedReport.symptoms)
+                : selectedReport.symptoms || [];
+            } catch (e) { /* ignore */ }
+
+            const top = Array.isArray(preds) && preds[0]
+              ? (preds[0].label || preds[0].disease || "Completed")
+              : "Review Analysis";
+
+            return (
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Patient:</strong> {selectedReport.patient_name || "N/A"}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Type:</strong> {selectedReport.type}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Date:</strong> {new Date(selectedReport.created_at).toLocaleString()}
+                </Typography>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 0.5 }}>
+                  Result
+                </Typography>
+                <Typography variant="body1" fontWeight={800} sx={{ mb: 1 }}>
+                  {top}
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  <strong>Risk:</strong> {selectedReport.risk_score}% &nbsp;|&nbsp; <strong>Priority:</strong> {selectedReport.priority}
+                </Typography>
+
+                {symptoms?.length > 0 && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 0.5 }}>
+                      Symptoms
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {symptoms.join(", ")}
+                    </Typography>
+                  </Box>
+                )}
+
+                <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+                  <Button
+                    variant="contained"
+                    onClick={() => downloadReport(selectedReport)}
+                    startIcon={<DownloadIcon />}
+                    sx={{ fontWeight: 800, borderRadius: 2 }}
+                  >
+                    Download PDF
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={closeView}
+                    sx={{ fontWeight: 800, borderRadius: 2 }}
+                  >
+                    Close
+                  </Button>
+                </Box>
+              </Box>
+            );
+          })() : null}
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }

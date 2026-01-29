@@ -6,11 +6,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/history", (req, res) => {
-  const Case = require("./models/case");
-  res.json(Case.getAllCases());
-});
-
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/cases", require("./routes/caseRoutes"));
 app.use("/api/doctor", require("./routes/doctorRoutes"));

@@ -2,8 +2,13 @@ const axios = require("axios");
 const Case = require("../models/case");
 
 exports.submitCase = async (req, res) => {
-  const { patient, phone, symptoms, type } = req.body;
+  const { phone, symptoms, type } = req.body;
   const userId = req.user.id;
+  const patientName =
+    req.user?.dbUser?.name ||
+    req.user?.name ||
+    req.user?.email ||
+    "Patient";
 
   if (!userId) {
     return res.status(401).json({ message: "User not found in database" });
@@ -40,7 +45,7 @@ exports.submitCase = async (req, res) => {
 
   Case.createCase({
     userId,
-    patient,
+    patient: patientName,
     phone,
     type: type || "SYMPTOMS",
     symptoms,
@@ -59,12 +64,17 @@ exports.submitCase = async (req, res) => {
 };
 
 exports.savePrediction = (req, res) => {
-  const { patient, type, result, probability, is_danger } = req.body;
+  const { type, result, probability, is_danger } = req.body;
   const userId = req.user.id;
+  const patientName =
+    req.user?.dbUser?.name ||
+    req.user?.name ||
+    req.user?.email ||
+    "Patient";
 
   Case.createCase({
     userId,
-    patient,
+    patient: patientName,
     phone: "", // Not applicable here usually but keeping schema consistent
     type,
     symptoms: [],
