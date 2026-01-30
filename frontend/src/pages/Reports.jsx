@@ -27,7 +27,7 @@ export default function Reports() {
 
   const fetchReports = () => {
     setLoading(true);
-    api.get("/patient/my-reports")
+    api.get("/cases/my-reports")
       .then(res => {
         console.log("Reports data fetched:", res.data);
         if (Array.isArray(res.data)) setReports(res.data);

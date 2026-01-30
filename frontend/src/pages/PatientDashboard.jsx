@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { api } from "../api/api";
+import { mlApi } from "../api/mlApi";
 import { useAuth } from "../context/AuthContext";
 import DashboardLayout from "../components/DashboardLayout";
 import SymptomSelect from "../components/SymptomSelect";
@@ -53,12 +54,38 @@ export default function PatientDashboard() {
 
     setLoading(true);
     try {
-      const res = await api.post("/cases/submit", {
+      // First, get predictions from ML service
+      const mlResponse = await mlApi.post("/predict", {
+        symptoms: symptoms
+      });
+
+      // Transform ML response to expected format
+      const predictions = mlResponse.data.top_predictions.map(p => ({
+        disease: p.disease,
+        probability: p.probability
+      }));
+
+      // Determine priority based on top prediction
+      const topProbability = predictions[0]?.probability || 0;
+      const priority = topProbability > 70 ? "HIGH" : "LOW";
+
+      const resultData = {
+        predictions: predictions,
+        matched: mlResponse.data.matched,
+        priority: priority
+      };
+
+      // Save to backend
+      await api.post("/cases/submit", {
         patient: name || "Anonymous",
         phone: phone || "N/A",
-        symptoms
+        symptoms,
+        predictions: predictions,
+        risk_score: topProbability,
+        priority: priority
       });
-      setResult(res.data);
+
+      setResult(resultData);
     } catch (err) {
       console.error(err);
     } finally {
@@ -526,7 +553,7 @@ export default function PatientDashboard() {
                     </Typography>
 
                     <Stack spacing={3}>
-                      {result.predictions.map((p, i) => (
+                      {result.predictions?.map((p, i) => (
                         <motion.div
                           key={i}
                           initial={{ opacity: 0, x: -20 }}

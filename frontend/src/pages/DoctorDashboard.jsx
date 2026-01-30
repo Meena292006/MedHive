@@ -103,9 +103,17 @@ export default function DoctorDashboard() {
   };
 
   const filteredCases = allCases.filter(c => {
-    const matchesSearch = c.patient_name.toLowerCase().includes(search.toLowerCase()) ||
-      c.id.toString().includes(search);
-    const matchesFilter = filter === 'all' || c.priority.toLowerCase() === filter.toLowerCase();
+    const patientName = (c.patient_name || "").toLowerCase();
+    const priority = (c.priority || "").toLowerCase();
+    const searchText = (search || "").toLowerCase();
+
+    const matchesSearch =
+      patientName.includes(searchText) ||
+      String(c.id || "").includes(searchText);
+
+    const matchesFilter =
+      filter === "all" || priority === filter.toLowerCase();
+
     return matchesSearch && matchesFilter;
   });
 

@@ -1,22 +1,27 @@
 const db = require("../config/db");
 
+/**
+ * CREATE CASE (report)
+ * patientUid MUST be Firebase UID
+ */
 exports.createCase = (data) => {
-  db.prepare(`
+  return db.prepare(`
     INSERT INTO cases
-    (user_id, patient_name, phone, type, symptoms, predictions, risk_score, priority)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (patient_uid, patient_name, symptoms, predictions, priority)
+    VALUES (?, ?, ?, ?, ?)
   `).run(
-    data.userId,
+    data.patientUid,
     data.patient,
-    data.phone,
-    data.type || 'SYMPTOMS',
-    JSON.stringify(data.symptoms),
-    JSON.stringify(data.predictions),
-    data.riskScore,
-    data.priority
+    JSON.stringify(data.symptoms || []),
+    JSON.stringify(data.predictions || []),
+    data.priority || "LOW"
   );
 };
 
+/**
+ * 🚫 REMOVE / DO NOT USE FOR PATIENT
+ * Admin / Doctor only
+ */
 exports.getAllCases = () => {
   return db.prepare(`
     SELECT * FROM cases
@@ -24,25 +29,14 @@ exports.getAllCases = () => {
   `).all();
 };
 
-exports.getCasesByUser = (userId) => {
+/**
+ * ✅ ONLY fetch logged-in user's cases
+ */
+exports.getCasesByUser = (patientUid) => {
   return db.prepare(`
-    SELECT * FROM cases
-    WHERE user_id = ?
+    SELECT *
+    FROM cases
+    WHERE patient_uid = ?
     ORDER BY created_at DESC
-  `).all(userId);
-};
-
-exports.findSimilarCases = (symptoms) => {
-  const all = db.prepare(`SELECT * FROM cases`).all();
-
-  return all.filter(c => {
-    const s = JSON.parse(c.symptoms);
-    return symptoms.some(sym => s.includes(sym));
-  });
-};
-
-exports.updateStatus = (caseId, status) => {
-  db.prepare(`
-    UPDATE cases SET status=? WHERE id=?
-  `).run(status, caseId);
+  `).all(patientUid);
 };

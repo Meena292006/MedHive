@@ -1,20 +1,27 @@
 const db = require("../config/db");
 
-exports.addPrescription = (data) => {
-  db.prepare(`
+exports.createPrescription = ({ caseId, patientUid, doctorUid, message }) => {
+  return db.prepare(`
     INSERT INTO prescriptions
-    (case_id, doctor_name, medicines, recommendations)
+    (case_id, patient_uid, doctor_uid, message)
     VALUES (?, ?, ?, ?)
-  `).run(
-    data.caseId,
-    data.doctor,
-    data.medicines,
-    data.recommendations
-  );
+  `).run(caseId, patientUid, doctorUid, message);
 };
 
-exports.getByCaseId = (caseId) => {
+exports.getByPatient = (patientUid) => {
   return db.prepare(`
-    SELECT * FROM prescriptions WHERE case_id=?
+    SELECT *
+    FROM prescriptions
+    WHERE patient_uid = ?
+    ORDER BY created_at DESC
+  `).all(patientUid);
+};
+
+exports.getByCase = (caseId) => {
+  return db.prepare(`
+    SELECT *
+    FROM prescriptions
+    WHERE case_id = ?
+    ORDER BY created_at ASC
   `).all(caseId);
 };

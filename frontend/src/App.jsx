@@ -8,6 +8,7 @@ import LiverPrediction from "./pages/LiverPrediction";
 import History from "./pages/History";
 import Reports from "./pages/Reports";
 import ECGPrediction from "./pages/ECGPrediction";
+import PatientPrescriptions from "./pages/PatientPrescription";
 import { DoctorRoute, PatientRoute } from "./components/ProtectedRoute";
 
 export default function App() {
@@ -26,6 +27,9 @@ export default function App() {
           <Route path="/patient/ecg" element={<ECGPrediction />} />
           <Route path="/patient/history" element={<History />} />
           <Route path="/patient/reports" element={<Reports />} />
+
+          {/* ✅ FIXED: prescription inside PatientRoute */}
+          <Route path="/patient/prescriptions" element={<PatientPrescriptions />} />
         </Route>
 
         {/* DOCTOR ROUTES */}

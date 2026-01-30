@@ -15,6 +15,7 @@ import PeopleIcon from "@mui/icons-material/PeopleRounded";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+
 const DRAWER_WIDTH = 280;
 
 export default function Sidebar() {
@@ -39,15 +40,19 @@ export default function Sidebar() {
   };
 
 
-  const patientMenu = [
-    { text: "Dashboard", icon: <DashboardIcon />, path: "/patient" },
-    { text: "Heart Disease", icon: <MonitorHeartIcon />, path: "/patient/heart" },
-    { text: "Diabetes", icon: <MedicationIcon />, path: "/patient/diabetes" },
-    { text: "Liver Disease", icon: <ScienceIcon />, path: "/patient/liver" },
-    { text: "ECG Analysis", icon: <PulseIcon />, path: "/patient/ecg" },
-    { text: "Medical Reports", icon: <DescriptionIcon />, path: "/patient/reports" },
-    { text: "History", icon: <HistoryIcon />, path: "/patient/history" },
-  ];
+ const patientMenu = [
+  { text: "Dashboard", icon: <DashboardIcon />, path: "/patient" },
+  { text: "Heart Disease", icon: <MonitorHeartIcon />, path: "/patient/heart" },
+  { text: "Diabetes", icon: <MedicationIcon />, path: "/patient/diabetes" },
+  { text: "Liver Disease", icon: <ScienceIcon />, path: "/patient/liver" },
+  { text: "ECG Analysis", icon: <PulseIcon />, path: "/patient/ecg" },
+  { text: "Medical Reports", icon: <DescriptionIcon />, path: "/patient/reports" },
+  { text: "History", icon: <HistoryIcon />, path: "/patient/history" },
+
+  // ✅ NEW
+  { text: "Prescriptions", icon: <MedicationIcon />, path: "/patient/prescriptions" },
+];
+
 
   const doctorMenu = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/doctor" },

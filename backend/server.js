@@ -10,6 +10,7 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/cases", require("./routes/caseRoutes"));
 app.use("/api/doctor", require("./routes/doctorRoutes"));
 app.use("/api/patient", require("./routes/patientRoutes"));
+app.use("/api/prescriptions", require("./routes/prescriptionRoutes"));
 
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend is responsive", time: new Date() });

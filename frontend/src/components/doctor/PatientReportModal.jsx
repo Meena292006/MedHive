@@ -1,75 +1,80 @@
-import { Modal, Box, Typography, IconButton, Divider, Grid, Chip, Stack } from "@mui/material";
-import CloseIcon from "@mui/icons-material/CloseRounded";
-import { motion, AnimatePresence } from "framer-motion";
-
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', md: 700 },
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
-    borderRadius: 4,
-    maxHeight: '90vh',
-    overflowY: 'auto'
-};
+import { useState } from "react";
+import {
+  Dialog, DialogTitle, DialogContent,
+  TextField, Button, Box, Alert
+} from "@mui/material";
+import { api } from "../../api/api";
 
 export default function PatientReportModal({ open, handleClose, patientCase }) {
-    if (!patientCase) return null;
+  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
-    return (
-        <Modal open={open} onClose={handleClose}>
-            <Box sx={style}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-                    <Typography variant="h5" fontWeight={900}>Medical Report</Typography>
-                    <IconButton onClick={handleClose}><CloseIcon /></IconButton>
-                </Stack>
+  if (!patientCase) return null;
 
-                <Divider sx={{ mb: 3 }} />
+  const sendPrescription = async () => {
+    try {
+      setError("");
+      setSuccess("");
 
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={4}>
-                        <Typography variant="caption" fontWeight={700} color="text.secondary" uppercase>Patient Name</Typography>
-                        <Typography variant="h6" fontWeight={700}>{patientCase.patient_name || "Anonymous"}</Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <Typography variant="caption" fontWeight={700} color="text.secondary" uppercase>Contact Number</Typography>
-                        <Typography variant="h6" fontWeight={700}>{patientCase.phone || "N/A"}</Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <Typography variant="caption" fontWeight={700} color="text.secondary" uppercase>Case ID</Typography>
-                        <Typography variant="h6" fontWeight={700}>#{patientCase.id}</Typography>
-                    </Grid>
+      console.log('Sending prescription:', {
+        caseId: patientCase?.id,
+        patientUid: patientCase?.patient_uid,
+        message: message,
+        fullPatientCase: patientCase
+      });
 
-                    <Grid item xs={12}>
-                        <Typography variant="caption" fontWeight={700} color="text.secondary" uppercase sx={{ display: 'block', mb: 1 }}>Symptoms Report</Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {JSON.parse(patientCase.symptoms || "[]").map((s, i) => (
-                                <Chip key={i} label={s} sx={{ fontWeight: 600 }} />
-                            ))}
-                        </Box>
-                    </Grid>
+      await api.post("/prescriptions/send", {
+        caseId: patientCase.id,
+        patientUid: patientCase.patient_uid,
+        message: message
+      });
 
-                    <Grid item xs={12}>
-                        <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 3, border: `1px solid ${theme.palette.divider}` }}>
-                            <Typography variant="caption" fontWeight={700} color="text.secondary" uppercase sx={{ display: 'block', mb: 2 }}>AI Diagnostic Results</Typography>
-                            {JSON.parse(patientCase.predictions || "[]").map((p, i) => (
-                                <Stack key={i} direction="row" justifyContent="space-between" mb={1}>
-                                    <Typography fontWeight={600}>{p.disease || p.label}</Typography>
-                                    <Typography fontWeight={800} color="primary">{p.probability}%</Typography>
-                                </Stack>
-                            ))}
-                        </Box>
-                    </Grid>
+      setSuccess("Prescription sent to patient");
+      setMessage("");
+    } catch (e) {
+      setError("Failed to send prescription");
+    }
+  };
 
-                    <Grid item xs={12}>
-                        <Typography variant="caption" fontWeight={700} color="text.secondary" uppercase>Assessment Date</Typography>
-                        <Typography variant="body1">{new Date(patientCase.created_at).toLocaleString()}</Typography>
-                    </Grid>
-                </Grid>
-            </Box>
-        </Modal>
-    );
+  return (
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+      <DialogTitle>
+        Prescription – {patientCase.patient_name}
+      </DialogTitle>
+
+      <DialogContent>
+        <Box sx={{ mb: 2 }}>
+          <strong>Condition:</strong> {patientCase.type}<br />
+          <strong>Risk:</strong> {patientCase.priority}
+        </Box>
+
+        <TextField
+          label="Write Prescription"
+          multiline
+          rows={4}
+          fullWidth
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Medicines, dosage, precautions..."
+        />
+
+        {success && <Alert sx={{ mt: 2 }} severity="success">{success}</Alert>}
+        {error && <Alert sx={{ mt: 2 }} severity="error">{error}</Alert>}
+
+        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+          <Button onClick={handleClose} sx={{ mr: 2 }}>
+            Close
+          </Button>
+          <Button
+            variant="contained"
+            disabled={!message}
+            onClick={sendPrescription}
+          >
+            Send
+          </Button>
+        </Box>
+      </DialogContent>
+    </Dialog>
+  );
 }

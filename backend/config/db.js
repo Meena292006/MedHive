@@ -1,6 +1,8 @@
 const Database = require("better-sqlite3");
 const db = new Database("medhive.db");
 
+/* ================= USERS ================= */
+
 db.prepare(`
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -12,46 +14,46 @@ CREATE TABLE IF NOT EXISTS users (
 )
 `).run();
 
-// Add indexes for better performance
 db.prepare(`CREATE INDEX IF NOT EXISTS idx_users_uid ON users(uid)`).run();
 db.prepare(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`).run();
 db.prepare(`CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)`).run();
 
+/* ================= CASES ================= */
+
 db.prepare(`
 CREATE TABLE IF NOT EXISTS cases (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER,
+  patient_uid TEXT,
   patient_name TEXT,
-  phone TEXT,
-  type TEXT DEFAULT 'SYMPTOMS',
   symptoms TEXT,
   predictions TEXT,
-  risk_score INTEGER,
   priority TEXT,
-  status TEXT DEFAULT 'PENDING',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users (id)
+  FOREIGN KEY (patient_uid) REFERENCES users(uid)
 )
 `).run();
 
-// Add indexes for cases table
-db.prepare(`CREATE INDEX IF NOT EXISTS idx_cases_user_id ON cases(user_id)`).run();
-db.prepare(`CREATE INDEX IF NOT EXISTS idx_cases_status ON cases(status)`).run();
+db.prepare(`CREATE INDEX IF NOT EXISTS idx_cases_patient_uid ON cases(patient_uid)`).run();
 db.prepare(`CREATE INDEX IF NOT EXISTS idx_cases_created_at ON cases(created_at)`).run();
+
+/* ================= PRESCRIPTIONS ================= */
 
 db.prepare(`
 CREATE TABLE IF NOT EXISTS prescriptions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   case_id INTEGER,
-  doctor_name TEXT,
-  medicines TEXT,
-  recommendations TEXT,
+  patient_uid TEXT,
+  doctor_uid TEXT,
+  message TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (case_id) REFERENCES cases (id)
+  FOREIGN KEY (case_id) REFERENCES cases (id),
+  FOREIGN KEY (patient_uid) REFERENCES users(uid),
+  FOREIGN KEY (doctor_uid) REFERENCES users(uid)
 )
 `).run();
 
-// Add indexes for prescriptions table
 db.prepare(`CREATE INDEX IF NOT EXISTS idx_prescriptions_case_id ON prescriptions(case_id)`).run();
+db.prepare(`CREATE INDEX IF NOT EXISTS idx_prescriptions_patient_uid ON prescriptions(patient_uid)`).run();
+db.prepare(`CREATE INDEX IF NOT EXISTS idx_prescriptions_doctor_uid ON prescriptions(doctor_uid)`).run();
 
 module.exports = db;
