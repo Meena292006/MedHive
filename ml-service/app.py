@@ -90,10 +90,108 @@ heart_model     = load_model_safe("heart_model.pkl")
 diabetes_model  = load_model_safe("diabetes_model_cleaned.pkl")
 liver_model     = load_model_safe("liver_model.pkl")
 
+# =====================================================
+# MEDICAL RULES (PORTED FROM MEDALERT)
+# =====================================================
 try:
     symptom_columns = joblib.load(os.path.join(MODEL_DIR, "symptom_columns.pkl"))
 except Exception:
     symptom_columns = []
+
+RULES_FILE = os.path.join(BASE_DIR, "medical_rules.json")
+
+def load_medical_rules():
+    if not os.path.exists(RULES_FILE):
+        print("⚠️ medical_rules.json not found")
+        return []
+    try:
+        with open(RULES_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"❌ Error loading rules: {e}")
+        return []
+
+medical_rules = load_medical_rules()
+
+def generate_medical_advice(transcript: str):
+    text = transcript.lower()
+    
+    # Categorize keywords
+    HEART_KEYWORDS = ["chest pain", "angina", "palpitations", "heart racing", "heart attack", "shortness of breath", "tightness"]
+    DIABETES_KEYWORDS = ["thirsty", "urination", "blurred vision", "sugar", "insulin", "diabetic", "numbness"]
+
+    matches = []
+    for rule in medical_rules:
+        if any(keyword.lower() in text for keyword in rule["keywords"]):
+            matches.append(rule)
+
+    def get_best_match(rule_list):
+        if not rule_list:
+            return {
+                "title": "Stable",
+                "message": "No critical indicators detected.",
+                "risk": "low",
+                "score": 0.1,
+                "action": "Maintain routine monitoring."
+            }
+        priority = {"high": 3, "elevated": 2, "low": 1}
+        best = sorted(rule_list, key=lambda x: priority.get(x["risk"], 0), reverse=True)[0]
+        
+        # Assign numeric scores for triage routing
+        score_map = {"high": 0.9, "elevated": 0.6, "low": 0.2}
+        action_map = {
+            "high": "🚨 EMERGENCY: ALERTING ON-CALL DOCTOR",
+            "elevated": "📢 URGENT: NOTIFYING TRIAGE NURSE",
+            "low": "✅ STABLE: SELF-CARE ADVICE"
+        }
+        
+        return {
+            "title": best["title"],
+            "message": best["message"],
+            "risk": best["risk"],
+            "score": score_map.get(best["risk"], 0.1),
+            "action": action_map.get(best["risk"], "No action needed.")
+        }
+
+    # General Analysis (existing logic)
+    general_advice = get_best_match(matches)
+
+    # Specific Heart Analysis
+    heart_matches = [m for m in matches if any(k in m["name"].lower() or any(k in kw for kw in m["keywords"]) for k in HEART_KEYWORDS)]
+    if not heart_matches and any(k in text for k in HEART_KEYWORDS):
+        heart_advice = {
+            "title": "Cardiac Alert", 
+            "message": "Potential cardiac symptoms detected. Monitor heart rate.", 
+            "risk": "elevated",
+            "score": 0.65,
+            "action": "📢 URGENT: NOTIFYING TRIAGE NURSE"
+        }
+    else:
+        heart_advice = get_best_match(heart_matches)
+        if heart_advice["title"] == "Stable": heart_advice["title"] = "Heart: Normal"
+
+    # Specific Diabetes Analysis
+    diabetes_matches = [m for m in matches if any(k in m["name"].lower() or any(k in kw for kw in m["keywords"]) for k in DIABETES_KEYWORDS)]
+    if not diabetes_matches and any(k in text for k in DIABETES_KEYWORDS):
+        diabetes_advice = {
+            "title": "Glucose Alert", 
+            "message": "Symptoms suggestive of blood sugar issues. Check glucose levels.", 
+            "risk": "elevated",
+            "score": 0.6,
+            "action": "📢 URGENT: NOTIFYING TRIAGE NURSE"
+        }
+    else:
+        diabetes_advice = get_best_match(diabetes_matches)
+        if diabetes_advice["title"] == "Stable": diabetes_advice["title"] = "Diabetes: Normal"
+
+    return {
+        "general": general_advice,
+        "heart": heart_advice,
+        "diabetes": diabetes_advice,
+        "risk": general_advice["risk"],
+        "score": general_advice["score"],
+        "action": general_advice["action"]
+    }
 
 # =====================================================
 # ECG MODEL (FIXED)
@@ -479,7 +577,56 @@ async def predict_ecg_image(file: UploadFile = File(...)):
         raise HTTPException(500, f"Critical interpretation error: {str(e)}")
 
 # Legacy endpoint (optional, keeping for compatibility)
-@app.post("/predict/ecg")
-async def legacy_predict_ecg(file: UploadFile = File(...)):
-    return await predict_ecg_image(file)
+# =====================================================
+# SPEECH ANALYSIS (MEDALERT INTEGRATION)
+# =====================================================
+class SpeechInput(BaseModel):
+    transcript: str
+
+@app.post("/analyze-speech")
+def analyze_speech(data: SpeechInput):
+    if not data.transcript:
+        raise HTTPException(400, "Transcript is required")
+    
+    advice = generate_medical_advice(data.transcript)
+    return {
+        "transcript": data.transcript,
+        "advice": advice
+    }
+
+
+# =====================================================
+# TRIAGE INTEGRATION
+# =====================================================
+from triage.risk_engine import calculate_risk
+from triage.router import route_patient
+
+class TriageInput(BaseModel):
+    symptoms: str
+    patient_name: str = "Patient"
+
+@app.post("/api/medalert/triage")
+def triage_endpoint(data: TriageInput):
+    # For now, we use the keyword-based analysis to get a basic "score"
+    # In a real model, this would be model.predict(symptoms)
+    advice = generate_medical_advice(data.symptoms)
+    probability = advice["score"]
+    
+    # Extract found symptoms from keyword analysis
+    found_symptoms = advice.get("symptoms_found", [data.symptoms])
+    
+    risk = calculate_risk(probability)
+    action = route_patient(risk, data.patient_name, symptoms=found_symptoms)
+    
+    return {
+        "risk": risk,
+        "score": round(probability * 100, 2),
+        "action": action,
+        "advice": advice
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    # Use 5001 as previously identified
+    uvicorn.run(app, host="0.0.0.0", port=5001)
 

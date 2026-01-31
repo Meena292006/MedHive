@@ -28,6 +28,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
+
 export default function PatientDashboard() {
   const { user } = useAuth();
   const [name, setName] = useState(user?.displayName || user?.email?.split('@')[0] || "");
@@ -408,8 +409,8 @@ export default function PatientDashboard() {
               </Stack>
             </CardContent>
           </AnimatedCard>
-
         </Grid>
+
 
         <Grid item xs={12} md={7}>
           <AnimatePresence mode="wait">
