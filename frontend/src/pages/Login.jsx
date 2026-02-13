@@ -6,6 +6,7 @@ import PersonIcon from "@mui/icons-material/PersonRounded";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospitalRounded";
 import GoogleIcon from "@mui/icons-material/Google";
 import EmailIcon from "@mui/icons-material/EmailRounded";
+import SmartphoneIcon from "@mui/icons-material/Smartphone";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import EmailPasswordAuth from "../components/EmailPasswordAuth";
@@ -91,6 +92,247 @@ export default function Login() {
         overflow: "hidden"
       }}
     >
+      {/* Professional Doctor Silhouette - Left */}
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        style={{
+          position: "absolute",
+          left: "6%",
+          bottom: "10%",
+          zIndex: 1,
+          pointerEvents: "none",
+          display: window.innerWidth < 1200 ? "none" : "block"
+        }}
+      >
+        <motion.div
+          animate={{
+            y: [0, -4, 0],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <svg width="200" height="400" viewBox="0 0 200 400" style={{ opacity: 0.35, filter: 'drop-shadow(0 15px 40px rgba(0,0,0,0.25))' }}>
+            {/* Doctor Figure */}
+            {/* Head */}
+            <circle cx="100" cy="50" r="28" fill={`url(#doctorHead)`} />
+
+            {/* Neck */}
+            <rect x="92" y="75" width="16" height="15" rx="3" fill={theme.palette.primary.dark} opacity="0.9" />
+
+            {/* Lab Coat Body */}
+            <path
+              d="M 65 90 Q 65 88 67 88 L 133 88 Q 135 88 135 90 L 140 200 Q 140 205 135 205 L 65 205 Q 60 205 60 200 Z"
+              fill={`url(#doctorCoat)`}
+              stroke={theme.palette.primary.dark}
+              strokeWidth="1"
+            />
+
+            {/* Collar */}
+            <path
+              d="M 80 88 L 85 78 L 92 88 M 120 88 L 115 78 L 108 88"
+              fill="none"
+              stroke={theme.palette.background.paper}
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+
+            {/* Left Arm with Phone */}
+            <motion.g
+              animate={{ rotate: [0, -2, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              style={{ transformOrigin: '65px 100px' }}
+            >
+              <ellipse cx="50" cy="140" rx="10" ry="45" fill={theme.palette.background.paper} opacity="0.95" />
+
+              {/* Phone in hand */}
+              <rect x="42" y="175" width="18" height="32" rx="3" fill={theme.palette.primary.main} stroke={theme.palette.primary.dark} strokeWidth="1.5" />
+              <rect x="44" y="177" width="14" height="24" rx="1" fill={theme.palette.background.paper} opacity="0.3" />
+              <motion.circle
+                cx="51"
+                cy="204"
+                r="2"
+                fill={theme.palette.background.paper}
+                animate={{ opacity: [0.3, 0.8, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </motion.g>
+
+            {/* Right Arm */}
+            <ellipse cx="150" cy="140" rx="10" ry="45" fill={theme.palette.background.paper} opacity="0.95" />
+
+            {/* Stethoscope */}
+            <path
+              d="M 95 95 Q 90 100 90 110 L 90 125"
+              fill="none"
+              stroke={theme.palette.secondary.main}
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <circle cx="90" cy="130" r="5" fill={theme.palette.secondary.dark} stroke={theme.palette.secondary.main} strokeWidth="2" />
+
+            {/* Medical Badge */}
+            <circle cx="100" cy="130" r="10" fill={theme.palette.error.main} opacity="0.9" />
+            <text x="100" y="135" fontSize="14" fill="white" textAnchor="middle" fontWeight="bold">+</text>
+
+            {/* Pants */}
+            <rect x="70" y="205" width="28" height="120" rx="5" fill={theme.palette.primary.dark} opacity="0.9" />
+            <rect x="102" y="205" width="28" height="120" rx="5" fill={theme.palette.primary.dark} opacity="0.9" />
+
+            {/* Shoes */}
+            <ellipse cx="84" cy="335" rx="16" ry="8" fill={theme.palette.grey[900]} />
+            <ellipse cx="116" cy="335" rx="16" ry="8" fill={theme.palette.grey[900]} />
+
+            {/* Gradients */}
+            <defs>
+              <linearGradient id="doctorHead" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor={theme.palette.primary.light} />
+                <stop offset="100%" stopColor={theme.palette.primary.main} />
+              </linearGradient>
+              <linearGradient id="doctorCoat" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor={theme.palette.background.paper} stopOpacity="0.98" />
+                <stop offset="100%" stopColor={theme.palette.grey[100]} stopOpacity="0.95" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </motion.div>
+      </motion.div>
+
+      {/* Professional Patient Silhouette - Right */}
+      <motion.div
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        style={{
+          position: "absolute",
+          right: "6%",
+          bottom: "10%",
+          zIndex: 1,
+          pointerEvents: "none",
+          display: window.innerWidth < 1200 ? "none" : "block"
+        }}
+      >
+        <motion.div
+          animate={{
+            y: [0, -3, 0],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5
+          }}
+        >
+          <svg width="200" height="400" viewBox="0 0 200 400" style={{ opacity: 0.35, filter: 'drop-shadow(0 15px 40px rgba(0,0,0,0.25))' }}>
+            {/* Patient Figure */}
+            {/* Head */}
+            <circle cx="100" cy="50" r="26" fill={`url(#patientHead)`} />
+
+            {/* Hair */}
+            <path
+              d="M 74 35 Q 74 20 100 20 Q 126 20 126 35"
+              fill={theme.palette.grey[800]}
+              opacity="0.9"
+            />
+
+            {/* Neck */}
+            <rect x="92" y="73" width="16" height="12" rx="3" fill={theme.palette.secondary.dark} opacity="0.8" />
+
+            {/* Casual Shirt */}
+            <path
+              d="M 68 85 Q 68 83 70 83 L 130 83 Q 132 83 132 85 L 135 195 Q 135 200 130 200 L 70 200 Q 65 200 65 195 Z"
+              fill={`url(#patientShirt)`}
+              stroke={theme.palette.secondary.dark}
+              strokeWidth="1"
+            />
+
+            {/* Collar */}
+            <polygon
+              points="85,83 92,75 100,83"
+              fill={theme.palette.secondary.dark}
+              opacity="0.9"
+            />
+            <polygon
+              points="115,83 108,75 100,83"
+              fill={theme.palette.secondary.dark}
+              opacity="0.9"
+            />
+
+            {/* Left Arm */}
+            <ellipse cx="55" cy="135" rx="9" ry="42" fill={theme.palette.secondary.main} opacity="0.9" />
+
+            {/* Right Arm with Phone */}
+            <motion.g
+              animate={{ rotate: [0, 2, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity }}
+              style={{ transformOrigin: '145px 100px' }}
+            >
+              <ellipse cx="145" cy="135" rx="9" ry="42" fill={theme.palette.secondary.main} opacity="0.9" />
+
+              {/* Phone in hand */}
+              <rect x="140" y="168" width="18" height="32" rx="3" fill={theme.palette.secondary.dark} stroke={theme.palette.grey[900]} strokeWidth="1.5" />
+              <rect x="142" y="170" width="14" height="24" rx="1" fill={theme.palette.background.paper} opacity="0.4" />
+              <motion.rect
+                x="145"
+                y="173"
+                width="8"
+                height="8"
+                rx="1"
+                fill={theme.palette.primary.main}
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 2.5, repeat: Infinity }}
+              />
+              <circle cx="149" cy="197" r="2" fill={theme.palette.background.paper} opacity="0.5" />
+            </motion.g>
+
+            {/* Heart Monitor Icon */}
+            <motion.g
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 1.8, repeat: Infinity }}
+              style={{ transformOrigin: '100px 125px' }}
+            >
+              <circle cx="100" cy="125" r="9" fill={theme.palette.error.main} opacity="0.85" />
+              <path
+                d="M 96 125 L 98 122 L 100 128 L 102 120 L 104 125"
+                fill="none"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </motion.g>
+
+            {/* Jeans */}
+            <rect x="73" y="200" width="26" height="125" rx="5" fill={theme.palette.secondary.dark} opacity="0.95" />
+            <rect x="101" y="200" width="26" height="125" rx="5" fill={theme.palette.secondary.dark} opacity="0.95" />
+
+            {/* Seam lines */}
+            <line x1="86" y1="200" x2="86" y2="325" stroke={theme.palette.grey[900]} strokeWidth="1" opacity="0.3" />
+            <line x1="114" y1="200" x2="114" y2="325" stroke={theme.palette.grey[900]} strokeWidth="1" opacity="0.3" />
+
+            {/* Shoes */}
+            <ellipse cx="86" cy="335" rx="15" ry="7" fill={theme.palette.grey[800]} />
+            <ellipse cx="114" cy="335" rx="15" ry="7" fill={theme.palette.grey[800]} />
+
+            {/* Gradients */}
+            <defs>
+              <linearGradient id="patientHead" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor={theme.palette.secondary.light} />
+                <stop offset="100%" stopColor={theme.palette.secondary.main} />
+              </linearGradient>
+              <linearGradient id="patientShirt" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor={theme.palette.secondary.light} stopOpacity="0.9" />
+                <stop offset="100%" stopColor={theme.palette.secondary.main} stopOpacity="0.85" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </motion.div>
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}

@@ -10,6 +10,7 @@ import Reports from "./pages/Reports";
 import ECGPrediction from "./pages/ECGPrediction";
 import PatientPrescriptions from "./pages/PatientPrescription";
 import MedAlertDashboard from "./pages/MedAlertDashboard";
+import DigitalTwin from "./pages/DigitalTwin";
 import { DoctorRoute, PatientRoute } from "./components/ProtectedRoute";
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/patient/liver" element={<LiverPrediction />} />
           <Route path="/patient/ecg" element={<ECGPrediction />} />
           <Route path="/patient/medalert" element={<MedAlertDashboard />} />
+          <Route path="/patient/digital-twin" element={<DigitalTwin />} />
           <Route path="/patient/history" element={<History />} />
           <Route path="/patient/reports" element={<Reports />} />
 

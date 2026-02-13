@@ -13,6 +13,7 @@ import PulseIcon from "@mui/icons-material/ShowChartRounded";
 import DescriptionIcon from "@mui/icons-material/DescriptionRounded";
 import PeopleIcon from "@mui/icons-material/PeopleRounded";
 import ShieldIcon from "@mui/icons-material/ShieldRounded";
+import PsychologyIcon from "@mui/icons-material/PsychologyRounded";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -43,6 +44,7 @@ export default function Sidebar() {
 
   const patientMenu = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/patient" },
+    { text: "Digital Twin", icon: <PsychologyIcon />, path: "/patient/digital-twin" },
     { text: "Heart Disease", icon: <MonitorHeartIcon />, path: "/patient/heart" },
     { text: "MedAlert AI", icon: <ShieldIcon />, path: "/patient/medalert" },
     { text: "Diabetes", icon: <MedicationIcon />, path: "/patient/diabetes" },

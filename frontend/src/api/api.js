@@ -2,7 +2,7 @@ import axios from "axios";
 import { auth } from "../firebase";
 
 export const api = axios.create({
-  baseURL: "http://localhost:5000/api"
+  baseURL: "http://localhost:5055/api"
 });
 
 // Add request interceptor to automatically attach Firebase token
